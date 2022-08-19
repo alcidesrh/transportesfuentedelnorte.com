@@ -32,7 +32,7 @@ PHPMETRICS    = ./vendor/bin/phpmetrics
 SYMFONY_BIN   = symfony
 BREW          = brew
 DOCKER        = docker
-DOCKER_COMP   = docker-compose
+DOCKER_COMP   = docker compose
 
 # Executables: prod only
 CERTBOT       = certbot
