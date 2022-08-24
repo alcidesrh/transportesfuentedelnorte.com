@@ -2,31 +2,67 @@
 
 namespace App\Controller;
 
+use App\Services\RemoteDatabaseQueries;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\EntityManagerInterface;
 
 class TestController extends AbstractController
 {
-    #[Route('/', name: 'app_test')]
-    public function index(EntityManagerInterface $systemfdnEntityManager): JsonResponse
+    #[Route('/estaciones', name: 'estaciones')]
+    public function estaciones(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
     {
         try {
-            $rsm = new ResultSetMapping();
-            $rsm->addScalarResult('id', 'id');
-            $rsm->addScalarResult('fecha_creacion', 'fecha_creacion');
-            // build rsm here
-
-            $query = $systemfdnEntityManager->createNativeQuery("SELECT * FROM encomienda WHERE encomienda.id = '1007611'", $rsm)->getResult();
-            // $query->setParameter(1, 'romanb');
-            // var_dump(count($query));
+            $result = $systemfdnEntityManager->getEstaciones();
         } catch (\Throwable $e) {
 
-            $e = 0;
+            return $this->json([
+                'message' => $e->getMessage(),
+            ]);
         }
+
+        dd($result);
+
+        return $this->json([
+            'message' => 'Welcome to your new controller!',
+            'path' => 'src/Controller/TestController.php',
+        ]);
+    }
+
+    #[Route('/salidas', name: 'salidas')]
+    public function salidas(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
+    {
+        try {
+            $result = $systemfdnEntityManager->getSalidas();
+        } catch (\Throwable $e) {
+
+            return $this->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        dd($result);
+
+        return $this->json([
+            'message' => 'Welcome to your new controller!',
+            'path' => 'src/Controller/TestController.php',
+        ]);
+    }
+
+    #[Route('/asientos', name: 'asientos')]
+    public function asientos(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
+    {
+        try {
+            $result = $systemfdnEntityManager->getAsientos();
+        } catch (\Throwable $e) {
+
+            return $this->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        dd($result);
 
         return $this->json([
             'message' => 'Welcome to your new controller!',
