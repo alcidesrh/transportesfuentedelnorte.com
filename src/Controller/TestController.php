@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Services\RemoteDatabaseQueries;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -51,10 +52,10 @@ class TestController extends AbstractController
     }
 
     #[Route('/asientos', name: 'asientos')]
-    public function asientos(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
+    public function asientos(RemoteDatabaseQueries $systemfdnEntityManager): Response
     {
         try {
-            $result = $systemfdnEntityManager->getAsientos();
+            // $result = $systemfdnEntityManager->getAsientos();
         } catch (\Throwable $e) {
 
             return $this->json([
@@ -62,7 +63,9 @@ class TestController extends AbstractController
             ]);
         }
 
-        dd($result);
+        // dd($result);
+
+        return $this->render('base.html.twig');
 
         return $this->json([
             'message' => 'Welcome to your new controller!',
