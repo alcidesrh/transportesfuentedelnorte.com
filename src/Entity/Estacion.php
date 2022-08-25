@@ -4,10 +4,15 @@ namespace App\Entity;
 
 use App\Repository\EstacionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: EstacionRepository::class)]
 class Estacion
 {
+
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,9 +30,23 @@ class Estacion
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $direccion = null;
 
+    #[ORM\Column(length: 110, unique: true)]
+    #[Gedmo\Slug(fields: ['nombre'])]
+    private ?string $slug = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $activa = null;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getNombre(): ?string
@@ -74,6 +93,30 @@ class Estacion
     public function setDireccion(?string $direccion): self
     {
         $this->direccion = $direccion;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function isActiva(): ?bool
+    {
+        return $this->activa;
+    }
+
+    public function setActiva(?bool $activa): self
+    {
+        $this->activa = $activa;
 
         return $this;
     }

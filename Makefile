@@ -265,3 +265,6 @@ migration:
 
 migrate:
 	@$(EXEC_SYMFONY) doctrine:migrations:migrate
+
+entity:
+	@$(EXEC_SYMFONY) make:entity	

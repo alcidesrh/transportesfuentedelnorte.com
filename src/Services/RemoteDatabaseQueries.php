@@ -9,18 +9,17 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class RemoteDatabaseQueries
 {
-    public function __construct(public EntityManagerInterface $systemfdnEntityManager)
+    public function __construct(public EntityManagerInterface $system_fdn_entitymanager)
     {
     }
     public function getEstaciones(): array
     {
+        $sql = "SELECT DISTINCT e.id as estacion_id, e.nombre as estacion_nombre, e.direccion as estacion_direccion, e.alias as estacion_alias, e.inicia_ruta as estacion_activa, d.nombre as departamento_nombre, d.id as departamento_id
+                from estacion e left join departamento d on e.departamento_id = d.id";
 
-        $sql = "SELECT e.id, e.nombre as estacion, d.nombre as departamento
-                from estacion e left join departamento d on e.departamento_id = d.id 
-                where e.departamento_id is not null and e.inicia_ruta is not null group by e.id, e.nombre, d.nombre;";
-
-        // $query = $systemfdnEntityManager->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
-        return $this->systemfdnEntityManager->getConnection()->fetchAllAssociative($sql);
+        $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
+        $query->bindValue(1, 1);
+        return $query->executeQuery()->fetchAllAssociative();
     }
 
     public function getSalidas(): array
@@ -41,7 +40,7 @@ class RemoteDatabaseQueries
         where salida.estado_id in (1,2,3) and ruta.estacion_origen_id = ? and ruta.estacion_destino_id = ? and salida.fecha between ? and ? 
         order by salida.fecha asc";
 
-        $query = $this->systemfdnEntityManager->getConnection()->prepare($sql);
+        $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
         $query->bindValue(1, 1);
         $query->bindValue(2, 3);
         $query->bindValue(3, $fecha);
@@ -59,13 +58,13 @@ class RemoteDatabaseQueries
                 left join clase_asiento on clase_asiento.id = bus_asiento.clase_id
                 where salida.id = ?";
 
-        $query = $this->systemfdnEntityManager->getConnection()->prepare($sql);
+        $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
         $query->bindValue(1, 251954);
         $return = $query->executeQuery()->fetchAllAssociative();
         return $return;
     }
 
-    // public function index(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
+    // public function index(RemoteDatabaseQueries $system_fdn_entitymanager): JsonResponse
     // {
     //     try {
     //         $rsm = new ResultSetMapping();
@@ -74,22 +73,22 @@ class RemoteDatabaseQueries
 
     //         // SELECT
     //         $sql = "SELECT * from encomienda where encomienda.id = '1007611'";
-    //         // $query = $systemfdnEntityManager->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
-    //         $query = $systemfdnEntityManager->getConnection()->fetchAllAssociative($sql);
+    //         // $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
+    //         $query = $system_fdn_entitymanager->getConnection()->fetchAllAssociative($sql);
 
     //         // INSERT
     //         // $sql = "INSERT INTO banco (alias, nombre, telefono, direccion) VALUES ('value11', 'value2', 'value3', 'value4')";
-    //         // $query = $systemfdnEntityManager->getConnection()->prepare($sql)->executeStatement();
+    //         // $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeStatement();
 
     //         // UPDATE
     //         // $sql = "UPDATE banco SET alias = 'alias', nombre = 'alcides' where id = 1;";
-    //         // $query = $systemfdnEntityManager->getConnection()->prepare($sql)->executeStatement();
+    //         // $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeStatement();
 
     //         // DELETE
     //         $sql = "DELETE from banco where id = 1";
-    //         $query = $systemfdnEntityManager->getConnection()->prepare($sql)->executeStatement();
-    //         // $query = $systemfdnEntityManager->createNativeQuery("SELECT * from encomienda where encomienda.id = '1007611'", $rsm)->getResult();
-    //         $query = $systemfdnEntityManager->createNativeQuery("SELECT encomienda.id as id from encomienda where encomienda.id = '1007611'", $rsm)->getResult();
+    //         $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeStatement();
+    //         // $query = $system_fdn_entitymanager->createNativeQuery("SELECT * from encomienda where encomienda.id = '1007611'", $rsm)->getResult();
+    //         $query = $system_fdn_entitymanager->createNativeQuery("SELECT encomienda.id as id from encomienda where encomienda.id = '1007611'", $rsm)->getResult();
     //         // $query->setParameter(1, 'romanb');
     //         // var_dump(count($query));
     //     } catch (\Throwable $e) {

@@ -6,10 +6,14 @@ use App\Repository\DepartamentoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: DepartamentoRepository::class)]
 class Departamento
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,6 +25,10 @@ class Departamento
     #[ORM\OneToMany(mappedBy: 'departamento', targetEntity: Estacion::class)]
     private Collection $estaciones;
 
+    #[ORM\Column(length: 110, unique: true)]
+    #[Gedmo\Slug(fields: ['nombre'])]
+    private ?string $slug = null;
+
     public function __construct()
     {
         $this->estaciones = new ArrayCollection();
@@ -29,6 +37,13 @@ class Departamento
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getNombre(): ?string
@@ -51,24 +66,36 @@ class Departamento
         return $this->estaciones;
     }
 
-    public function addEstacione(Estacion $estacione): self
+    public function addEstacion(Estacion $estacion): self
     {
-        if (!$this->estaciones->contains($estacione)) {
-            $this->estaciones->add($estacione);
-            $estacione->setDepartamento($this);
+        if (!$this->estaciones->contains($estacion)) {
+            $this->estaciones->add($estacion);
+            $estacion->setDepartamento($this);
         }
 
         return $this;
     }
 
-    public function removeEstacione(Estacion $estacione): self
+    public function removeEstacion(Estacion $estacion): self
     {
-        if ($this->estaciones->removeElement($estacione)) {
+        if ($this->estaciones->removeElement($estacion)) {
             // set the owning side to null (unless already changed)
-            if ($estacione->getDepartamento() === $this) {
-                $estacione->setDepartamento(null);
+            if ($estacion->getDepartamento() === $this) {
+                $estacion->setDepartamento(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
