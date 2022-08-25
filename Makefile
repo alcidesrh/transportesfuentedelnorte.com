@@ -17,7 +17,7 @@ REDIS         = redis-cli
 GIT           = git
 YARN          = yarn
 NPX           = npx
-
+EXEC_SYMFONY  = symfony console
 # Alias
 SYMFONY       = $(EXEC_PHP) bin/console
 # if you use Docker you can replace with: "docker-compose exec my_php_container $(EXEC_PHP) bin/console"
@@ -255,3 +255,13 @@ report-metrics: ## Run the phpmetrics report
 
 coverage: ## Create the code coverage report with PHPUnit
 	$(EXEC_PHP) -d xdebug.enable=1 -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html=var/coverage
+
+## —— Doctrine ———————————————————————————————————————————————————————————————————
+database:
+	@$(EXEC_SYMFONY) doctrine:database:create --if-not-exists
+
+migration:
+	@$(EXEC_SYMFONY) make:migration
+
+migrate:
+	@$(EXEC_SYMFONY) doctrine:migrations:migrate
