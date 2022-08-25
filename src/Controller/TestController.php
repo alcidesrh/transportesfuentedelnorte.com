@@ -55,7 +55,7 @@ class TestController extends AbstractController
     public function asientos(RemoteDatabaseQueries $systemfdnEntityManager): Response
     {
         try {
-            $result = $systemfdnEntityManager->getAsientos();
+            // $result = $systemfdnEntityManager->getAsientos();
         } catch (\Throwable $e) {
 
             return $this->json([
