@@ -6,6 +6,7 @@ use App\Repository\EstacionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EstacionRepository::class)]
 class Estacion
@@ -18,6 +19,7 @@ class Estacion
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column(length: 100)]
     private ?string $nombre = null;
 
