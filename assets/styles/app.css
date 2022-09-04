@@ -1,11 +1,8 @@
+@import "material-symbols/outlined.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.background-transparent {
-    background-color: #b2b2b2;
-    background-color: rgba(0, 0, 0, 0.3);
-}
 
 @layer components {
     .card {
@@ -14,8 +11,51 @@
         padding: theme("spacing.6");
         box-shadow: theme("boxShadow.xl");
     }
-    .btn-primary {
+    [type="submit"] {
         @apply py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
+    }
+    .input {
+        @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder:italic placeholder:text-slate-400;
+    }
+
+    /* input[type="text"], */
+    /* select {
+        @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder:italic placeholder:text-slate-400;
+    } */
+}
+
+html {
+    box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    /* font-family: "Barlow", sans-serif; */
+    font-family: "Montserrat", sans-serif;
+    /* font-size: 48px; */
+}
+
+.background-transparent {
+    background-color: #b2b2b2;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.pulse {
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        font-variation-settings: "wght" 100;
+    }
+    50% {
+        font-variation-settings: "wght" 700;
+    }
+    100% {
+        font-variation-settings: "wght" 100;
     }
 }
 

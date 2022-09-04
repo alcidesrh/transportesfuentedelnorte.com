@@ -39,28 +39,25 @@ class EstacionRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Estacion[] Returns an array of Estacion objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    //    /**
+    //     * @return Estacion[] Returns an array of Estacion objects
+    //     */
+    public function getEstacionesSelect()
+    {
+        return $this->createQueryBuilder('e')
+            ->select('e, d')
+            ->leftJoin('e.departamento', 'd')
+            ->where('e.activa = :true')
+            ->setParameter('true', true);
+    }
 
-//    public function findOneBySomeField($value): ?Estacion
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    //    public function findOneBySomeField($value): ?Estacion
+    //    {
+    //        return $this->createQueryBuilder('e')
+    //            ->andWhere('e.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
