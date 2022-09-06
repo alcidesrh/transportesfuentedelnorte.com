@@ -1,9 +1,0 @@
-{{ form_start(ruta, {attr: {class: 'm-auto'}}) }}
-{{ form_row(ruta._token) }}
-<div class="grid gap-4 w-fit m-auto sm:grid-cols-[repeat(2,minmax(250px,300px))] lg:grid-cols-[repeat(3,minmax(250px,300px))]">
-	{{ form_row(ruta.desde)}}
-	{{ form_row(ruta.hacia)}}
-	{{ form_row(ruta.ida_vuelta, {attr: {class: 'flex gap-2 h-full items-center'}}) }}
-	{{ form_row(ruta.submit,{row_attr: {class: 'flex justify-end row-start-4 sm:row-start-3 sm:col-start-2 lg:col-start-3'}})}}
-</div>
-{{ form_end(ruta) }}

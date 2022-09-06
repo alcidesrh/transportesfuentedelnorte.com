@@ -233,7 +233,8 @@
         {%- endif -%}
     {%- endif -%}
     <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>
-        {%- if translation_domain is same as(false) -%}
+        <div class="flex justify-center">
+         {%- if translation_domain is same as(false) -%}
             {%- if label_html is same as(false) -%}
                 {{- label -}}
             {%- else -%}
@@ -246,6 +247,11 @@
                 {{- label|trans(label_translation_parameters, translation_domain)|raw -}}
             {%- endif -%}
         {%- endif -%}
+        {%- if button_icon|default(false) -%}
+                <span class="material-symbols-outlined ml-2">{{button_icon.icon}}</span>
+        {%- endif -%}
+        
+        </div>
     </button>
 {%- endblock button_widget -%}
 

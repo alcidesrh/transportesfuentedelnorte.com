@@ -40,7 +40,7 @@ class EstacionRepository extends ServiceEntityRepository
     }
 
     //    /**
-    //     * @return Estacion[] Returns an array of Estacion objects
+    //     * @return QueryBuilder object
     //     */
     public function getEstacionesSelect()
     {

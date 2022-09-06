@@ -56,7 +56,7 @@ class FechaEstacionReservaType extends AbstractType
                 'placeholder' => 'Hacia',
                 'label' => false,
                 'constraints' => [
-                    new NotBlank(['message' => 'test'])
+                    new NotBlank()
                 ],
                 'required' => false
             ])->add(
@@ -72,7 +72,6 @@ class FechaEstacionReservaType extends AbstractType
                     'constraints' => [
                         new NotBlank()
                     ],
-                    'required' => false
                 ]
             )->add('submit', SubmitType::class, [
                 'label' => 'Siguiente'
