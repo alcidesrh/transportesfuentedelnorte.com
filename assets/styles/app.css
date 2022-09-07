@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;600&display=swap");
 @import "material-symbols/outlined.css";
 
 @tailwind base;
@@ -34,9 +35,12 @@ html {
 }
 
 body {
-    /* font-family: "Barlow", sans-serif; */
     font-family: "Montserrat", sans-serif;
-    /* font-size: 48px; */
+    transition: opacity 1000ms;
+}
+body.turbo-loading,
+body.turbo-loaded {
+    opacity: 0.2;
 }
 
 .background-transparent {

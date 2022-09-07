@@ -1,6 +1,5 @@
 {% block stylesheets %}
-	{# {{parent()}} #}
 	{{ encore_entry_link_tags('reserva') }}
 {% endblock %}
 {% include 'reserva/_steps.html.twig' %}
-{% include 'reserva/_escoger_ruta_form.html.twig' %}
+{{ render_esi(controller('App\\Controller\\ReservacionController::_rutaForm')) }}

@@ -7,7 +7,7 @@
 }
 
 .step-icon {
-    @apply w-10 h-10 mx-auto bg-white border-2 border-gray-200 rounded-full text-lg text-white flex items-center;
+    @apply w-10 h-10 mx-auto bg-white border-2 border-gray-200 rounded-full text-lg text-white flex items-center relative;
 }
 
 .complete .step-icon {
@@ -22,12 +22,24 @@
     @apply text-white;
 }
 
-.active .step-icon > span {
-    @apply text-indigo-500;
+/* .active .step-icon > span {
+    @apply text-blue-700;
+} */
+
+.complete .step-icon > span {
+    @apply invisible;
+}
+
+.complete .step-icon > span::after {
+    content: "done";
+    @apply visible block absolute;
+    padding: 5px;
+    top: 1px;
+    left: 1px;
 }
 
 .step-verticals-lines {
-    @apply border border-t-0 border-b-0 border-indigo-500 w-10 mx-auto absolute hidden;
+    @apply border border-t-0 border-b-0 border-slate-500 w-10 mx-auto absolute hidden;
     height: 33px;
     top: 40px;
     left: 50%;
@@ -43,7 +55,7 @@
 }
 
 .active .step-icon {
-    @apply border border-b-0 border-indigo-500 rounded-b-none bg-transparent;
+    @apply border border-b-0 border-slate-500 rounded-b-none bg-transparent;
 }
 
 .active .step-verticals-lines {
