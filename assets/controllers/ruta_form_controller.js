@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-import flatpickr from "flatpickr";
 import { useDispatch } from "stimulus-use";
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
@@ -7,15 +6,8 @@ import { useDispatch } from "stimulus-use";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-  static targets = ["fechaSalida"];
-  static values = {
-    fecha: String,
-  };
   connect() {
     useDispatch(this);
-    this.dispatch("reservacion:paso", { paso: 1 });
-
-    const picker = flatpickr(this.fechaSalidaTarget, {});
-    picker.open();
+    this.dispatch("reservacion:paso", { paso: 0 });
   }
 }

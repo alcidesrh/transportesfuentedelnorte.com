@@ -1,5 +1,13 @@
 {% block stylesheets %}
 	{{ encore_entry_link_tags('reserva') }}
 {% endblock %}
-{% include 'reserva/_steps.html.twig' %}
-{{ render_esi(controller('App\\Controller\\ReservacionController::_rutaForm')) }}
+<div {{ stimulus_controller('reservacion') }}>
+
+	{% include 'reserva/_steps.html.twig' %}
+
+	{% if reservacion_paso == 0 %}
+		{{ render_esi(controller('App\\Controller\\ReservacionController::_rutaForm')) }}
+	{% elseif reservacion_paso == 1 %}
+		{{ render(controller('App\\Controller\\ReservacionController::_salidaForm')) }}
+	{% endif %}
+</div>

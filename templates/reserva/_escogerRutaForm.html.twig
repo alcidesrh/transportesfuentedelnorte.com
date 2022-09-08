@@ -1,5 +1,5 @@
 <turbo-frame id="reservacion-form">
-	{{ form_start(form, {attr: {class: 'm-auto'}}) }}
+	{{ form_start(form, {attr: {class: 'm-auto', 'data-controller': 'ruta-form', 'data-action':'ruta-form:reservacion:paso->reservacion#setPaso'}}) }}
 	<fieldset class="border px-5 py-10 rounded-md border-slate-500 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
 		{{ form_row(form._token) }}
 		<div class="grid gap-4 w-fit m-auto sm:grid-cols-[repeat(2,minmax(250px,300px))] lg:grid-cols-[repeat(3,minmax(250px,300px))]">

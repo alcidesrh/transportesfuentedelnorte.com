@@ -17,16 +17,13 @@ class ReservacionController extends AbstractController
 
         try {
             $form = $this->createForm(FechaEstacionReservaType::class, null, [
-                'action' => $this->generateUrl('_ruta_form'),
-                'attr' => [
-                    'data-controller' => 'salida-form',
-                ]
+                'action' => $this->generateUrl('_ruta_form')
             ]);
 
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $data = $form->getData();
+                $request->getSession()->set('reservacion', ['ruta' => $form->getData()]);
                 return $this->redirectToRoute('_salida_form');
             }
 
@@ -47,10 +44,7 @@ class ReservacionController extends AbstractController
 
         try {
             $form = $this->createForm(SalidaReservaType::class, null, [
-                'action' => $this->generateUrl('_salida_form'),
-                'attr' => [
-                    'data-controller' => 'salida-form',
-                ]
+                'action' => $this->generateUrl('_salida_form')
             ]);
 
             $form->handleRequest($request);

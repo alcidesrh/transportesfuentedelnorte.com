@@ -1,6 +1,6 @@
 <div class="w-full py-6 z-20">
-	<div class="flex">
-		<div class="w-1/4 active">
+	<div class="flex" data-reservacion-target="pasos">
+		<div class="w-1/4 {{reservacion_paso == 0 ? 'active' : 'complete'}}">
 			<div class="relative mb-2">
 				<div class="step-label">{{ 'Ruta'|trans }}</div>
 				<div class="relative w-10 h-10 mx-auto step-icon text-lg text-white flex items-center">
@@ -14,8 +14,7 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="w-1/4">
+		<div class="w-1/4 {{ reservacion_paso == 1 ? 'active' : (reservacion_paso > 1 ? 'complete' : '') }}">
 			<div class="relative mb-2">
 				<div class="step-label">{{'Salida/Fecha'|trans}}</div>
 				<div class="absolute flex align-center items-center align-middle content-center" style="width: calc(100% - 2.5rem - 1rem); top: 50%; transform: translate(-50%, -50%)">
@@ -35,8 +34,7 @@
 
 
 		</div>
-
-		<div class="w-1/4">
+		<div class="w-1/4 {{ reservacion_paso == 2 ? 'active' : (reservacion_paso > 2 ? 'complete' : '') }}">
 			<div class="relative mb-2">
 				<div class="step-label">{{'Pasajeros'|trans}}</div>
 				<div class="absolute flex align-center items-center align-middle content-center" style="width: calc(100% - 2.5rem - 1rem); top: 50%; transform: translate(-50%, -50%)">
@@ -57,8 +55,7 @@
 			</div>
 
 		</div>
-
-		<div class="w-1/4">
+		<div class="w-1/4 {{ reservacion_paso == 3 ? 'active' : (reservacion_paso > 3 ? 'complete' : '') }}">
 			<div class="relative mb-2">
 				<div class="step-label">{{'Comprar ticket'|trans}}</div>
 

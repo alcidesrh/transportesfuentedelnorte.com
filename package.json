@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "flatpickr": "^4.6.13",
-        "material-symbols": "^0.2.9"
+        "material-symbols": "^0.2.9",
+        "stimulus-use": "^0.50.0"
     }
 }

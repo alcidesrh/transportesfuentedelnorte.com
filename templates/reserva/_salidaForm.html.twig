@@ -1,11 +1,14 @@
 <turbo-frame id="reservacion-form">
-	{{ form_start(form, {attr: {class: 'm-auto'}}) }}
+	{{ form_start(form, {attr: {class: 'm-auto', 'data-controller': 'salida-form', 'data-action':'salida-form:reservacion:paso->reservacion#setPaso'}}) }}
 	<fieldset class="border px-5 py-10 rounded-md border-slate-500 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
 		{{ form_row(form._token) }}
 		<div class="grid gap-4 w-fit m-auto sm:grid-cols-[repeat(2,minmax(250px,300px))] lg:grid-cols-[repeat(3,minmax(250px,300px))]">
 			{{ form_row(form.fecha)}}
 			{{ form_row(form.submit,{row_attr: {class: 'flex justify-end row-start-4 sm:row-start-3 sm:col-start-2 lg:col-start-3'}, button_icon: {icon: 'arrow_forward'}})}}
 		</div>
+		<a class="btn">
+			<span class="material-symbols-outlined mr-2">arrow_back</span>
+			Atras</a>
 	</fieldset>
 	{{ form_end(form) }}
 </turbo-frame>

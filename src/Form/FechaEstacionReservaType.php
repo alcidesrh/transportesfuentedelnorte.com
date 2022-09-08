@@ -41,7 +41,7 @@ class FechaEstacionReservaType extends AbstractType
                 'constraints' => [
                     new NotBlank()
                 ],
-                'required' => false
+                'required' => false,
             ])
             ->add('hacia', EntityType::class, [
                 'class' => Estacion::class,
