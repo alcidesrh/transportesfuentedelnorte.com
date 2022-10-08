@@ -13,13 +13,11 @@ class EstablecerIdiomaSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        $leanh = $request->getSession()->get('_locale');
-
         if (!$request->hasPreviousSession()) {
 
-            $lang = substr( $event->getRequest()->headers->get('Accept-Language'), 0, 2);
+            $lang = substr($event->getRequest()->headers->get('Accept-Language'), 0, 2);
 
-            if($lang != 'es'){
+            if ($lang != 'es') {
 
                 $request->getSession()->set('_locale', 'en');
 
@@ -28,7 +26,6 @@ class EstablecerIdiomaSubscriber implements EventSubscriberInterface
                 $event->setResponse($response);
             }
         }
-        
     }
 
     public static function getSubscribedEvents()

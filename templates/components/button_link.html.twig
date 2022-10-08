@@ -1,0 +1,11 @@
+<a class="btn" href="{{link}}">
+	<div class="flex justify-center">
+		{% if icon is defined and icon.left is defined%}
+			<span class="material-symbols-outlined mr-2">{{icon.name}}</span>
+		{% endif %}
+		<label class="capitalize cursor-pointer">{{text | trans}}</label>
+		{% if icon is defined and icon.right is defined%}
+			<span class="material-symbols-outlined ml-2">{{icon.name}}</span>
+		{% endif %}
+	</div>
+</a>

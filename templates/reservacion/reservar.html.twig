@@ -1,0 +1,15 @@
+{% block stylesheets %}
+	{{ encore_entry_link_tags('reserva') }}
+{% endblock %}
+<div {{ stimulus_controller('reservacion') }}>
+
+
+	{% include 'reservacion/_steps.html.twig' %}
+	{% if reservacion_paso == 0 %}
+		{{ render_esi(controller('App\\Controller\\ReservacionController::ruta', {'reservacion': reservacion_id, primer_render: true})) }}
+	{% elseif reservacion_paso == 1 %}
+		{{ render(controller('App\\Controller\\ReservacionController::salida', {'reservacion': reservacion_id, primer_render: true})) }}
+	{% elseif reservacion_paso == 2 %}
+		{{ render(controller('App\\Controller\\ReservacionController::asientos', {'reservacion': reservacion_id, primer_render: true})) }}
+	{% endif %}
+</div></div>

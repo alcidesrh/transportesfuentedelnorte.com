@@ -8,10 +8,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+#[Route('/test')]
 class TestController extends AbstractController
 {
-    #[Route('/estaciones', name: 'estaciones')]
+    #[Route('/estaciones', name: 'estaciones-test')]
     public function estaciones(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
     {
         try {
@@ -31,7 +31,7 @@ class TestController extends AbstractController
         ]);
     }
 
-    #[Route('/salidas', name: 'salidas')]
+    #[Route('/salidas', name: 'salidas-test')]
     public function salidas(RemoteDatabaseQueries $systemfdnEntityManager): JsonResponse
     {
         try {
@@ -51,7 +51,7 @@ class TestController extends AbstractController
         ]);
     }
 
-    #[Route('/asientos', name: 'asientos')]
+    #[Route('/asientos', name: 'asientos-test')]
     public function asientos(RemoteDatabaseQueries $systemfdnEntityManager): Response
     {
         try {

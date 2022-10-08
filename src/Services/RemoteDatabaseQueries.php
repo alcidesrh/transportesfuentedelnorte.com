@@ -2,9 +2,6 @@
 
 namespace App\Services;
 
-use DateInterval;
-use DateTime;
-use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RemoteDatabaseQueries
@@ -16,16 +13,66 @@ class RemoteDatabaseQueries
     {
         $sql = "SELECT DISTINCT e.id as estacion_id, e.nombre as estacion_nombre, e.direccion as estacion_direccion, e.alias as estacion_alias, e.inicia_ruta as estacion_activa, d.nombre as departamento_nombre, d.id as departamento_id
                 from estacion e left join departamento d on e.departamento_id = d.id";
-
-        $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
-        $query->bindValue(1, 1);
-        return $query->executeQuery()->fetchAllAssociative();
+        return $this->execute_query($sql);
     }
 
-    public function getSalidas(): array
+    public function getSalidas($fecha = null): array | null
     {
-        $fecha = new DateTime();
-        $fecha->sub(new DateInterval('P143D'));
+        if (!$fecha) {
+            return null;
+        }
+
+        return [
+            0 => [
+                "salida_id" => "250861",
+                "horario" => "2022-04-05 05:45:00.000000",
+                "bus_clase" => "Clase Oro / Maya de Oro",
+                "kilometros" => 480,
+                "minutos" => 600,
+            ],
+            1 => [
+                "salida_id" => "250862",
+                "horario" => "2022-04-05 10:00:00.000000",
+                "bus_clase" => "Clase Oro / Maya de Oro",
+                "kilometros" => 480,
+                "minutos" => 600,
+            ],
+            2 => [
+                "salida_id" => "251706",
+                "horario" => "2022-04-05 11:15:00.000000",
+                "bus_clase" => "Clase Oro / Maya de Oro",
+                "kilometros" => 480,
+                "minutos" => 600,
+            ],
+            3 => [
+                "salida_id" => "250863",
+                "horario" => "2022-04-05 14:00:00.000000",
+                "bus_clase" => "Clase Oro / Maya de Oro",
+                "kilometros" => 480,
+                "minutos" => 600,
+            ],
+            4 => [
+                "salida_id" => "250866",
+                "horario" => "2022-04-05 19:00:00.000000",
+                "bus_clase" => "Maya de Oro GL",
+                "kilometros" => 480,
+                "minutos" => 600,
+            ],
+            5 => [
+                "salida_id" => "250868",
+                "horario" => "2022-04-05 21:00:00.000000",
+                "bus_clase" => "Maya de Oro GL",
+                "kilometros" => 480,
+                "minutos" => 600,
+            ],
+            6 => [
+                "salida_id" => "250869",
+                "horario" => "2022-04-05 21:30:00.000000",
+                "bus_clase" => "Premier VIP",
+                "kilometros" => 480,
+                "minutos" => null,
+            ]
+        ];
 
         $fecha->setTime(0, 0, 0);
         $fecha2 = clone $fecha;
@@ -37,68 +84,77 @@ class RemoteDatabaseQueries
         left join bus_clase on bus_tipo.clase_id = bus_clase.id 
         left join itineario on itineario.id = salida.itinerario_id
         left join ruta on itineario.ruta_codigo = ruta.codigo
-        where salida.estado_id in (1,2,3) and ruta.estacion_origen_id = ? and ruta.estacion_destino_id = ? and salida.fecha between ? and ? 
+        where ruta.estacion_origen_id = ? and ruta.estacion_destino_id = ? and salida.fecha between ? and ? 
         order by salida.fecha asc";
 
-        $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
-        $query->bindValue(1, 1);
-        $query->bindValue(2, 3);
-        $query->bindValue(3, $fecha);
-        $query->bindValue(4, $fecha2);
-        $query->bindValue(5, 3);
-        $return = $query->executeQuery()->fetchAllAssociative();
+        $return = $this->execute_query($sql, [1, 3, $fecha, $fecha2]);
         return $return;
     }
 
-    public function getAsientos(): array
+    public function getAsientos($id_salida): array | null
     {
-        $sql = "SELECT bus_asiento.id, bus_asiento.nivel2, bus_asiento.numero, bus_asiento.coordenadaX, bus_asiento.coordenadaY, bus_tipo.totalAsientos, clase_asiento.id as clase from bus_tipo
+        $sql_asientos = "SELECT boleto.id as boleto, reservacion.id as reservacion, bus_asiento.id, bus_asiento.nivel2, bus_asiento.numero, bus_asiento.coordenadaX, bus_asiento.coordenadaY, bus_tipo.totalAsientos, clase_asiento.id as clase, salida.id as salida_id from bus_tipo
                 left join salida on bus_tipo.id = salida.tipo_bus_id
                 left join bus_asiento on bus_asiento.tipoBus_id = bus_tipo.id
                 left join clase_asiento on clase_asiento.id = bus_asiento.clase_id
+                left join boleto on (boleto.salida_id = salida.id and boleto.asiento_bus_id = bus_asiento.id)
+                left join reservacion on (reservacion.estado_id = 1 and reservacion.asiento_bus_id = bus_asiento.id)
                 where salida.id = ?";
 
-        $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
-        $query->bindValue(1, 251954);
-        $return = $query->executeQuery()->fetchAllAssociative();
-        return $return;
+        $sql_senales = "SELECT bus_senal.nivel2, bus_senal.coordenadaX, bus_senal.coordenadaY, bus_senal_tipo.id as conductor_puerta from bus_tipo
+                left join salida on bus_tipo.id = salida.tipo_bus_id
+                left join bus_senal on bus_senal.tipoBus_id = bus_tipo.id
+                left join bus_senal_tipo on bus_senal_tipo.id = bus_senal.tipo_id
+                where salida.id = ?";
+
+        // return [$this->asientos(), []];
+        if ($asientos = $this->execute_query($sql_asientos, [$id_salida])) {
+            $senales = $this->execute_query($sql_senales, [$id_salida]);
+            return [$asientos, $senales];
+        }
+        return null;
     }
 
-    // public function index(RemoteDatabaseQueries $system_fdn_entitymanager): JsonResponse
-    // {
-    //     try {
-    //         $rsm = new ResultSetMapping();
-    //         $rsm->addScalarResult('id', 'id');
-    //         $rsm->addScalarResult('fecha_creacion', 'fecha_creacion');
+    public function execute_query($sql, $params = [])
+    {
+        try {
+            $query = $this->system_fdn_entitymanager->getConnection()->prepare($sql);
+            foreach ($params as $key => $value) {
+                $query->bindValue($key + 1, $value);
+            }
+            return $query->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $th) {
+            if ($th->getCode() == 258 || $th->getCode() == 10057) {
+                return null;
+            }
+            throw $th;
+        }
+    }
 
-    //         // SELECT
-    //         $sql = "SELECT * from encomienda where encomienda.id = '1007611'";
-    //         // $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
-    //         $query = $system_fdn_entitymanager->getConnection()->fetchAllAssociative($sql);
+    public function asientos()
+    {
 
-    //         // INSERT
-    //         // $sql = "INSERT INTO banco (alias, nombre, telefono, direccion) VALUES ('value11', 'value2', 'value3', 'value4')";
-    //         // $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeStatement();
+        $asientos = [];
 
-    //         // UPDATE
-    //         // $sql = "UPDATE banco SET alias = 'alias', nombre = 'alcides' where id = 1;";
-    //         // $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeStatement();
+        for ($i = 1, $cont = 1, $y = 50; $i < 15; $i++, $y += 50) {
 
-    //         // DELETE
-    //         $sql = "DELETE from banco where id = 1";
-    //         $query = $system_fdn_entitymanager->getConnection()->prepare($sql)->executeStatement();
-    //         // $query = $system_fdn_entitymanager->createNativeQuery("SELECT * from encomienda where encomienda.id = '1007611'", $rsm)->getResult();
-    //         $query = $system_fdn_entitymanager->createNativeQuery("SELECT encomienda.id as id from encomienda where encomienda.id = '1007611'", $rsm)->getResult();
-    //         // $query->setParameter(1, 'romanb');
-    //         // var_dump(count($query));
-    //     } catch (\Throwable $e) {
+            for ($k = 0, $j = 0; $k < 4; $k++, $j += 50) {
+                if ($k == 2) {
+                    $j = 150;
+                }
+                $asientos[] = [
+                    'boleto' => '',
+                    'reservacion' => '',
+                    'id' => rand(100, 10000),
+                    'nivel2' => false,
+                    'numero' => $cont++,
+                    'coordenadaX' => $j,
+                    'coordenadaY' => $y,
+                    'clase' => 1
+                ];
+            }
+        }
 
-    //         $e = 0;
-    //     }
-
-    //     return $this->json([
-    //         'message' => 'Welcome to your new controller!',
-    //         'path' => 'src/Controller/TestControlleruta.php',
-    //     ]);
-    // }
+        return $asientos;
+    }
 }

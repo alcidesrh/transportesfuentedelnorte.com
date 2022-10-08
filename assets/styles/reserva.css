@@ -1,3 +1,5 @@
+@import "./flatpickr.min.css";
+
 .step-label {
     @apply absolute text-xs sm:text-sm md:text-base text-center w-full leading-normal text-slate-600 font-bold;
     top: 50%;
@@ -69,4 +71,61 @@
 .active .step-union-lines,
 .complete .step-union-lines {
     @apply bg-teal-500;
+}
+
+#reservacion-form[busy],
+#salida-form[busy] {
+    opacity: 0.5;
+}
+
+#reservacion-form[busy] button,
+#reservacion-form[busy] a.btn,
+#salida-form[busy] .calendar-icon {
+    @apply hidden;
+}
+
+#salida-form[busy] .button-loading {
+    @apply inline;
+}
+
+#reservacion-form[busy] div.loading-div {
+    @apply flex;
+}
+
+.calendar-icon {
+    @apply absolute m-[10px] top-0 right-0 cursor-pointer text-slate-500;
+}
+
+.salida-col {
+    @apply text-sm text-gray-900 px-0 sm:px-2 py-4 border-b flex items-center;
+}
+
+.salida-selected {
+    @apply bg-slate-300;
+}
+
+.salida-selected button.elegir {
+    @apply hidden;
+}
+.salida-selected button.btn-descartar-salida {
+    @apply inline-block;
+}
+
+.asiento > svg {
+    @apply fill-slate-500;
+}
+.asiento.libre {
+    @apply cursor-pointer;
+}
+.asiento.libre:not(.elegido):hover {
+    @apply bg-slate-200 rounded-2xl;
+}
+.asiento.elegido {
+    @apply bg-teal-400 rounded-2xl;
+}
+.asiento.elegido.libre:hover {
+    @apply bg-teal-100;
+}
+.elegido > svg {
+    @apply fill-teal-700;
 }

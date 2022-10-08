@@ -7,13 +7,17 @@ import { Controller } from "@hotwired/stimulus";
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
   static targets = ["pasos"];
-  static values = {
-    tesv: String,
-  };
-  setPaso(event) {
-    this.pasosTarget.children[event.detail.paso - 1].classList.remove("active");
-    this.pasosTarget.children[event.detail.paso - 1].classList.add("complete");
-    this.pasosTarget.children[event.detail.paso].classList.add("active");
+
+  setPaso({ detail: { paso } }) {
+    if (typeof this.pasosTarget.querySelector(".active") != "undefined") {
+      this.pasosTarget.querySelector(".active").classList.remove("active");
+    }
+    if (paso > 0) {
+      this.pasosTarget.children[paso - 1].classList.add("complete");
+    }
+    if (typeof this.pasosTarget.children[paso] != "undefined") {
+      this.pasosTarget.children[paso].classList.remove("complete");
+      this.pasosTarget.children[paso].classList.add("active");
+    }
   }
-  connect() {}
 }

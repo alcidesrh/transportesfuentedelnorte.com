@@ -15,6 +15,11 @@
         {%- set required = false -%}
     {%- endif -%}
     <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    {%- if calendario|default(false) -%}
+        <span class="material-symbols-outlined calendar-icon" data-action="click->buscar-salida#abrirFechaSalida">
+			calendar_month
+		</span>
+    {%- endif -%}
 {%- endblock form_widget_simple -%}
 
 {%- block form_widget_compound -%}
@@ -253,6 +258,11 @@
         
         </div>
     </button>
+    <div class="flex justify-center hidden w-full loading-div">
+        <span class="material-symbols-outlined button-loading">
+                cached
+        </span>
+    </div>
 {%- endblock button_widget -%}
 
 {%- block submit_widget -%}

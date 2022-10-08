@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Services\CybersourceApi;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,7 +22,7 @@ use Symfony\Component\Console\Event\ConsoleErrorEvent;
 )]
 class TestCommand extends Command
 {
-    public function __construct(private EntityManagerInterface $systemfdnEntityManager)
+    public function __construct(private CybersourceApi $cybersourceApi)
     {
         parent::__construct();
     }
@@ -36,6 +37,11 @@ class TestCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $this->cybersourceApi->fetchGitHubInformation();
+
+
+
+        return 1;
 
 
         try {

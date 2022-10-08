@@ -1,0 +1,52 @@
+<div>
+
+	{% if sistema_conexion_error | default(false) %}
+		<ul class="m-auto w-fit mb-10">
+			<li class="text-red-700">{{ sistema_conexion_error }}</li>
+		</ul>
+	{% else %}
+		<div class="flex mb-5 pl-3 sm:pl-0">
+			<div class="flex items-center">
+				<div class="w-5 h-5 bg-[#808080] mr-3"></div>
+				{{'Disponible' | trans}}
+			</div>
+			<div class="flex items-center ml-5">
+				<div class="w-5 h-5 bg-red-500 mr-3"></div>
+				{{'Ocupado' | trans}}
+			</div>
+		</div>
+
+		<div class="max-w-[334px] border border-slate-500 rounded-3xl pt-5 bg-white z-10">
+
+			{% if asientos_nivel_1 is not empty and asientos_nivel_2 is not empty %}
+				<div class="flex justify-end px-3 mb-5 gap-2">
+					<button class="btn btn-success sm flex justify-center text-sm" type="button" data-asiento-target="{{regreso ? 'btn_nivel1_regreso' : 'btn_nivel1'}}" data-action="asiento#cambiar_nivel" data-nivel="1" data-regreso="{{regreso}}">
+						{{'Nivel' | trans}}
+						1
+					</button>
+
+					<button class="btn btn-success sm btn-outline flex justify-center text-sm" type="button" data-asiento-target="{{regreso ? 'btn_nivel2_regreso' : 'btn_nivel2'}}" data-action="asiento#cambiar_nivel" data-nivel="2" data-regreso="{{regreso}}">
+						<div class="">
+							{{'Nivel' | trans}}
+							2
+						</div>
+					</button>
+				</div>
+			{% endif %}
+
+			<div class="relative  h-[1192px] w-[334px] m-1" data-asiento-target="{{regreso ? 'nivel1_regreso' : 'nivel1'}}" data-asientos="{{asientos_nivel_1 | length}}">
+				{% for item in senales_nivel_1 | merge(asientos_nivel_1)%}
+					{{ component('asiento', {data: item, regreso: regreso}) }}
+				{% endfor %}
+			</div>
+
+			{% if asientos_nivel_2 is not empty %}
+				<div class="relative  h-[1192px] w-[334px] m-1 hidden" data-asiento-target="{{regreso ? 'nivel2_regreso' : 'nivel2'}}" data-asientos="{{asientos_nivel_2 | length}}">
+					{% for item in senales_nivel_2 | merge(asientos_nivel_2)%}
+						{{ component('asiento', {data: item, regreso: regreso}) }}
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>

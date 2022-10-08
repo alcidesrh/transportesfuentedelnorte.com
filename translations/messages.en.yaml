@@ -4,6 +4,29 @@ Solo ida: One way
 Ida y vuelta: Round trip
 Siguiente: Next
 Ruta: Route
-Salida/Fecha: Departure/Date
-Pasajeros: Passengers
+Fecha/Salida: Date/Departure
 Comprar ticket: Buy ticket
+Elija bus: Choose bus
+Hora: Time
+Bus Clase: Bus class
+Duración/Horas: Duration/Hours
+Fecha: Date
+Fecha de regreso: Return date
+Descartar: Discard
+Regreso: Return
+Salida: Departure
+Atras: Back
+La fecha no puede estar en vacía: The date can not be empty
+Debe escoger una salida: You must choose an departure
+Debe escoger una salida para el regreso: You must choose an departure for the return
+No se encontraron salida para esa fecha: No departure found on this date
+Debe definir la salida: You must define the departure
+Debe definir el regreso: You must define the return
+No se pudo establecer la conexión con el sistema de reserva. Por favor inténtelo más tarde: Failed to connect to booking system. Please try again later
+Disponible: Available
+Ocupado: Taken
+Nivel: Level
+Asientos: Seating
+Puede escoger más de un asiento si viajan varias personas.: You can choose more than one seat if several people are traveling.
+Debe escoger al menos un asiento en la salida: You must choose at least one seat at the departure.
+Debe escoger al menos un asiento en el regreso: You must choose at least one seat at the return.
