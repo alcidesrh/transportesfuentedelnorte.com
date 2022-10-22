@@ -24,7 +24,7 @@
 		</div>
 
 		<div class="flex justify-between mt-10">
-			{{ component('button_link', {text: 'Atras', icon: {left: true, name: 'arrow_back'}, link: path('ruta', {'reservacion': reservacion_id})}) }}
+			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('ruta', {'reservacion': reservacion_id})}) }}
 			<form action="{{path('salida', {reservacion: reservacion_id})}}">
 				<input type="hidden" name="siguiente" value="1">
 				{{ component('button', {text: 'Siguiente', icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit', onclick: 'this.click()'}}) }}

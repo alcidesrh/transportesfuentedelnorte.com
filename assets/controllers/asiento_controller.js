@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-
+import { useDispatch } from "stimulus-use";
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
@@ -30,17 +30,18 @@ export default class extends Controller {
   asientos_regreso = [];
   connect() {
     if (!this.primerRenderValue) {
-      this.dispatch("reservacion_paso", { detail: { paso: 2 } });
+      useDispatch(this);
+      this.dispatch("reservacion_paso", { paso: 2 });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     if (!this.hasNivel2Target) {
       this.nivel1Target.style.height =
-        parseInt((this.nivel1Target.dataset.asientos / 4) * 60 + 250) + "px";
+        parseInt((this.nivel1Target.dataset.asientos / 4) * 60 + 350) + "px";
     } else {
       this.nivel1Target.style.height =
-        parseInt((this.nivel1Target.dataset.asientos / 3) * 60 + 250) + "px";
+        parseInt((this.nivel1Target.dataset.asientos / 3) * 60 + 350) + "px";
       this.nivel2Target.style.height =
-        parseInt((this.nivel2Target.dataset.asientos / 4) * 60 + 250) + "px";
+        parseInt((this.nivel2Target.dataset.asientos / 4) * 60 + 350) + "px";
     }
 
     if (this.hasNivel1_regresoTarget) {
@@ -63,28 +64,12 @@ export default class extends Controller {
 
     this.asientos_salida = JSON.parse(this.asientos_salidaTarget.value);
 
+    console.log(this.asientos_salida);
+
     if (this.hasAsientos_regresoTarget) {
       this.asientos_regreso = JSON.parse(this.asientos_regresoTarget.value);
     }
   }
-
-  // agregar_cliente({ detail: { asiento, regreso, eliminar } }) {
-  //   if (regreso) {
-  //     if (eliminar) {
-  //       this.asientos_regreso.splice(this.asientos_regreso.indexOf(asiento), 1);
-  //     } else {
-  //       this.asientos_regreso.push(asiento);
-  //     }
-  //     this.asientos_regresoTarget.value = JSON.stringify(this.asientos_regreso);
-  //   } else {
-  //     if (eliminar) {
-  //       this.asientos_salida.splice(this.asientos_salida.indexOf(asiento), 1);
-  //     } else {
-  //       this.asientos_salida.push(asiento);
-  //     }
-  //     this.asientos_salidaTarget.value = JSON.stringify(this.asientos_salida);
-  //   }
-  // }
 
   cambiar_nivel(event) {
     let nivel1, nivel2, btn_nivel1, btn_nivel2;
@@ -119,17 +104,18 @@ export default class extends Controller {
       return;
     }
     const id = parseInt(event.currentTarget.dataset.id);
+    const numero = parseInt(event.currentTarget.dataset.numero);
     let asientos = event.currentTarget.dataset.regreso
       ? this.asientos_regreso
       : this.asientos_salida;
-    if (asientos.includes(id)) {
-      console.log(asientos);
 
-      asientos.splice(asientos.indexOf(id), 1);
+    const index = asientos.indexOf(asientos.find((i) => i.id == id));
+    if (index != -1) {
+      asientos.splice(index, 1);
       event.currentTarget.classList.remove("elegido");
     } else {
       event.currentTarget.classList.add("elegido");
-      asientos.push(id);
+      asientos.push({ id: id, numero: numero });
     }
     if (event.currentTarget.dataset.regreso) {
       this.asientos_regreso = asientos;

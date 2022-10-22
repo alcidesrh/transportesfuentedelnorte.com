@@ -110,19 +110,6 @@ class SalidaReservacion
 
         return $this;
     }
-
-    public function getRtr(): ?\DateTimeInterface
-    {
-        return $this->rtr;
-    }
-
-    public function setRtr(\DateTimeInterface $rtr): self
-    {
-        $this->rtr = $rtr;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Asiento>
      */

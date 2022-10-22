@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/l10n/es.js";
+import { useDispatch } from "stimulus-use";
 /*
  * The following line makes this controller 'lazy': it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
@@ -29,7 +30,8 @@ export default class extends Controller {
 
   connect() {
     if (!this.primerRenderValue) {
-      this.dispatch("reservacion_paso", { detail: { paso: 1 } });
+      useDispatch(this);
+      this.dispatch("reservacion_paso", { paso: 1 });
       if (!this.noScrollValue) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }

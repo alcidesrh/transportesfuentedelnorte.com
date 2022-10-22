@@ -11,5 +11,7 @@ class AlertComponent
 
     public string $text;
 
+    public string|null $class = null;
+
     public string $icon = 'info';
 }

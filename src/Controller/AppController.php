@@ -17,7 +17,7 @@ class AppController extends AbstractController
         if ($reservacion_id = $request->getSession()->get('reservacion')) {
             $paso = $reservacionRepository->find($reservacion_id)->getPasoCompletado();
         }
-        return $this->renderForm('app/index.html.twig', [
+        return $this->render('index.html.twig', [
             'reservacion_paso' => $paso,
             'reservacion_id' => $request->getSession()->get('reservacion')
         ]);

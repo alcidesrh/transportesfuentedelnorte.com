@@ -10,6 +10,9 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Entity(repositoryClass: ReservacionRepository::class)]
 class Reservacion
 {
+    const STATUS_INCOMPLETA = "incompleta";
+    const STATUS_COMPLETADA = "completada";
+
     use TimestampableEntity;
 
     #[ORM\Id]
@@ -37,6 +40,32 @@ class Reservacion
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?ClienteReservacion $cliente = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $precio = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $transaccion_id = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = null;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $moneda = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $factura_id = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $factura_dte = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $boleto_ticket_id = null;
+
+    public function __construct()
+    {
+        $this->status = self::STATUS_INCOMPLETA;
+    }
 
     public function getId(): ?int
     {
@@ -111,6 +140,92 @@ class Reservacion
     public function setCliente(?ClienteReservacion $cliente): self
     {
         $this->cliente = $cliente;
+
+        return $this;
+    }
+
+    public function getPrecio(): ?float
+    {
+        return $this->precio;
+    }
+
+    public function setPrecio(?float $precio): self
+    {
+        $this->precio = $precio;
+
+        return $this;
+    }
+
+    public function getTransaccionId(): ?string
+    {
+        return $this->transaccion_id;
+    }
+
+    public function setTransaccionId(?string $transaccion_id): self
+    {
+        $this->transaccion_id = $transaccion_id;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getMoneda(): ?string
+    {
+        return $this->moneda;
+    }
+
+    public function setMoneda(?string $moneda): self
+    {
+        $this->moneda = $moneda;
+
+        return $this;
+    }
+
+
+
+    public function getFacturaId(): ?int
+    {
+        return $this->factura_id;
+    }
+
+    public function setFacturaId(?int $factura_id): self
+    {
+        $this->factura_id = $factura_id;
+
+        return $this;
+    }
+
+    public function getFacturaDte(): ?string
+    {
+        return $this->factura_dte;
+    }
+
+    public function setFacturaDte(?string $factura_dte): self
+    {
+        $this->factura_dte = $factura_dte;
+
+        return $this;
+    }
+
+    public function getBoletoTicketId(): ?int
+    {
+        return $this->boleto_ticket_id;
+    }
+
+    public function setBoletoTicketId(?int $boleto_ticket_id): self
+    {
+        $this->boleto_ticket_id = $boleto_ticket_id;
 
         return $this;
     }

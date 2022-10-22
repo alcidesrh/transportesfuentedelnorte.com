@@ -1,0 +1,34 @@
+{% macro reservacion_pdf_salida(reservacion, regreso = false) %}
+	<div class="row">
+		<div class="span2 text-right">{{'Fecha' | trans}}:</div>
+		<div class="span5">
+			<strong>{{ (regreso ? reservacion.regreso.salidaFecha : reservacion.salida.salidaFecha )| date(app.request.locale == 'es' ? 'd/m/Y' : 'Y-m-d') ~ ' ' ~ reservacion.salida.hora }}</strong>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span2 text-right">{{'Asientos' | trans}}:</div>
+		<div class="span5">
+			<strong>
+				{% for asiento in regreso ? reservacion.regreso.asientos : reservacion.salida.asientos %}
+					{{ asiento.numero}}{{not loop.last ? ', '}}
+				{% endfor %}
+			</strong>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span2 text-right">{{'Estación salida' | trans}}:</div>
+		<div class="span8">{{regreso ? reservacion.ruta.estacionLlegada.nombre : reservacion.ruta.estacionSalida.nombre}}</div>
+	</div>
+	<div class="row">
+		<div class="span2 text-right">{{'Dirección' | trans}}:</div>
+		<div class="span8">{{regreso ? reservacion.ruta.estacionLlegada.direccion : reservacion.ruta.estacionSalida.direccion}}</div>
+	</div>
+	<div class="row">
+		<div class="span2 text-right">{{'Estación llegada' | trans}}:</div>
+		<div class="span8">{{regreso ? reservacion.ruta.estacionSalida.nombre : reservacion.ruta.estacionLlegada.nombre}}</div>
+	</div>
+	<div class="row">
+		<div class="span2 text-right">{{'Dirección' | trans}}:</div>
+		<div class="span8">{{regreso ? reservacion.ruta.estacionSalida.direccion : reservacion.ruta.estacionLlegada.direccion}}</div>
+	</div>
+{% endmacro %}

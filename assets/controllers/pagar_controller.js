@@ -6,13 +6,12 @@ import { useDispatch } from "stimulus-use";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-  static values = {
-    primerRender: String,
-  };
+  static targets = ["test"];
+
   connect() {
     if (!this.primerRenderValue) {
       useDispatch(this);
-      this.dispatch("reservacion_paso", { paso: 0 });
+      this.dispatch("reservacion_paso", { paso: 3 });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }

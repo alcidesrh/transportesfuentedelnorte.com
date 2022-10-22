@@ -15,7 +15,7 @@ Fecha de regreso: Return date
 Descartar: Discard
 Regreso: Return
 Salida: Departure
-Atras: Back
+Atrás: Back
 La fecha no puede estar en vacía: The date can not be empty
 Debe escoger una salida: You must choose an departure
 Debe escoger una salida para el regreso: You must choose an departure for the return
@@ -30,3 +30,36 @@ Asientos: Seating
 Puede escoger más de un asiento si viajan varias personas.: You can choose more than one seat if several people are traveling.
 Debe escoger al menos un asiento en la salida: You must choose at least one seat at the departure.
 Debe escoger al menos un asiento en el regreso: You must choose at least one seat at the return.
+Apellido: Last name
+Nombre: First name
+"* obligatorio": "* required"
+Número de la tarjeta: Car number
+Mes que expira: Expiring month
+Año que expira: Expiring year
+Este campo es requerido: This field is required
+Información personal: Personal information
+Datos de la tarjeta: Credit card information
+No guardamos ningún dato de la tarjeta. Solo se usará para pagar la compra.: We do not store any card data. It will only be used to pay for the purchase.
+No se pudo realizar el pago. Los datos de la tarjeta no son correctos.: The payment could not be made. The card details are not correct.
+datos opcional solo para Guatemala: Only citizens of Guatemala
+El boleto se descargará cuando efectue el pago pero si inserta un email también se le enviará.: The ticket will be downloaded when you make the payment but if you insert an email it will also be sent to you.
+Cantidad a pagar: Amount to pay
+Datos de la reserva: Reservation data
+Estación salida: Departure station
+Dirección: Address
+Estación llegada: Arrival station
+Cliente datos: Customer data
+Precio: Price
+Los asientos siguientes acaban de ser ocupados: The following seats have just been filled
+Reservacion número: Reservation number
+Guarde y muestre este boleto ha la hora de abordar. Feliz viaje!: Keep and show this ticket at boarding time. Happy journey!
+Boleto: Ticket
+boleto: ticket
+Boleto Transporte Fuente del Norte. Servcio de Bus. Guatemala.: Bus Service Ticket Guatemala. Transporte Fuente del Norte.
+Descargar boleto: Download ticket
+Si no se ha descargado el boleto automáticamente pulse el boton para descargarlo.: If the ticket has not been downloaded automatically, press the button to download it.
+Su reserva ha sido creada con exito. Guarde el boleto y llévelo en el teléfono o impreso el día de su viaje.: Your reservation has been created successfully. Keep the ticket and take it on the phone or printed on the day of your trip.
+Se ha enviado un correo a: An email has been sent to
+con una copia del boleto.: with a copy of the ticket.
+Factura dte: Invoice number
+Fecha de creación: Creation date

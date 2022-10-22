@@ -3,22 +3,31 @@
 namespace App\Controller;
 
 use App\Entity\Asiento;
+use App\Entity\ClienteReservacion;
 use App\Entity\Reservacion;
 use App\Entity\RutaReservacion;
 use App\Entity\SalidaReservacion;
+use App\Form\ClienteReservacionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\RutaReservacionType;
 use App\Form\SalidaReservacionType;
+use App\Repository\AsientoRepository;
+use App\Repository\ReservacionRepository;
+use App\Services\CybersourceApi;
 use App\Services\RemoteDatabaseQueries;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
-use Error;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Dompdf\Dompdf;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 class ReservacionController extends AbstractController
 {
@@ -150,8 +159,20 @@ class ReservacionController extends AbstractController
 
 
         if ($salida_reservacion->getSalidaFecha()) {
-            if (!($salidas = $sistema->getSalidas($salida_reservacion->getSalidaFecha()))) {
-                $sistema_conexion_error = $translatorInterface->trans('No se pudo establecer la conexión con el sistema de reserva. Por favor inténtelo más tarde');
+            if ($ida_vuelta) {
+                $salidas = $sistema->getSalidas($reservacion->getRuta()->getEstacionLlegada()->getId(), $reservacion->getRuta()->getEstacionSalida()->getId(), $salida_reservacion->getSalidaFecha());
+                if (is_null($salidas)) {
+                    $sistema_conexion_error = $translatorInterface->trans('No se pudo establecer la conexión con el sistema de reserva. Por favor inténtelo más tarde');
+                }
+            } else {
+                $salidas = $sistema->getSalidas($reservacion->getRuta()->getEstacionSalida()->getId(), $reservacion->getRuta()->getEstacionLlegada()->getId(), $salida_reservacion->getSalidaFecha());
+                if (is_null($salidas)) {
+                    $sistema_conexion_error = $translatorInterface->trans('No se pudo establecer la conexión con el sistema de reserva. Por favor inténtelo más tarde');
+                }
+            }
+            if (isset($salidas['error'])) {
+                $sistema_conexion_error = $salidas['error'];
+                $salidas = [];
             }
         }
         return $this->renderForm('reservacion/salidaForm.html.twig', [
@@ -166,7 +187,7 @@ class ReservacionController extends AbstractController
     }
 
     #[Route('/asientos/{reservacion}', name: 'asientos')]
-    public function asientos(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    public function asientos(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, TranslatorInterface $translatorInterface, RemoteDatabaseQueries $remoteDatabaseQueries, $primer_render = null): Response
     {
         $errors = [];
 
@@ -180,12 +201,12 @@ class ReservacionController extends AbstractController
             ->addModelTransformer(new CallbackTransformer(
                 function (Collection|null $asientos = null) {
                     if ($asientos) {
-                        return  json_encode($asientos->map(fn (Asiento $item) => $item->getAsientoId())->toArray());
+                        return  json_encode($asientos->map(fn (Asiento $item) => ['id' => $item->getAsientoId(), 'numero' => $item->getNumero()])->toArray());
                     }
                     return null;
                 },
-                function ($ids) {
-                    return json_decode($ids);
+                function ($asientos) {
+                    return json_decode($asientos);
                 }
             ));
 
@@ -199,12 +220,12 @@ class ReservacionController extends AbstractController
                 ->addModelTransformer(new CallbackTransformer(
                     function (Collection|null $asientos = null) {
                         if ($asientos) {
-                            return  json_encode($asientos->map(fn (Asiento $item) => $item->getAsientoId())->toArray());
+                            return  json_encode($asientos->map(fn (Asiento $item) => ['id' => $item->getAsientoId(), 'numero' => $item->getNumero()])->toArray());
                         }
                         return null;
                     },
-                    function ($ids) {
-                        return json_decode($ids);
+                    function ($asientos) {
+                        return json_decode($asientos);
                     }
                 ));
         }
@@ -214,6 +235,9 @@ class ReservacionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+
+            $array_ids = fn ($array) => array_map(fn ($i) => $i->id, $array);
+
             if (empty($data['asientos_salida'])) {
                 $errors[] = $translatorInterface->trans('Debe escoger al menos un asiento en la salida');
                 if ($asientos = $reservacion->getSalida()->getAsientos()->count()) {
@@ -225,14 +249,14 @@ class ReservacionController extends AbstractController
             } else {
                 $asientos = $reservacion->getSalida()->getAsientos();
                 foreach ($asientos as $value) {
-                    if (!in_array($value->getAsientoId(), $data['asientos_salida'])) {
+                    if (!in_array($value->getAsientoId(), $array_ids($data['asientos_salida']))) {
                         $entityManagerInterface->remove($value);
                     } else {
-                        unset($data['asientos_salida'][array_search($value->getAsientoId(), $data['asientos_salida'])]);
+                        unset($data['asientos_salida'][array_search($value->getAsientoId(), $array_ids($data['asientos_salida']))]);
                     }
                 }
                 foreach ($data['asientos_salida'] as  $value) {
-                    $entityManagerInterface->persist((new Asiento)->setAsientoId($value)->setSalidaReservacion($reservacion->getSalida()));
+                    $entityManagerInterface->persist((new Asiento)->setAsientoId($value->id)->setNumero($value->numero)->setSalidaReservacion($reservacion->getSalida()));
                     $entityManagerInterface->refresh($reservacion->getSalida());
                 }
 
@@ -240,7 +264,7 @@ class ReservacionController extends AbstractController
                     if (empty($data['asientos_regreso'])) {
                         $errors[] = $translatorInterface->trans('Debe escoger al menos un asiento en el regreso');
                         if ($asientos = $reservacion->getRegreso()->getAsientos()->count()) {
-                            foreach ($reservacion->getSalida()->getAsientos() as $value) {
+                            foreach ($reservacion->getRegreso()->getAsientos() as $value) {
                                 $entityManagerInterface->remove($value);
                             }
                             $entityManagerInterface->flush();
@@ -248,17 +272,35 @@ class ReservacionController extends AbstractController
                     } else {
                         $asientos = $reservacion->getRegreso()->getAsientos();
                         foreach ($asientos as $value) {
-                            if (!in_array($value->getAsientoId(), $data['asientos_regreso'])) {
+                            if (!in_array($value->getAsientoId(), $array_ids($data['asientos_regreso']))) {
                                 $entityManagerInterface->remove($value);
                             } else {
-                                unset($data['asientos_regreso'][array_search($value->getAsientoId(), $data['asientos_regreso'])]);
+                                unset($data['asientos_regreso'][array_search($value->getAsientoId(), $array_ids($data['asientos_regreso']))]);
                             }
                         }
                         foreach ($data['asientos_regreso'] as  $value) {
-                            $entityManagerInterface->persist((new Asiento)->setAsientoId($value)->setSalidaReservacion($reservacion->getRegreso()));
+                            $entityManagerInterface->persist((new Asiento)->setAsientoId($value->id)->setNumero($value->numero)->setSalidaReservacion($reservacion->getRegreso()));
                             $entityManagerInterface->refresh($reservacion->getRegreso());
                         }
                     }
+                }
+
+                $entityManagerInterface->flush();
+                $entityManagerInterface->refresh($reservacion);
+
+                try {
+                    $precio = $remoteDatabaseQueries->getAsientosPrecios($reservacion);
+
+                    if ($precio->error) {
+                        $errors[] = $precio->error;
+                    } else {
+                        $reservacion->setPrecio($precio->total);
+                        $reservacion->setPasoCompletado(3);
+                        $entityManagerInterface->flush();
+                        return $this->redirectToRoute('pagar', ['reservacion' => $reservacion->getId()]);
+                    }
+                } catch (\Throwable $th) {
+                    $errors[] = $th->getMessage();
                 }
                 $entityManagerInterface->flush();
             }
@@ -305,5 +347,185 @@ class ReservacionController extends AbstractController
             'sistema_conexion_error' => $sistema_conexion_error ?? null,
             'regreso' => $regreso
         ]);
+    }
+
+    #[Route('/test', name: 'test')]
+    public function test(Request $request, ReservacionRepository $entityManagerInterface, MailerInterface $mailer): Response
+    {
+
+        $reservacion = $entityManagerInterface->find($request->getSession()->get('reservacion', 49));
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
+        $dompdf->render();
+        file_put_contents('facturas/factura.pdf', $dompdf->output());
+
+        $response = new Response(file_get_contents('facturas/factura.pdf'));
+
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            'foo.pdf'
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+        return $response;
+
+        $email = (new Email())
+            ->from('hello@example.com')
+            ->to('you@example.com')
+            //->cc('cc@example.com')
+            //->bcc('bcc@example.com')
+            //->replyTo('fabien@example.com')
+            //->priority(Email::PRIORITY_HIGH)
+            ->subject('Time for Symfony Mailer!')
+            ->text('Sending emails is fun again!')
+            ->html('<p>See Twig integration for better HTML integration!</p>')
+            ->attachFromPath('facturas/factura.pdf');
+
+        $mailer->send($email);
+        return $this->render('pdf/factura.html.twig', ['reservacion' => $reservacion]);
+    }
+    #[Route('/pagar/{reservacion}', name: 'pagar')]
+    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, CybersourceApi $cybersourceApi, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    {
+
+        $cliente = new ClienteReservacion();
+
+        $form = $this->createForm(ClienteReservacionType::class, $cliente, [
+            'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion?->getId()]),
+            'reservacion' => $reservacion
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
+
+            $reservacion->setCliente($cliente)->setMoneda($form->get('tipo_moneda')->getData());
+
+            $result = $remoteDatabaseQueries->crearBoleto($reservacion);
+
+            if (is_array($result) && isset($result['error'])) {
+                if ($result['error'] == 1) {
+                    $error = $translatorInterface->trans('Los asientos siguientes acaban de ser ocupados') . ': ';
+                    foreach ($result['asientos'] as $index => $value) {
+                        $asiento = $asientoRepository->findOneBy(['asiento_id' => $value]);
+                        $error .= $asiento->getNumero();
+                        if ($index < count($result['asientos']) - 1) {
+                            $error .= ', ';
+                        }
+                        $entityManagerInterface->remove($asiento);
+                    }
+                    $this->addFlash(
+                        'error_asientos_ocupados',
+                        $error
+                    );
+                    $reservacion->setPasoCompletado(2);
+                    $entityManagerInterface->flush();
+                    return $this->redirectToRoute('asientos', ['reservacion' => $reservacion->getId()]);
+                }
+                $error_tarjeta = $result['error'];
+            } else if (isset($result['success'])) {
+
+                $data = json_decode($result['data']);
+
+                $reservacion->setFacturaId($data->factura_id)->setFacturaDte($data->dte)->setBoletoTicketId($data->boletos_ticket);
+
+                $salida = $reservacion->getSalida();
+                foreach ($salida->getAsientos() as $index => $asiento) {
+                    $asiento->setBoletoId($data->boletos_salida[$index]);
+                }
+
+                if ($reservacion->isIdaVuelta()) {
+                    $regreso = $reservacion->getRegreso();
+                    foreach ($regreso->getAsientos() as $index => $asiento) {
+                        $asiento->setBoletoId($data->boletos_regreso[$index]);
+                    }
+                }
+                if (!$cliente->getClienteId()) {
+                    $cliente->setClienteId($data->cliente_id);
+                }
+                $entityManagerInterface->flush();
+            }
+
+            // $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData());
+
+            // if (is_array($resultado)) {
+            //     if (isset($resultado['status']) && $resultado['status'] == 'AUTHORIZED') {
+            //         $transaccion_id = $resultado['id'];
+            //         $entityManagerInterface->persist($cliente);
+            //         $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
+            //         // return $this->redirectToRoute('salida', ['reservacion' => $reservacion->getId()]);
+            //     } else if (isset($resultado["errorInformation"]) && !empty($resultado["errorInformation"])) {
+            //         $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
+            //         if (isset($resultado["errorInformation"]["message"])) {
+            //             $error_tarjeta .= ' ' . $resultado["errorInformation"]["message"];
+            //         }
+            //     }
+            //     $reservacion->setTransaccionId($resultado['id'] ?? null);
+            // } else if ($resultado == 400) {
+            //     $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
+            // } else if ($resultado == 502) {
+            //     $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
+            // }
+            // 
+            // $entityManagerInterface->flush();
+        }
+
+        return $this->renderForm('reservacion/pagar.html.twig', [
+            'form' => $form,
+            'primer_render' => $primer_render,
+            'reservacion' => $reservacion,
+            'error_tarjeta' => $error_tarjeta ?? null
+        ]);
+    }
+
+    #[Route('/confirmacion/{reservacion}', name: 'confirmacion')]
+    public function confirmacion(Request $request, Reservacion $reservacion, TranslatorInterface $translatorInterface, MailerInterface $mailer, Filesystem $filesystem): Response
+    {
+
+        $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';
+
+        if (!$filesystem->exists('facturas/' . $pdf_nombre)) {
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
+            $dompdf->render();
+            $filesystem->dumpFile('facturas/' . $pdf_nombre, $dompdf->output());
+        }
+
+        if ($reservacion->getCliente()->getEmail()) {
+            $email = (new Email())
+                ->from('reservacion@transportesfuentedelnorte.com')
+                ->to($reservacion->getCliente()->getEmail())
+                ->priority(Email::PRIORITY_HIGH)
+                ->subject($translatorInterface->trans('Boleto Transporte Fuente del Norte. Servcio de Bus. Guatemala.'))
+                ->text($translatorInterface->trans('Boleto Transporte Fuente del Norte. Servcio de Bus. Guatemala.'))
+                ->html($this->renderView('pdf/factura.html.twig', ['reservacion' => $reservacion]))
+                ->attachFromPath('facturas/' . $pdf_nombre);
+
+            $mailer->send($email);
+        }
+
+        $request->getSession()->remove('reservacion');
+
+        return $this->renderForm('reservacion/confirmacion.html.twig', [
+            'reservacion' => $reservacion
+        ]);
+    }
+
+    #[Route('/pdf/{reservacion}', name: 'pdf')]
+    public function pdf(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, CybersourceApi $cybersourceApi, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    {
+        $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';
+
+        $response = new Response(file_get_contents('facturas/' . $pdf_nombre));
+
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $pdf_nombre
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+        return $response;
     }
 }

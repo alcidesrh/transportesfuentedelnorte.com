@@ -2,29 +2,29 @@
 
 namespace App\Services;
 
+use App\Entity\Reservacion;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CybersourceApi
 {
-    private $client;
 
-    public function __construct(HttpClientInterface $client)
+    public function __construct(private HttpClientInterface $client, private $CYBERSOURCE_HOST, private $CYBERSOURCE_PAYMENTS, private $cybersource_merchant_id, private $cybersource_merchant_key_id, private $cybersource_merchant_secret_key)
     {
-        $this->client = $client;
     }
 
-    public function fetchGitHubInformation()
+    public function procesarPago(Reservacion $reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad)
     {
-        $request_host = "apitest.cybersource.com";
-        $merchant_id = "visanetgt_fuentesdelnorte";
-        $merchant_key_id = "a466340f-e936-41fe-97ea-676eb09307ea";
-        $merchant_secret_key = "S9vBxoLAJh9wvSMnIGuARr85ThX0JuzHW7Cz2Jm4Bo8=";
+        $request_host = $this->CYBERSOURCE_HOST;
+        $merchant_id = $this->cybersource_merchant_id;
+        $merchant_key_id = $this->cybersource_merchant_key_id;
+        $merchant_secret_key = $this->cybersource_merchant_secret_key;
 
-        $payload = json_encode($this->setPayload([]));
-        $resource = "/pts/v2/payments/";
+
+        $resource = $this->CYBERSOURCE_PAYMENTS;
         $method = "post";
-        $statusCode = -1;
         $url = "https://" . $request_host . $resource;
+
+        $payload = json_encode($this->getPayload($reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad));
 
         $resource = utf8_encode($resource);
 
@@ -93,14 +93,11 @@ class CybersourceApi
         );
 
         $statusCode = $response->getStatusCode();
-        // $statusCode = 200
-        // $contentType = 'application/json'
-        // $content = $response->getContent();
-        // $content = '{"id":521583, "name":"symfony-docs", ...}'
-        $content = $response->toArray();
-        // $content = ['id' => 521583, 'name' => 'symfony-docs', ...]
+        if ($statusCode >= 200 && $statusCode <= 299) {
+            return $response->toArray();
+        }
 
-        return $content;
+        return $statusCode;
     }
 
     public function GenerateDigest($requestPayload)
@@ -110,28 +107,30 @@ class CybersourceApi
         return base64_encode($digestEncode);
     }
 
-    public function setPayload($data)
+    public function getPayload(Reservacion $reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad)
     {
 
+        $cliente = $reservacion->getCliente();
+
         $data = [
-            'code' => '069551001',
+            'code' => 'TC50171_3',
             'commerceIndicator' => 'internet',
-            'firstName' => 'doe',
-            'lastName' => 'john',
-            'address1' => 'n',
-            'postalCode' => 'n',
-            'locality' => 'n',
-            'administrativeArea' => 'n',
-            'country' => 'GT',
+            'firstName' => $cliente->getNombre(),
+            'lastName' => 'doe',
+            'address1' => '201 S. Division St.',
+            'postalCode' => '48104-2201',
+            'locality' => 'Ann Arbor',
+            'administrativeArea' => 'MI',
+            'country' => 'US',
             'phoneNumber' => '999999999',
-            'email' => 'n',
+            'email' => 'test@cybs.com',
             'totalAmount' => '10',
             'currency' => 'GTQ',
             'expirationYear' => '2031',
-            'number' => '5555555555554444',
-            // 'securityCode' => '123',
+            'number' => '4111111111111111',
+            'securityCode' => '123',
             'expirationMonth' => '12',
-            // 'type' => '002',
+            'type' => '002',
         ];
 
         return [
@@ -139,66 +138,112 @@ class CybersourceApi
             // 'processingInformation' => ['commerceIndicator' => $data['commerceIndicator']],
             'orderInformation' => [
                 'billTo' => [
-                    'firstName' => $data['firstName'],
-                    'lastName' => $data['lastName'],
-                    'address1' => $data['address1'],
-                    'postalCode' => $data['postalCode'],
-                    'locality' => $data['locality'],
-                    'administrativeArea' => $data['administrativeArea'],
-                    'country' => $data['country'],
-                    'phoneNumber' => $data['phoneNumber'],
-                    'email' => $data['email']
+                    // 'firstName' => $data['firstName'],
+                    // 'lastName' => $data['lastName'],
+                    // 'address1' => $data['address1'],
+                    // 'postalCode' => $data['postalCode'],
+                    // 'locality' => $data['locality'],
+                    // 'administrativeArea' => $data['administrativeArea'],
+                    // 'country' => $data['country'],
+                    // 'phoneNumber' => $data['phoneNumber'],
+                    // 'email' => $data['email'],
+
+                    'firstName' => $cliente->getNombre(),
+                    'lastName' => $cliente->getApellido(),
+                    'address1' => $cliente->getDireccion(),
+                    'postalCode' => $cliente->getCodigoPostal(),
+                    'locality' => $cliente->getLocalidad(),
+                    'administrativeArea' => $cliente->getAreaAdministrativa(),
+                    'country' => 'GT',
+                    'phoneNumber' => $cliente->getTelefono(),
+                    'email' => $cliente->getEmail(),
                 ],
                 'amountDetails' => [
-                    'totalAmount' => $data['totalAmount'],
-                    'currency' => $data['currency']
+                    'totalAmount' => $reservacion->getPrecio(),
+                    'currency' => $reservacion->getMoneda()
                 ]
             ],
             'paymentInformation' => [
                 'card' => [
-                    'expirationYear' => $data['expirationYear'],
-                    'number' => $data['number'],
-                    // 'securityCode' => $data['securityCode'],
-                    'expirationMonth' => $data['expirationMonth'],
+                    'expirationYear' => $expira_year,
+                    'number' => $numero,
+                    'securityCode' => $codigo_seguridad,
+                    'expirationMonth' => $expira_mes,
                     // 'type' => $data['type'],
                 ]
-            ]
+                // 'card' => [
+                //     'expirationYear' => $data['expirationYear'],
+                //     'number' => $data['number'],
+                //     'securityCode' => $data['securityCode'],
+                //     'expirationMonth' => $data['expirationMonth'],
+                //     // 'type' => $data['type'],
+                // ]
+            ],
         ];
 
-        // $payload = "{\n" .
-        //     "  \"clientReferenceInformation\": {\n" .
-        //     "    \"code\": \"069551001\"\n" .
-        //     "  },\n" .
-        //     "  \"processingInformation\": {\n" .
-        //     "    \"commerceIndicator\": \"internet\"\n" .
-        //     "  },\n" .
-        //     "  \"orderInformation\": {\n" .
-        //     "    \"billTo\": {\n" .
-        //     "      \"firstName\": \"john\",\n" .
-        //     "      \"lastName\": \"doe\",\n" .
-        //     "      \"address1\": \"201 S. Division St.\",\n" .
-        //     "      \"postalCode\": \"48104-2201\",\n" .
-        //     "      \"locality\": \"Ann Arbor\",\n" .
-        //     "      \"administrativeArea\": \"MI\",\n" .
-        //     "      \"country\": \"US\",\n" .
-        //     "      \"phoneNumber\": \"999999999\",\n" .
-        //     "      \"email\": \"test@cybs.com\"\n" .
-        //     "    },\n" .
-        //     "    \"amountDetails\": {\n" .
-        //     "      \"totalAmount\": \"10\",\n" .
-        //     "      \"currency\": \"GTQ\"\n" .
-        //     "    }\n" .
-        //     "  },\n" .
-        //     "  \"paymentInformation\": {\n" .
-        //     "    \"card\": {\n" .
-        //     "      \"expirationYear\": \"2031\",\n" .
-        //     "      \"number\": \"5555555555554444\",\n" .
-        //     "      \"securityCode\": \"123\",\n" .
-        //     "      \"expirationMonth\": \"12\",\n" .
-        //     "      \"type\": \"002\"\n" .
-        //     "    }\n" .
-        //     "  }\n" .
-        //     "}";
-        
+        // return '{
+        //     "clientReferenceInformation": {
+        //       "code": "TC50171_3"
+        //     },
+        //     "paymentInformation": {
+        //       "card": {
+        //         "number": "4111111111111111",
+        //         "expirationMonth": "12",
+        //         "expirationYear": "2031"
+        //       }
+        //     },
+        //     "orderInformation": {
+        //       "amountDetails": {
+        //         "totalAmount": "102.21",
+        //         "currency": "GQT"
+        //       },
+        //       "billTo": {
+        //         "firstName": "John",
+        //         "lastName": "Doe",
+        //         "address1": "1 Market St",
+        //         "locality": "san francisco",
+        //         "administrativeArea": "CA",
+        //         "postalCode": "94105",
+        //         "country": "US",
+        //         "email": "test@cybs.com",
+        //         "phoneNumber": "4158880000"
+        //       }
+        //     }
+        //   }';
+
+        return "{\n" .
+            "  \"clientReferenceInformation\": {\n" .
+            "    \"code\": \"TC50171_3\"\n" .
+            "  },\n" .
+            "  \"processingInformation\": {\n" .
+            "    \"commerceIndicator\": \"internet\"\n" .
+            "  },\n" .
+            "  \"orderInformation\": {\n" .
+            "    \"billTo\": {\n" .
+            "      \"firstName\": \"john\",\n" .
+            "      \"lastName\": \"doe\",\n" .
+            "      \"address1\": \"201 S. Division St.\",\n" .
+            "      \"postalCode\": \"48104-2201\",\n" .
+            "      \"locality\": \"Ann Arbor\",\n" .
+            "      \"administrativeArea\": \"MI\",\n" .
+            "      \"country\": \"US\",\n" .
+            "      \"phoneNumber\": \"999999999\",\n" .
+            "      \"email\": \"test@cybs.com\"\n" .
+            "    },\n" .
+            "    \"amountDetails\": {\n" .
+            "      \"totalAmount\": \"10\",\n" .
+            "      \"currency\": \"GTQ\"\n" .
+            "    }\n" .
+            "  },\n" .
+            "  \"paymentInformation\": {\n" .
+            "    \"card\": {\n" .
+            "      \"expirationYear\": \"2031\",\n" .
+            "      \"number\": \"5555555555554444\",\n" .
+            "      \"securityCode\": \"123\",\n" .
+            "      \"expirationMonth\": \"12\",\n" .
+            "      \"type\": \"002\"\n" .
+            "    }\n" .
+            "  }\n" .
+            "}";
     }
 }

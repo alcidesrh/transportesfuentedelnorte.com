@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Entity\Asiento;
+use App\Entity\Reservacion;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class RemoteDatabaseQueries
 {
-    public function __construct(public EntityManagerInterface $system_fdn_entitymanager)
+    public function __construct(public EntityManagerInterface $system_fdn_entitymanager, private HttpClientInterface $client, private $FDN_HOST)
     {
     }
     public function getEstaciones(): array
@@ -16,63 +19,59 @@ class RemoteDatabaseQueries
         return $this->execute_query($sql);
     }
 
-    public function getSalidas($fecha = null): array | null
+    public function getSalidas($salida, $llegada, $fecha): array | null
     {
-        if (!$fecha) {
-            return null;
-        }
-
-        return [
-            0 => [
-                "salida_id" => "250861",
-                "horario" => "2022-04-05 05:45:00.000000",
-                "bus_clase" => "Clase Oro / Maya de Oro",
-                "kilometros" => 480,
-                "minutos" => 600,
-            ],
-            1 => [
-                "salida_id" => "250862",
-                "horario" => "2022-04-05 10:00:00.000000",
-                "bus_clase" => "Clase Oro / Maya de Oro",
-                "kilometros" => 480,
-                "minutos" => 600,
-            ],
-            2 => [
-                "salida_id" => "251706",
-                "horario" => "2022-04-05 11:15:00.000000",
-                "bus_clase" => "Clase Oro / Maya de Oro",
-                "kilometros" => 480,
-                "minutos" => 600,
-            ],
-            3 => [
-                "salida_id" => "250863",
-                "horario" => "2022-04-05 14:00:00.000000",
-                "bus_clase" => "Clase Oro / Maya de Oro",
-                "kilometros" => 480,
-                "minutos" => 600,
-            ],
-            4 => [
-                "salida_id" => "250866",
-                "horario" => "2022-04-05 19:00:00.000000",
-                "bus_clase" => "Maya de Oro GL",
-                "kilometros" => 480,
-                "minutos" => 600,
-            ],
-            5 => [
-                "salida_id" => "250868",
-                "horario" => "2022-04-05 21:00:00.000000",
-                "bus_clase" => "Maya de Oro GL",
-                "kilometros" => 480,
-                "minutos" => 600,
-            ],
-            6 => [
-                "salida_id" => "250869",
-                "horario" => "2022-04-05 21:30:00.000000",
-                "bus_clase" => "Premier VIP",
-                "kilometros" => 480,
-                "minutos" => null,
-            ]
-        ];
+        // return [
+        //     0 => [
+        //         "salida_id" => "250861",
+        //         "horario" => "2022-04-05 05:45:00.000000",
+        //         "bus_clase" => "Clase Oro / Maya de Oro",
+        //         "kilometros" => 480,
+        //         "minutos" => 600,
+        //     ],
+        //     1 => [
+        //         "salida_id" => "250862",
+        //         "horario" => "2022-04-05 10:00:00.000000",
+        //         "bus_clase" => "Clase Oro / Maya de Oro",
+        //         "kilometros" => 480,
+        //         "minutos" => 600,
+        //     ],
+        //     2 => [
+        //         "salida_id" => "251706",
+        //         "horario" => "2022-04-05 11:15:00.000000",
+        //         "bus_clase" => "Clase Oro / Maya de Oro",
+        //         "kilometros" => 480,
+        //         "minutos" => 600,
+        //     ],
+        //     3 => [
+        //         "salida_id" => "250863",
+        //         "horario" => "2022-04-05 14:00:00.000000",
+        //         "bus_clase" => "Clase Oro / Maya de Oro",
+        //         "kilometros" => 480,
+        //         "minutos" => 600,
+        //     ],
+        //     4 => [
+        //         "salida_id" => "250866",
+        //         "horario" => "2022-04-05 19:00:00.000000",
+        //         "bus_clase" => "Maya de Oro GL",
+        //         "kilometros" => 480,
+        //         "minutos" => 600,
+        //     ],
+        //     5 => [
+        //         "salida_id" => "250868",
+        //         "horario" => "2022-04-05 21:00:00.000000",
+        //         "bus_clase" => "Maya de Oro GL",
+        //         "kilometros" => 480,
+        //         "minutos" => 600,
+        //     ],
+        //     6 => [
+        //         "salida_id" => "250869",
+        //         "horario" => "2022-04-05 21:30:00.000000",
+        //         "bus_clase" => "Premier VIP",
+        //         "kilometros" => 480,
+        //         "minutos" => null,
+        //     ]
+        // ];
 
         $fecha->setTime(0, 0, 0);
         $fecha2 = clone $fecha;
@@ -87,8 +86,11 @@ class RemoteDatabaseQueries
         where ruta.estacion_origen_id = ? and ruta.estacion_destino_id = ? and salida.fecha between ? and ? 
         order by salida.fecha asc";
 
-        $return = $this->execute_query($sql, [1, 3, $fecha, $fecha2]);
-        return $return;
+        try {
+            return $this->execute_query($sql, [$salida, $llegada, $fecha, $fecha2]);
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 
     public function getAsientos($id_salida): array | null
@@ -156,5 +158,78 @@ class RemoteDatabaseQueries
         }
 
         return $asientos;
+    }
+
+    public function getAsientosPrecios(Reservacion $reservacion)
+    {
+        $response = $this->client->request(
+            'POST',
+            $this->FDN_HOST . 'calcularImporteTotalMonedaBase.json',
+            // 'http://grupofuentedelnorte.com/app_dev.php/api/calcularImporteTotalMonedaBase.json',
+
+            [
+                'body' => [
+                    'idEstacionOrigen' => $reservacion->getRuta()->getEstacionSalida()->getId(),
+                    'idEstacionDestino' => $reservacion->getRuta()->getEstacionLlegada()->getId(),
+                    'idSalida' => $reservacion->getSalida()->getSalidaId(),
+                    'asientos' => json_encode($reservacion->getSalida()->getAsientos()->map(fn (Asiento $item) => ['id' => $item->getAsientoId()])->toArray())
+                ]
+            ]
+        );
+
+        $result = json_decode($response->getContent());
+
+        if ($reservacion->isIdaVuelta()) {
+            $response = $this->client->request(
+                'POST',
+                $this->FDN_HOST . 'calcularImporteTotalMonedaBase.json',
+                [
+                    'body' => [
+                        'idEstacionOrigen' => $reservacion->getRuta()->getEstacionLlegada()->getId(),
+                        'idEstacionDestino' => $reservacion->getRuta()->getEstacionSalida()->getId(),
+                        'idSalida' => $reservacion->getRegreso()->getSalidaId(),
+                        'asientos' => json_encode($reservacion->getRegreso()->getAsientos()->map(fn (Asiento $item) => ['id' => $item->getAsientoId()])->toArray())
+                    ]
+                ]
+            );
+
+            $result_regreso = json_decode($response->getContent());
+            $result->total = intval($result->total) + intval($result_regreso->total);
+            if ($result_regreso->error && !$result->error) {
+                $result->error = $result_regreso->error;
+            }
+        }
+
+        return $result;
+    }
+
+    public function crearBoleto(Reservacion $reservacion, $regreso = false)
+    {
+        $salida = ['salida_id' => $reservacion->getSalida()->getSalidaId(), 'salida_asientos' => $reservacion->getSalida()->getAsientos()->map(fn (Asiento $item) => $item->getAsientoId())->toArray()];
+
+        $regreso = [];
+        if ($reservacion->isIdaVuelta()) {
+            $regreso = ['regreso_id' => $reservacion->getRegreso()->getSalidaId(), 'regreso_asientos' => $reservacion->getRegreso()->getAsientos()->map(fn (Asiento $item) => $item->getAsientoId())->toArray()];
+        }
+
+        $response = $this->client->request(
+            'POST',
+            // $this->FDN_HOST . 'emitirBoletos.json',
+            'http://grupofuentedelnorte.com/app_dev.php/api/emitirBoletos.json',
+            [
+                'body' => [
+                    'salidas' => json_encode(array_merge($salida, $regreso)),
+                    'cliente' => json_encode($reservacion->getCliente()->getClienteId() ? ['id' => $reservacion->getCliente()->getClienteId()] : ['nombre' => $reservacion->getCliente()->getNombre(), 'apellido' => $reservacion->getCliente()->getApellido(), 'nit' => $reservacion->getCliente()->getNit(), 'telefono' => $reservacion->getCliente()->getTelefono(), 'email' => $reservacion->getCliente()->getEmail()])
+                ]
+            ]
+        );
+
+        try {
+            $result = json_decode($response->getContent(), true);
+        } catch (\Exception $e) {
+            $result = ['error' => $e->getMessage()];
+        }
+
+        return $result;
     }
 }

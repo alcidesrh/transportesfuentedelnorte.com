@@ -26,6 +26,15 @@ services:
             # you want to pass the *service* whose id is 'monolog.logger.request',
             # and not just the *string* 'monolog.logger.request'
             $system_fdn_entitymanager: "@doctrine.orm.systemfdn_entity_manager"
+            $FDN_HOST: "%env(FDN_HOST)%"
+
+    App\Services\CybersourceApi:
+        arguments:
+            $cybersource_merchant_id: "%env(cybersource_merchant_id)%"
+            $cybersource_merchant_key_id: "%env(cybersource_merchant_key_id)%"
+            $cybersource_merchant_secret_key: "%env(cybersource_merchant_secret_key)%"
+            $CYBERSOURCE_HOST: "%env(CYBERSOURCE_HOST)%"
+            $CYBERSOURCE_PAYMENTS: "%env(CYBERSOURCE_PAYMENTS)%"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

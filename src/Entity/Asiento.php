@@ -27,6 +27,9 @@ class Asiento
     #[ORM\JoinColumn(nullable: false)]
     private ?SalidaReservacion $salidaReservacion = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $boleto_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -83,5 +86,17 @@ class Asiento
     public function __toString()
     {
         return $this->asiento_id;
+    }
+
+    public function getBoletoId(): ?int
+    {
+        return $this->boleto_id;
+    }
+
+    public function setBoletoId(?int $boleto_id): self
+    {
+        $this->boleto_id = $boleto_id;
+
+        return $this;
     }
 }

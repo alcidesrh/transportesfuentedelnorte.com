@@ -8,6 +8,12 @@
 			</ul>
 		{% endif %}
 
+		{% for message in app.flashes('error_asientos_ocupados') %}
+			<ul class="m-auto w-fit mb-1">
+				<li class="text-red-700">{{ message }}</li>
+			</ul>
+		{% endfor %}
+
 		{{ component('alert', {text: 'Puede escoger más de un asiento si viajan varias personas.' | trans}) }}
 
 		<div class="grid grid-rows-1 gap-2 mt-10">
@@ -29,7 +35,7 @@
 
 
 		<div class="flex justify-between mt-10">
-			{{ component('button_link', {text: 'Atras', icon: {left: true, name: 'arrow_back'}, link: path('salida', {'reservacion': reservacion.id})}) }}
+			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('salida', {'reservacion': reservacion.id})}) }}
 			{{ form_start(form, {'action': path('asientos', {reservacion: reservacion.id})}) }}
 			<div class="hidden">
 				{{ form_row(form.asientos_salida, {attr: {'data-asiento-target': 'asientos_salida'}}) }}
