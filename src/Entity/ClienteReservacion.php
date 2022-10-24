@@ -48,7 +48,7 @@ class ClienteReservacion
 
     public function __construct()
     {
-        $this->direccion = 'unknow';
+        $this->direccion = 'sin dirección';
         $this->nit = 'CF';
     }
 
@@ -187,5 +187,10 @@ class ClienteReservacion
         $this->cliente_id = $cliente_id;
 
         return $this;
+    }
+
+    public function getNombreCompleto()
+    {
+        return $this->nombre . ' ' . $this->apellido;
     }
 }

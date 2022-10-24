@@ -41,7 +41,7 @@ Información personal: Personal information
 Datos de la tarjeta: Credit card information
 No guardamos ningún dato de la tarjeta. Solo se usará para pagar la compra.: We do not store any card data. It will only be used to pay for the purchase.
 No se pudo realizar el pago. Los datos de la tarjeta no son correctos.: The payment could not be made. The card details are not correct.
-datos opcional solo para Guatemala: Only citizens of Guatemala
+Nit (solo Guatemala): Nit (only Guatemala)
 El boleto se descargará cuando efectue el pago pero si inserta un email también se le enviará.: The ticket will be downloaded when you make the payment but if you insert an email it will also be sent to you.
 Cantidad a pagar: Amount to pay
 Datos de la reserva: Reservation data
@@ -63,3 +63,8 @@ Se ha enviado un correo a: An email has been sent to
 con una copia del boleto.: with a copy of the ticket.
 Factura dte: Invoice number
 Fecha de creación: Creation date
+Quiénes somos: About us
+Iniciar sesión: Log in
+Estaciones: Stations
+Efectuar pago: Make payment
+Teléfono: Phone

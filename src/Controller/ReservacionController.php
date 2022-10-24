@@ -139,7 +139,6 @@ class ReservacionController extends AbstractController
                         $entityManagerInterface->remove($value);
                     }
                 }
-                $no_scroll = true;
             } else if ($salida_reservacion) {
                 $fecha = $salida_reservacion->getSalidaFecha();
                 $entityManagerInterface->remove($salida_reservacion);
@@ -153,6 +152,7 @@ class ReservacionController extends AbstractController
             } else {
                 $reservacion->setSalida($salida_reservacion);
             }
+
 
             $entityManagerInterface->flush();
         }
@@ -182,7 +182,7 @@ class ReservacionController extends AbstractController
             'salidas' => $salidas ?? null,
             'sistema_conexion_error' => $sistema_conexion_error ?? null,
             'primer_render' => $primer_render,
-            'no_scroll' => $no_scroll ?? false
+            'no_scroll' => $form->isSubmitted()
         ]);
     }
 

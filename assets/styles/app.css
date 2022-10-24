@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;500;600;700;800;900&display=swap");
 @import "material-symbols/outlined.css";
 @import "./modal.css";
 
@@ -10,23 +11,23 @@
     .card {
         background-color: theme("colors.white");
         border-radius: theme("borderRadius.lg");
-        padding: theme("spacing.6");
         box-shadow: theme("boxShadow.xl");
     }
     [type="submit"],
     .btn {
         /* max-width: max-content; */
-        @apply inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-semibold rounded-lg px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800;
+        @apply inline-block text-white bg-slate-600 hover:bg-slate-700 focus:ring-4 focus:ring-slate-300 font-semibold rounded-lg px-5 py-2.5 dark:bg-slate-600 dark:hover:bg-slate-700 focus:outline-none dark:focus:ring-slate-800;
     }
     .btn-success {
-        @apply bg-teal-700 hover:bg-teal-900;
+        @apply bg-slate-300 text-slate-700 hover:bg-slate-400;
+        /* bg-emerald-600 hover:bg-emerald-700; */
     }
 
     .btn.sm {
         @apply px-2 py-1.5;
     }
     .btn-outline {
-        @apply bg-transparent text-black  border border-slate-700 hover:text-white;
+        @apply bg-transparent text-slate-700  border border-slate-500 hover:bg-slate-200;
     }
 
     .input {
@@ -51,15 +52,30 @@ html {
 body {
     font-family: "Montserrat", sans-serif;
     transition: opacity 1000ms;
+    @apply text-slate-600;
 }
 body.turbo-loading,
 body.turbo-loaded {
     opacity: 0.2;
 }
 
-.background-transparent {
-    background-color: #b2b2b2;
-    background-color: rgba(0, 0, 0, 0.3);
+*:focus {
+    outline: none;
+}
+
+a:active,
+a:focus,
+li:focus,
+li:active {
+    outline: none !important;
+    border: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    user-select: none;
 }
 
 button * {
@@ -68,6 +84,10 @@ button * {
 
 .button-loading {
     animation: rotation 1s infinite linear;
+}
+
+.empresa-nombre {
+    font-family: "Crimson Pro", serif;
 }
 
 @keyframes rotation {

@@ -18,18 +18,20 @@
 				Welcome!
 			{% endblock %}
 		</title>
+
 	</head>
-	<body class="text-gray-800 antialiased">
+	<body class="antialiased">
 		{{ include('header.html.twig') }}
-		<main>
-			{% block body %}{% endblock %}
-		</main>
-		{{ include('footer.html.twig') }}
-	</body>
-	<script>
-		function toggleNavbar(collapseID) {
+		<main class="mt-[70px]"> {% block body %}{% endblock %}
+			</main>
+			{% block footer %}
+				{{ include('footer.html.twig') }}
+			{% endblock %}
+		</body>
+		<script>
+			function toggleNavbar(collapseID) {
 document.getElementById(collapseID).classList.toggle("hidden");
 document.getElementById(collapseID).classList.toggle("block");
 }
-	</script>
-</html>
+		</script>
+	</html>

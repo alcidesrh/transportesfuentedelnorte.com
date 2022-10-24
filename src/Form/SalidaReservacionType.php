@@ -22,7 +22,7 @@ class SalidaReservacionType extends AbstractType
         $builder
             ->add('salida_fecha', DateType::class, [
                 'widget' => 'single_text',
-                'html5' => false,
+                // 'html5' => false,
                 'format' => 'en' == $this->translator->getLocale() ? 'yyyy-MM-dd' : 'dd/MM/yyyy',
                 'label' => false,
                 'constraints' => [

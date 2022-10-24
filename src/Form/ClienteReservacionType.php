@@ -51,9 +51,8 @@ class ClienteReservacionType extends AbstractType
                 'help' => $this->twig->render('reservacion/_reserva_email_nota.html.twig')
             ])
             ->add('nit', TextType::class, [
-                'label' => 'Nit',
+                'label' => 'Nit (solo Guatemala)',
                 'required' => false,
-                'help' => $this->translator->trans('datos opcional solo para Guatemala'),
                 'help_attr' => ['class' => 'help-info']
             ])
             //Datos de la tarjeta
@@ -111,7 +110,7 @@ class ClienteReservacionType extends AbstractType
                 'help' => '* obligatorio',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => $this->translator->trans('Pagar'),
+                'label' => $this->translator->trans('Efectuar pago'),
             ]);
     }
 

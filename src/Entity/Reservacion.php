@@ -229,4 +229,9 @@ class Reservacion
 
         return $this;
     }
+
+    public function getRutaForAdmin()
+    {
+        return $this->ruta->getEstacionSalida()->getNombre() . ' - ' . $this->ruta->getEstacionLlegada()->getNombre();
+    }
 }

@@ -16,4 +16,6 @@ class ButtonLinkComponent
     public array $icon;
 
     public string $attr = '';
+
+    public string $class = '';
 }

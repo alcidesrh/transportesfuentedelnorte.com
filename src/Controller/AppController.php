@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AppController extends AbstractController
 {
-    #[Route('/', name: 'app_app')]
+    #[Route('/', name: 'inicio')]
     public function index(Request $request, ReservacionRepository $reservacionRepository): Response
     {
         $paso = 0;

@@ -33,9 +33,9 @@
 		{% if salidas is defined and salidas is not null %}
 			{% if salidas is not empty %}
 				<details open>
-					<summary class="font-bold my-5 cursor-pointer">{{'Elija bus' | trans}}</summary>
+					<summary class="font-medium my-5 cursor-pointer">{{'Elija bus' | trans}}</summary>
 					<div>
-						<div class="grid grid-cols-7 bg-gray-800">
+						<div class="grid grid-cols-7 bg-slate-600 px-3 rounded">
 							<div class="text-sm font-bold text-white px-2 py-4 text-left col-span-2">
 								{{'Hora' | trans}}
 							</div>
@@ -49,7 +49,7 @@
 						</div>
 						<div data-buscar-salida-target="lista">
 							{% for salida in salidas %}
-								<div class="grid grid-cols-8 cursor-pointer {{ salida.salida_id == salida_reservacion.getSalidaId ?? null ? 'salida-selected'}}" id="_{{salida.salida_id}}" data-action="click->buscar-salida#elegir" data-id="{{salida.salida_id}}">
+								<div class="grid grid-cols-8 cursor-pointer px-3 {{ salida.salida_id == salida_reservacion.getSalidaId ?? null ? 'salida-selected'}}" id="_{{salida.salida_id}}" data-action="click->buscar-salida#elegir" data-id="{{salida.salida_id}}">
 									<div class="salida-col col-span-2" data-value="{{salida.horario | date("g:i a")}}" id="_{{salida.salida_id ~ '_horario'}}">
 										{{salida.horario  | date("g:i a")}}
 									</div>
@@ -59,13 +59,13 @@
 									<div class="salida-col col-span-1" data-value="{{salida.minutos}}" id="_{{salida.salida_id ~ '_minutos'}}">
 										{{salida.minutos ? (salida.minutos * 60)| date('H:i') : '' | trans }}
 									</div>
-									<div class="salida-col col-span-2">
+									<div class="salida-col col-span-2 flex justify-end">
 										<button class="btn sm elegir">
 											<div class="flex justify-center">
 												<label class="capitalize text-sm">{{'Elegir' | trans}}</label>
 											</div>
 										</button>
-										<button class="btn sm btn-success hidden btn-descartar-salida">
+										<button class="btn sm hidden btn-descartar-salida btn-outline">
 											<div class="flex justify-center">
 												<label class="capitalize text-sm">{{'Descartar' | trans}}</label>
 											</div>

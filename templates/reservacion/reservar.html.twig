@@ -18,4 +18,4 @@
 	{% elseif reservacion_paso == 3 %}
 		{{ render(controller('App\\Controller\\ReservacionController::pagar', {'reservacion': reservacion_id, primer_render: true})) }}
 	{% endif %}
-</div></div>
+</div>

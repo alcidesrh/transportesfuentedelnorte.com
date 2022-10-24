@@ -1,7 +1,7 @@
 @import "./flatpickr.min.css";
 
 .step-label {
-    @apply absolute text-xs sm:text-sm md:text-base text-center w-full leading-normal text-slate-600 font-bold;
+    @apply absolute text-xs sm:text-sm md:text-base text-center w-full text-slate-600 font-medium;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -101,7 +101,7 @@
 }
 
 .salida-selected {
-    @apply bg-slate-300;
+    @apply bg-gray-100 rounded;
 }
 
 .salida-selected button.elegir {
@@ -121,10 +121,10 @@
     @apply bg-slate-200 rounded-2xl;
 }
 .asiento.elegido {
-    @apply bg-teal-400 rounded-2xl;
+    @apply bg-emerald-200 rounded-2xl;
 }
 .asiento.elegido.libre:hover {
-    @apply bg-teal-100;
+    @apply bg-emerald-100;
 }
 .elegido > svg {
     @apply fill-teal-700;
@@ -133,5 +133,5 @@
     @apply text-orange-500 text-sm flex items-center font-medium;
 }
 .help-text.help-info {
-    @apply text-blue-400;
+    @apply text-indigo-500 font-medium;
 }
