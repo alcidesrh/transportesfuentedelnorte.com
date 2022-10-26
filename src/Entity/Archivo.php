@@ -31,6 +31,11 @@ class Archivo
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $tipo = null;
 
+    public function __construct()
+    {
+        $this->webP = true;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,7 +67,7 @@ class Archivo
 
     public function getPath(): ?string
     {
-        return $this->path;
+        return self::IMAGEN == $this->tipo ? 'images/' . $this->path : '';
     }
 
     public function setPath(?string $path): self
@@ -94,5 +99,10 @@ class Archivo
         $this->tipo = $tipo;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->path;
     }
 }

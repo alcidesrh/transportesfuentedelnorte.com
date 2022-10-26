@@ -18,6 +18,9 @@ class Slider
     #[ORM\ManyToMany(targetEntity: Archivo::class)]
     private Collection $images;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $nombre = null;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -48,6 +51,18 @@ class Slider
     public function removeImage(Archivo $image): self
     {
         $this->images->removeElement($image);
+
+        return $this;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?string $nombre): self
+    {
+        $this->nombre = $nombre;
 
         return $this;
     }

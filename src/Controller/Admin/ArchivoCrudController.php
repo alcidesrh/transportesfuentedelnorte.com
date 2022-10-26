@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Archivo;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -10,11 +11,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
 use function Symfony\Component\String\u;
 
 class ArchivoCrudController extends AbstractCrudController
 {
+
+    public function __construct(private Filesystem $filesystem, private EntityManagerInterface $entityManagerInterface)
+    {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Archivo::class;
@@ -26,10 +33,9 @@ class ArchivoCrudController extends AbstractCrudController
         return [
 
             ImageField::new('path')
-                ->setBasePath('images')
                 ->setUploadDir('public/images')
-                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]'),
-            IdField::new('id')->onlyOnIndex(),
+                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]'), //->setTemplatePath('admin/image.index.html.twig'),
+            IdField::new('id')->hideOnForm(),
             TextField::new('nombre')->hideWhenCreating(),
             TextField::new('extencion', 'Extención')->hideWhenCreating(),
             BooleanField::new('webP', 'Crear versión webp')->onlyWhenCreating(),
@@ -81,10 +87,27 @@ class ArchivoCrudController extends AbstractCrudController
 
             $entity = $form->getData();
             foreach ($state->getUploadedFiles() as $index => $file) {
-                $entity->setNombre($file->getClientOriginalName())->setExtencion($file->getClientOriginalExtension())->setTipo(Archivo::IMAGEN);
+
+                if ($entity->getId()) {
+                    $oldEntity = $this->entityManagerInterface->getUnitOfWork()->getOriginalEntityData($entity);
+                    if ($this->filesystem->exists('images/' . $oldEntity['path'])) {
+                        $this->filesystem->remove('images/' . $oldEntity['path']);
+                    }
+                } else {
+                    $entity->setNombre($file->getClientOriginalName())->setExtencion($file->getClientOriginalExtension())->setTipo(Archivo::IMAGEN);
+                }
                 $fileName = u($filePaths[$index])->replace($uploadDir, '')->toString();
                 $uploadNew($file, $uploadDir, $fileName);
             }
         }
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($this->filesystem->exists($entityInstance->getPath())) {
+            $this->filesystem->remove($entityInstance->getPath());
+        }
+        $entityManager->remove($entityInstance);
+        $entityManager->flush();
     }
 }

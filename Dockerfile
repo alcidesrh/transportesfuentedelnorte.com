@@ -164,6 +164,13 @@ RUN echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini 
 RUN rm msodbcsql18_18.0.1.1-1_amd64.apk msodbcsql18_18.0.1.1-1_amd64.sig mssql-tools18_18.0.1.1-1_amd64.apk mssql-tools18_18.0.1.1-1_amd64.sig
 ###>end sql server drivers
 
+## gd
+RUN apk add --no-cache --virtual build-essentials \
+    libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
+    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
+    docker-php-ext-install gd
+##>end gd	
+
 # Build Caddy with the Mercure and Vulcain modules
 FROM caddy:${CADDY_VERSION}-builder-alpine AS app_caddy_builder
 

@@ -7,17 +7,24 @@ import { Controller } from "@hotwired/stimulus";
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
   static targets = ["image"];
-  count = 0;
-  image = "";
+  static values = {
+    images: String,
+  };
+  count = 1;
+  images = [];
   connect() {
+    return;
+    this.images = JSON.parse(this.imagesValue);
     let timeout = setInterval(() => {
-      if (this.count % 2) {
-        this.image = "/images/image.webp";
+      this.imageTarget.style.backgroundImage = `url('${
+        this.images[this.count]
+      }')`;
+
+      if (this.count == this.images.length - 1) {
+        this.count = 0;
       } else {
-        this.image = "/images/image2.webp";
+        this.count++;
       }
-      this.imageTarget.style.backgroundImage = `url('${this.image}')`;
-      this.count++;
     }, 5000);
   }
 }
