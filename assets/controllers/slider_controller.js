@@ -1,30 +1,28 @@
 import { Controller } from "@hotwired/stimulus";
-
+import { gsap } from "gsap";
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-  static targets = ["image"];
+  static targets = ["slider"];
   static values = {
     images: String,
   };
   count = 1;
   images = [];
   connect() {
-    return;
-    this.images = JSON.parse(this.imagesValue);
-    let timeout = setInterval(() => {
-      this.imageTarget.style.backgroundImage = `url('${
-        this.images[this.count]
-      }')`;
+    const tl = gsap.timeline({ repeat: -1, yoyo: true });
 
-      if (this.count == this.images.length - 1) {
-        this.count = 0;
-      } else {
-        this.count++;
-      }
-    }, 5000);
+    for (let i = 0; i < this.sliderTarget.children.length; i++) {
+      tl.to(this.sliderTarget.children[i], {
+        opacity: 0,
+        height: 0,
+        duration: 3,
+        delay: 5,
+      });
+    }
+    tl.play();
   }
 }

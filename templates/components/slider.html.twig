@@ -1,86 +1,12 @@
-<style>
-	@mixin white-gradient {
-		background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
-	}
-
-	$animationSpeed: 40s;
-
-	@keyframes scroll {
-		0% {
-			transform: translateX(0);
-		}
-		100% {
-			transform: translateX(calc(-250px * 7))
-		}
-	}
-
-
-	.slider {
-		background: white;
-		box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.125);
-		height: 100px;
-		margin: auto;
-		overflow: hidden;
-		position: relative;
-		width: 960px;
-
-		&::before,
-		&::after {
-			@include white-gradient;
-			content: "";
-			height: 100px;
-			position: absolute;
-			width: 200px;
-			z-index: 2;
-		}
-
-		&::after {
-			right: 0;
-			top: 0;
-			transform: rotateZ(180deg);
-		}
-
-		&::before {
-			left: 0;
-			top: 0;
-		}
-
-		.slide-track {
-			animation: scroll $animationSpeed linear infinite;
-			display: flex;
-			width: calc(250px * 14);
-		}
-
-		.slide {
-			height: 100px;
-			width: 250px;
-		}
-	}
-</style>
 <section class="relative block h-[33vw]" data-controller="slider" data-slider-images-value="{{this.slider | json_encode()}}">
 
-
-	{# <div data-slider-images-value="{{this.slider | json_encode()}}" class="slider-container">
-								{% for image in this.slider.images %}
-									<picture class="slider img">
-										<source srcset="{{ image.path | imagine_filter('slider_webp') }}" type="image/webp">
-										<source srcset="{{ image.path | imagine_filter('slider_image') }}" type="image/jpeg">
-										<img width="100%" src="{{ image.path | imagine_filter('slider_image') }}" alt="{{image.nombre}}">
-									</picture>
-								{% endfor %} #}
-	{# <div data-slider-target="image" class="absolute top-0 w-full h-full bg-center bg-cover" style="transition: background-image 3s; background-image: url(&quot;{{this.slider[0]}}&quot;);"> <div class="bg-black w-full h-full opacity-50"></div>
-																		</div> #}
-
-	{# </div> #}
-
-		<div class="slider"> <div class="slide-track">
-			{% for image in this.slider.images %}
-				<picture>
-					<source srcset="{{ image.path | imagine_filter('slider_webp') }}" type="image/webp">
-					<source srcset="{{ image.path | imagine_filter('slider_image') }}" type="image/jpeg">
-					<img width="100%" src="{{ image.path | imagine_filter('slider_image') }}" alt="{{image.nombre}}">
-				</picture>
-			{% endfor %}
-		</div>
+	<div data-slider-target="slider">
+		{% for key, image in this.slider.images %}
+			<picture class="block" style="z-index: {{this.slider.images | length - key}}">
+				<source srcset="{{ image.path | imagine_filter('slider_webp') }}" type="image/webp">
+				<source srcset="{{ image.path | imagine_filter('slider_image') }}" type="image/jpeg">
+				<img width="100%" src="{{ image.path | imagine_filter('slider_image') }}" alt="{{image.nombre}}">
+			</picture>
+		{% endfor %}
 	</div>
 </section>
