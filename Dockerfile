@@ -124,7 +124,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
  RUN mkdir -p /etc/periodic/30min
  RUN touch /etc/periodic/log
  COPY docker/cron/anular-reservaciones.sh /etc/periodic/30min/anular-reservaciones
- RUN chmod +x /etc/periodic/20min/anular-reservaciones
+ RUN chmod +x /etc/periodic/30min/anular-reservaciones
  RUN echo "*/30       *       *       *       *       run-parts /etc/periodic/30min" >> /etc/crontabs/root
 
 ENTRYPOINT ["docker-entrypoint"]
