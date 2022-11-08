@@ -36,6 +36,7 @@
         "symfony/twig-bundle": "6.1.*",
         "symfony/ux-turbo": "^2.4",
         "symfony/ux-twig-component": "^2.4",
+        "symfony/ux-typed": "^2.5",
         "symfony/validator": "6.1.*",
         "symfony/webpack-encore-bundle": "^1.15",
         "symfony/yaml": "6.1.*",

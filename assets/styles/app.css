@@ -148,6 +148,10 @@ button * {
     @apply max-w-lg break-words ml-auto mr-auto;
 }
 
+.gold {
+    text-shadow: 3px 3px 8px #bf7f00, -3px -3px 8px #bf7f00;
+}
+
 /*************************Tailwind breakpoint***************************/
 
 /* Tailwind breakpoint sm 640px	 */

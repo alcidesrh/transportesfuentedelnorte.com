@@ -1,5 +1,14 @@
-<section class="slider relative block h-[33vw] w-full" data-controller="slider" data-slider-images-value="{{this.slider | json_encode()}}">
-	<span style="z-index: 8" class="w-full h-full absolute backdrop-contrast-100 bg-black/30"></span>
+<section
+	class="slider relative block h-[33vw] w-full" data-controller="slider" data-slider-images-value="{{this.slider | json_encode()}}">
+	{# <div class="z-20 text-white absolute w-full flex justify-center items-center h-full font-semibold ">
+			<span class="bg-dblack/50 pd-5" {{ stimulus_controller('symfony/ux-typed', { 
+				strings: [
+					'I ❤ Symfony UX', 'Symfony UX is great', 'Symfony UX is easy',
+					] } ) }}></span>
+	
+		</div> #}
+	<span style="z-index: 8" class="w-full h-full absolute backdrop-contrast-100 bg-black/50"></span>
+
 
 	<div data-slider-target="slider">
 		{% for key, image in this.slider.images %}
