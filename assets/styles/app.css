@@ -63,6 +63,9 @@
     .btn.btn-success {
         @apply bg-cyan-600 text-white hover:bg-cyan-500;
     }
+    .btn.cancel {
+        @apply bg-orange-500/80 hover:bg-orange-500;
+    }
     .btn-outline,
     .btn.btn-outline.btn-success {
         @apply w-fit bg-transparent text-cyan-600  border border-cyan-600 hover:bg-cyan-200 !outline-none;
