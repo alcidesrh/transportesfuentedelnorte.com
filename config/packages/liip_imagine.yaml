@@ -30,4 +30,4 @@ liip_imagine:
 
         imagen_servicio_inicio:
             filters:
-                fixed: { width: 150, height: 90 }
+                fixed: { width: 170, height: 102 }

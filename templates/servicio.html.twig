@@ -7,18 +7,15 @@
 			<div class="text-2xl text-center font-semibold">{{'Nuestros Servicios' | trans}}</div>
 			<div class=" grid gap-8 grid-cols-1 divide-y">
 				{% for key, servicio in servicios %}
-					<div>
-						<div class="h-[50px] w-full" id="{{servicio.slug}}"></div>
-						<div class="pt-10 grid sm:block">
-							<picture class="float-left mr-5 mb-5 shadow-lg max-w-[250px]">
-								<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio') }}" type="image/webp">
-								<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio') }}" type="image/jpeg">
-								<img class="rounded-md" src="{{ servicio.imagen.path | imagine_filter('imagen_servicio') }}" alt="{{servicio.imagen.nombre}}">
-							</picture>
-							<div class="prose prose-base max-w-none">
-								<h3 class="">{{servicio.nombre}}</h3>
-								{{servicio.texto | raw}}
-							</div>
+					<div id="{{servicio.slug}}" class="pt-10 grid sm:block">
+						<picture class="float-left mr-5 mb-5 shadow-lg max-w-[250px]">
+							<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio') }}" type="image/webp">
+							<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio') }}" type="image/jpeg">
+							<img class="rounded-md" src="{{ servicio.imagen.path | imagine_filter('imagen_servicio') }}" alt="{{servicio.imagen.nombre}}">
+						</picture>
+						<div class="prose prose-base max-w-none">
+							<h3 class="">{{servicio.nombre}}</h3>
+							{{servicio.texto | raw}}
 						</div>
 					</div>
 				{% endfor %}

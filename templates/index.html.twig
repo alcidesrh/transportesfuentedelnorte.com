@@ -13,7 +13,7 @@
 	</div>
 
 
-	<section class="relative pt-16 pb-32 flex content-center items-center justify-center" style="min-height: 75vh;">
+	<section class="relative pb-20 pt-14 flex content-center items-center justify-center" style="min-height: 75vh;">
 
 		<div class="container relative mx-auto flex items-center">
 			<div>
@@ -24,7 +24,7 @@
 							<a href="{{path('servicio', {'_fragment': servicio.slug})}}">
 								<div class="bg-white w-full px-4 py-8 shadow-lg rounded-lg max-h-[366px]">
 									<div class="grid gap-5">
-										<picture class="shadow-lg max-w-[150px] m-auto">
+										<picture class="shadow-lg max-w-[200px] m-auto">
 											<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" type="image/webp">
 											<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" type="image/jpeg">
 											<img class="rounded-md" src="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" alt="{{servicio.imagen.nombre}}">
@@ -96,13 +96,13 @@
 		</div>
 	</section>
 
-	<section id="contacto" class="relative block bg-slate-600 py-20 pb-">
+	<section id="contacto" class="relative block bg-slate-600 py-20">
 		<div class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20" style="height: 80px; transform: rotate(180deg) rotateX(180deg);">
 			<svg class="absolute bottom-0 overflow-hidden" xmlns="http://www.w3.org/2000/svg" preserveaspectratio="none" version="1.1" viewbox="0 0 2560 100" x="0" y="0">
 				<polygon class="text-slate-600 fill-current" points="2560 0 2560 100 0 100"></polygon>
 			</svg>
 		</div>
-		<div class="container mx-auto px-4">
+		<div class="container mx-auto">
 			<div class="flex flex-wrap justify-center">
 				<div class="w-full md:w-6/12 px-4">
 					<div class="relatidve shadow-lg rounded-lg bg-gray-300">

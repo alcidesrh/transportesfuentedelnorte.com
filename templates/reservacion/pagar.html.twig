@@ -47,16 +47,10 @@
 			</div>
 		</div>
 
-
-		<div class="flex justify-center sm:justify-between mt-10 flex-col sm:flex-row">
-			<div class="flex order-2 sm:order-1 mt-5 sm:mt-0 justify-center sm:justify-start">
-				{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
-			</div>
-			<div class="flex justify-between smjustify-end sm:gap-5 order-1 sm:order-2">
-				{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('asientos', {'reservacion': reservacion.id})}) }}
-
-				{{ form_row(form.submit, {attr: {class: 'btn'}})}}
-			</div>
+		<div class="flex justify-between mt-14">
+			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
+			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('asientos', {'reservacion': reservacion.id})}) }}
+			{{ form_row(form.submit, {attr: {class: 'btn'}})}}
 		</div>
 		{{ form_end(form) }}
 
