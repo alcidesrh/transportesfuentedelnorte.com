@@ -1,7 +1,7 @@
 <turbo-frame id="reservacion-form">
-	<fieldset data-controller="pagar" data-pagar-primer-render-value="{{primer_render}}" class="border p-5 sm:p-10 rounded-md border-slate-500">
+	<div data-controller="pagar" data-pagar-primer-render-value="{{primer_render}}">
 		{% if error_tarjeta %}
-			<div class="text-red-700 text-center mb-10">
+			<div class="text-red-700 text-center m-auto mb-10 break-words">
 				{{error_tarjeta}}
 			</div>
 		{% endif %}
@@ -18,7 +18,7 @@
 
 		</div>
 
-		<div class="border-t border-slate-300 max-w-xs md:max-w-lg lg:max-w-2xl xl:max-w-4xl m-auto my-14 sm:my-20"></div>
+		<div class="border-t border-slate-300 max-w-xs md:max-w-lg lg:max-w-2xl xl:max-w-4xl m-auto my-8 sm:my-15"></div>
 
 		<h1 class="mt-8 mb-5 font-medium text-lg">{{'Datos de la tarjeta' | trans}}</h1>
 
@@ -48,11 +48,17 @@
 		</div>
 
 
-		<div class="flex justify-between mt-10">
-			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('asientos', {'reservacion': reservacion.id})}) }}
-			{{ form_row(form.submit, {attr: {class: 'bg-indigo-700 text-white hover:bg-indigo-900'}})}}
+		<div class="flex justify-center sm:justify-between mt-10 flex-col sm:flex-row">
+			<div class="flex order-2 sm:order-1 mt-5 sm:mt-0 justify-center sm:justify-start">
+				{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'bg-orange-600 hover:bg-orange-500', link: path('cancelar'), attr: 'data-turbo=false'}) }}
+			</div>
+			<div class="flex justify-between smjustify-end sm:gap-5 order-1 sm:order-2">
+				{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('asientos', {'reservacion': reservacion.id})}) }}
+
+				{{ form_row(form.submit, {attr: {class: 'btn'}})}}
+			</div>
 		</div>
 		{{ form_end(form) }}
 
-	</fieldset>
+	</div>
 </turbo-frame>

@@ -1,4 +1,4 @@
-<div class="w-full py-6 z-20">
+<div class="w-full mb-8 z-20">
 	<div class="flex" data-reservacion-target="pasos">
 		<div class="w-1/4 {{reservacion_paso == 0 ? 'active' : 'complete'}}">
 			<div class="relative mb-2">
@@ -7,18 +7,14 @@
 					<span class="material-symbols-outlined">
 						sync_alt
 					</span>
-
-				</div>
-				<div class="step-verticals-lines">
-					<div></div>
 				</div>
 			</div>
 		</div>
 		<div class="w-1/4 {{ reservacion_paso == 1 ? 'active' : (reservacion_paso > 1 ? 'complete' : '') }}">
 			<div class="relative mb-2">
-				<div class="step-label">{{'Fecha/Salida'|trans}}</div>
+				<div class="step-label">{{'Salida'|trans}}</div>
 				<div class="absolute flex align-center items-center align-middle content-center" style="width: calc(100% - 2.5rem - 1rem); top: 50%; transform: translate(-50%, -50%)">
-					<div class="w-full bg-gray-200 rounded items-center align-middle align-center flex-1">
+					<div class="w-full bg-slate-200 rounded items-center align-middle align-center flex-1">
 						<div class="step-union-lines"></div>
 					</div>
 				</div>
@@ -26,9 +22,6 @@
 					<span class="material-symbols-outlined">
 						departure_board
 					</span>
-				</div>
-				<div class="step-verticals-lines">
-					<div></div>
 				</div>
 			</div>
 
@@ -38,7 +31,7 @@
 			<div class="relative mb-2">
 				<div class="step-label">{{'Asientos'|trans}}</div>
 				<div class="absolute flex align-center items-center align-middle content-center" style="width: calc(100% - 2.5rem - 1rem); top: 50%; transform: translate(-50%, -50%)">
-					<div class="w-full bg-gray-200 rounded items-center align-middle align-center flex-1">
+					<div class="w-full bg-slate-200 rounded items-center align-middle align-center flex-1">
 						<div class="step-union-lines"></div>
 					</div>
 				</div>
@@ -48,19 +41,15 @@
 						person_add
 					</span>
 				</div>
-
-				<div class="step-verticals-lines">
-					<div></div>
-				</div>
 			</div>
 
 		</div>
 		<div class="w-1/4 {{ reservacion_paso == 3 ? 'active' : (reservacion_paso > 3 ? 'complete' : '') }}">
 			<div class="relative mb-2">
-				<div class="step-label">{{'Comprar ticket'|trans}}</div>
+				<div class="step-label">{{'Comprar'|trans}}</div>
 
 				<div class="absolute flex align-center items-center align-middle content-center" style="width: calc(100% - 2.5rem - 1rem); top: 50%; transform: translate(-50%, -50%)">
-					<div class="w-full bg-gray-200 rounded items-center align-middle align-center flex-1">
+					<div class="w-full bg-slate-200 rounded items-center align-middle align-center flex-1">
 						<div class="step-union-lines"></div>
 					</div>
 				</div>
@@ -69,10 +58,6 @@
 					<span class="material-symbols-outlined">
 						payments
 					</span>
-				</div>
-
-				<div class="step-verticals-lines">
-					<div></div>
 				</div>
 			</div>
 

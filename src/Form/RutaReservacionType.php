@@ -23,6 +23,7 @@ class RutaReservacionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 
+
         $select_options = [
             'class' => Estacion::class,
             'query_builder' => $this->er->getEstacionesSelect(),
@@ -53,10 +54,7 @@ class RutaReservacionType extends AbstractType
                     'data' => $options['reservacion']?->isIdaVuelta() ?? 0,
                     'mapped' => false
                 ]
-            )
-            ->add('submit', SubmitType::class, [
-                'label' => 'Siguiente'
-            ])->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+            )->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
                 $ruta = $event->getData();
                 if ($ruta = $this->rutaReservacionRepository->findOneBy([
                     'estacion_salida' => $ruta->getEstacionSalida(),

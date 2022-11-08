@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\DepartamentoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -29,9 +30,13 @@ class Departamento
     #[Gedmo\Slug(fields: ['nombre'])]
     private ?string $slug = null;
 
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $prioridad = null;
+
     public function __construct()
     {
         $this->estaciones = new ArrayCollection();
+        $this->prioridad = 0;
     }
 
     public function getId(): ?int
@@ -96,6 +101,18 @@ class Departamento
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getPrioridad(): ?int
+    {
+        return $this->prioridad;
+    }
+
+    public function setPrioridad(?int $prioridad): self
+    {
+        $this->prioridad = $prioridad;
 
         return $this;
     }

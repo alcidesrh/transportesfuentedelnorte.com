@@ -9,76 +9,79 @@
 	<div class="m-auto" data-controller='buscar-salida' data-buscar-salida-idioma-value={{app.request.locale}} data-buscar-salida-ida-vuelta-value="{{ida_vuelta}}" data-buscar-salida-primer-render-value="{{primer_render}}" data-buscar-salida-no-scroll-value="{{no_scroll}}">
 
 
-		<div data-action="buscar-salida:min_fecha@window->buscar-salida#minFecha"></div>
+		<div data-action="buscar-salida:min_fecha@window->buscar-salida#minFecha">
+			<div>
+				<div>
+					{% if ida_vuelta %}
+						<label class="font-medium">{{'Fecha de regreso' | trans}}</label>
+					{% else %}
+						<label class="font-medium">{{'Fecha de salida' | trans}}</label>
+					{% endif %}
 
-		{% if ida_vuelta %}
-			<label class="font-medium">{{'Fecha de regreso' | trans}}</label>
-		{% else %}
-			<label class="font-medium">{{'Fecha' | trans}}</label>
-		{% endif %}
-
-		<div class="relative w-[300px]">
-			{{ form_start(form) }}
-			{{ form_row(form.salida_fecha, {attr: {'data-buscar-salida-target': 'salida_fecha', 'data-action': 'buscar-salida#buscarSalida', readonly: true, class: 'flatpickr-input'}})}}
-			<span class=" material-symbols-outlined calendar-icon" data-action="click->buscar-salida#abrirFechaSalida">
-				calendar_month
-			</span>
-			<span class="material-symbols-outlined button-loading calendar-icon hidden">
-				cached
-			</span>
-			{{ form_end(form) }}
-		</div>
-
-		<div class="relative max-w-sm"></div>
-		{% if salidas is defined and salidas is not null %}
-			{% if salidas is not empty %}
-				<details open>
-					<summary class="font-medium my-5 cursor-pointer">{{'Elija bus' | trans}}</summary>
-					<div>
-						<div class="grid grid-cols-7 bg-slate-600 px-3 rounded">
-							<div class="text-sm font-bold text-white px-2 py-4 text-left col-span-2">
-								{{'Hora' | trans}}
-							</div>
-							<div class="text-sm font-bold text-white px-2 py-4 text-left col-span-2">
-								{{'Bus Clase' | trans}}
-							</div>
-							<div class="text-sm font-bold text-white px-2 py-4 text-left col-span-1">
-								<label class="absolute">{{'Duración / Horas' | trans}}</label>
-							</div>
-							<div class="col-span-2"></div>
-						</div>
-						<div data-buscar-salida-target="lista">
-							{% for salida in salidas %}
-								<div class="grid grid-cols-8 cursor-pointer px-3 {{ salida.salida_id == salida_reservacion.getSalidaId ?? null ? 'salida-selected'}}" id="_{{salida.salida_id}}" data-action="click->buscar-salida#elegir" data-id="{{salida.salida_id}}">
-									<div class="salida-col col-span-2" data-value="{{salida.horario | date("g:i a")}}" id="_{{salida.salida_id ~ '_horario'}}">
-										{{salida.horario  | date("g:i a")}}
-									</div>
-									<div class="salida-col col-span-3 pl-[0.50rem]" data-value="{{salida.bus_clase}}" id="_{{salida.salida_id ~ '_bus_clase'}}">
-										{{salida.bus_clase}}
-									</div>
-									<div class="salida-col col-span-1" data-value="{{salida.minutos}}" id="_{{salida.salida_id ~ '_minutos'}}">
-										{{salida.minutos ? (salida.minutos * 60)| date('H:i') : '' | trans }}
-									</div>
-									<div class="salida-col col-span-2 flex justify-end">
-										<button class="btn sm elegir">
-											<div class="flex justify-center">
-												<label class="capitalize text-sm">{{'Elegir' | trans}}</label>
-											</div>
-										</button>
-										<button class="btn sm hidden btn-descartar-salida btn-outline">
-											<div class="flex justify-center">
-												<label class="capitalize text-sm">{{'Descartar' | trans}}</label>
-											</div>
-										</button>
-									</div>
-								</div>
-							{% endfor %}
-						</div>
+					<div class="relative w-[300px]">
+						{{ form_start(form) }}
+						{{ form_row(form.salida_fecha, {attr: {'data-buscar-salida-target': 'salida_fecha', 'data-action': 'buscar-salida#buscarSalida', readonly: true, class: 'flatpickr-input'}})}}
+						<span class=" material-symbols-outlined calendar-icon" data-action="click->buscar-salida#abrirFechaSalida">
+							calendar_month
+						</span>
+						<span class="material-symbols-outlined button-loading calendar-icon hidden">
+							cached
+						</span>
+						{{ form_end(form) }}
 					</div>
-				</details>
-			{% else %}
-				<p class="mt-10 font-medium">{{'No se encontraron salida para esa fecha' | trans}}</p>
-			{% endif %}
-		{% endif %}
+				</div>
+
+				{% if salidas is defined and salidas is not null %}
+					{% if salidas is not empty %}
+						<details open>
+							<summary class="font-medium my-5 cursor-pointer">{{'Elija hora' | trans}}</summary>
+							<div>
+								<div class="grid grid-cols-5 lg:grid-cols-7 bg-cyan-600 px-0 sm:px-3 rounded">
+									<div class="text-sm font-bold text-white px-2 py-3 text-left col-span-2">
+										{{'Hora' | trans}}
+									</div>
+									<div class="text-sm font-bold text-white px-2 py-3 text-left col-span-2 hidden lg:block">
+										{{'Bus Clase' | trans}}
+									</div>
+									<div class="text-sm font-bold text-white py-3 text-left col-span-1">
+										<label class="absolute">{{'Duración / Horas' | trans}}</label>
+									</div>
+									<div class="col-span-2"></div>
+								</div>
+								<div data-buscar-salida-target="lista" class="bg-slaate-100">
+									{% for salida in salidas %}
+										<div class="grid grid-cols-5 lg:grid-cols-8 cursor-pointer px-0 sm:px-3 {{ salida.salida_id == salida_reservacion.getSalidaId ?? null ? 'salida-selected'}}" id="_{{salida.salida_id}}" data-action="click->buscar-salida#elegir" data-id="{{salida.salida_id}}">
+											<div class="salida-col flex items-center col-span-2 !pl-2" data-value="{{salida.horario | date("g:i a")}}" id="_{{salida.salida_id ~ '_horario'}}">
+												{{salida.horario  | date("g:i a")}}
+											</div>
+											<div class="salida-col hidden lg:flex items-center col-span-3 pl-[0.50rem]" data-value="{{salida.bus_clase}}" id="_{{salida.salida_id ~ '_bus_clase'}}">
+												{{salida.bus_clase}}
+											</div>
+											<div class="salida-col flex items-center col-span-1" data-value="{{salida.minutos}}" id="_{{salida.salida_id ~ '_minutos'}}">
+												{{salida.minutos ? (salida.minutos * 60)| date('H:i') : '' | trans }}
+											</div>
+											<div class="salida-col flex items-center col-span-2 justify-end !pr-2">
+												<button class="btn sm btn-outline elegir">
+													<div class="flex justify-center">
+														<label class="capitalize text-sm">{{'Elegir' | trans}}</label>
+													</div>
+												</button>
+												<button class="btn sm hidden btn-descartar-salida btn-success">
+													<div class="flex justify-center">
+														<label class="capitalize text-sm">{{'Descartar' | trans}}</label>
+													</div>
+												</button>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</div>
+						</details>
+					{% else %}
+						<p class="mt-10 font-medium">{{'No se encontraron salida para esa fecha' | trans}}</p>
+					{% endif %}
+				{% endif %}
+			</div>
+		</div>
 	</div>
 </turbo-frame>

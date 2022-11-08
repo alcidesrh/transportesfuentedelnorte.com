@@ -1,5 +1,10 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    set_locale_from_accept_language: true
+    set_content_language_from_locale: true
+    default_locale: "%default_locale%"
+    enabled_locales: ["en", "es"]
+
     secret: "%env(APP_SECRET)%"
     #csrf_protection: true
     http_method_override: false
@@ -11,6 +16,8 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
         storage_factory_id: session.storage.factory.native
+        gc_probability: null,
+        cookie_lifetime: 0
 
     esi: true
     fragments: { path: /_fragment }

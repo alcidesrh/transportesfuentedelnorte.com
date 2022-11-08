@@ -13,5 +13,7 @@ class AlertComponent
 
     public string|null $class = null;
 
-    public string $icon = 'info';
+    public string|null $icon = null;
+
+    public string|null $attr = null;
 }

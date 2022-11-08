@@ -36,7 +36,7 @@ class ArchivoCrudController extends AbstractCrudController
                 ->setUploadDir('public/images')
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]'), //->setTemplatePath('admin/image.index.html.twig'),
             IdField::new('id')->hideOnForm(),
-            TextField::new('nombre')->hideWhenCreating(),
+            TextField::new('nombre'),
             TextField::new('extencion', 'Extención')->hideWhenCreating(),
             BooleanField::new('webP', 'Crear versión webp')->onlyWhenCreating(),
         ];
@@ -90,11 +90,14 @@ class ArchivoCrudController extends AbstractCrudController
 
                 if ($entity->getId()) {
                     $oldEntity = $this->entityManagerInterface->getUnitOfWork()->getOriginalEntityData($entity);
-                    if ($this->filesystem->exists('images/' . $oldEntity['path'])) {
+                    if ($oldEntity['path'] && $this->filesystem->exists('images/' . $oldEntity['path'])) {
                         $this->filesystem->remove('images/' . $oldEntity['path']);
                     }
                 } else {
-                    $entity->setNombre($file->getClientOriginalName())->setExtencion($file->getClientOriginalExtension())->setTipo(Archivo::IMAGEN);
+                    $entity->setExtencion($file->getClientOriginalExtension())->setTipo(Archivo::IMAGEN);
+                    if (!$entity->getNombre()) {
+                        $entity->setNombre($file->getClientOriginalName());
+                    }
                 }
                 $fileName = u($filePaths[$index])->replace($uploadDir, '')->toString();
                 $uploadNew($file, $uploadDir, $fileName);
@@ -104,7 +107,7 @@ class ArchivoCrudController extends AbstractCrudController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($this->filesystem->exists($entityInstance->getPath())) {
+        if ($entityInstance->getFileName() && $this->filesystem->exists($entityInstance->getPath())) {
             $this->filesystem->remove($entityInstance->getPath());
         }
         $entityManager->remove($entityInstance);

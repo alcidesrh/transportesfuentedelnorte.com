@@ -74,6 +74,38 @@ RUN apk add --no-cache --virtual .pgsql-deps postgresql-dev; \
 ###< doctrine/doctrine-bundle ###
 ###< recipes ###
 
+###>sql server drivers
+RUN apk add gcc make g++ zlib-dev unixodbc-dev php8-dev gnupg
+
+RUN  curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/msodbcsql18_18.0.1.1-1_amd64.apk >> /srv/app/msodbcsql18_18.0.1.1-1_amd64.apk \
+     && curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/mssql-tools18_18.0.1.1-1_amd64.apk >> /srv/app/mssql-tools18_18.0.1.1-1_amd64.apk \
+     && curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/msodbcsql18_18.0.1.1-1_amd64.sig >> /srv/app/msodbcsql18_18.0.1.1-1_amd64.sig \
+     && curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/mssql-tools18_18.0.1.1-1_amd64.sig >> /srv/app/mssql-tools18_18.0.1.1-1_amd64.sig
+
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc  | gpg --import -; \
+	gpg --verify msodbcsql18_18.0.1.1-1_amd64.sig msodbcsql18_18.0.1.1-1_amd64.apk; \
+	gpg --verify mssql-tools18_18.0.1.1-1_amd64.sig mssql-tools18_18.0.1.1-1_amd64.apk;
+
+RUN apk add --allow-untrusted msodbcsql18_18.0.1.1-1_amd64.apk
+RUN apk add --allow-untrusted mssql-tools18_18.0.1.1-1_amd64.apk
+
+RUN pecl install sqlsrv; \
+    pecl install pdo_sqlsrv
+
+RUN echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/10_pdo_sqlsrv.ini; \
+    echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20_sqlsrv.ini
+
+RUN rm msodbcsql18_18.0.1.1-1_amd64.apk msodbcsql18_18.0.1.1-1_amd64.sig mssql-tools18_18.0.1.1-1_amd64.apk mssql-tools18_18.0.1.1-1_amd64.sig
+###>end sql server drivers
+
+## gd
+RUN apk add --no-cache --virtual build-essentials \
+    libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
+    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
+    docker-php-ext-install gd
+##>end gd	
+
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/conf.d/app.ini $PHP_INI_DIR/conf.d/
 COPY docker/php/conf.d/app.prod.ini $PHP_INI_DIR/conf.d/
@@ -88,6 +120,12 @@ HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["docker-healthcheck"]
 
 COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ RUN mkdir -p /etc/periodic/30min
+ RUN touch /etc/periodic/log
+ COPY docker/cron/anular-reservaciones.sh /etc/periodic/30min/anular-reservaciones
+ RUN chmod +x /etc/periodic/20min/anular-reservaciones
+ RUN echo "*/30       *       *       *       *       run-parts /etc/periodic/30min" >> /etc/crontabs/root
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
@@ -138,38 +176,6 @@ RUN set -eux; \
 	apk del .build-deps
 
 RUN rm -f .env.local.php
-
-###>sql server drivers
-RUN apk add gcc make g++ zlib-dev unixodbc-dev php8-dev gnupg
-
-RUN  curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/msodbcsql18_18.0.1.1-1_amd64.apk >> /srv/app/msodbcsql18_18.0.1.1-1_amd64.apk \
-     && curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/mssql-tools18_18.0.1.1-1_amd64.apk >> /srv/app/mssql-tools18_18.0.1.1-1_amd64.apk \
-     && curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/msodbcsql18_18.0.1.1-1_amd64.sig >> /srv/app/msodbcsql18_18.0.1.1-1_amd64.sig \
-     && curl -SL https://download.microsoft.com/download/b/9/f/b9f3cce4-3925-46d4-9f46-da08869c6486/mssql-tools18_18.0.1.1-1_amd64.sig >> /srv/app/mssql-tools18_18.0.1.1-1_amd64.sig
-
-
-RUN curl https://packages.microsoft.com/keys/microsoft.asc  | gpg --import -; \
-	gpg --verify msodbcsql18_18.0.1.1-1_amd64.sig msodbcsql18_18.0.1.1-1_amd64.apk; \
-	gpg --verify mssql-tools18_18.0.1.1-1_amd64.sig mssql-tools18_18.0.1.1-1_amd64.apk;
-
-RUN apk add --allow-untrusted msodbcsql18_18.0.1.1-1_amd64.apk
-RUN apk add --allow-untrusted mssql-tools18_18.0.1.1-1_amd64.apk
-
-RUN pecl install sqlsrv; \
-    pecl install pdo_sqlsrv
-
-RUN echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/10_pdo_sqlsrv.ini; \
-    echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20_sqlsrv.ini
-
-RUN rm msodbcsql18_18.0.1.1-1_amd64.apk msodbcsql18_18.0.1.1-1_amd64.sig mssql-tools18_18.0.1.1-1_amd64.apk mssql-tools18_18.0.1.1-1_amd64.sig
-###>end sql server drivers
-
-## gd
-RUN apk add --no-cache --virtual build-essentials \
-    libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
-    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
-    docker-php-ext-install gd
-##>end gd	
 
 # Build Caddy with the Mercure and Vulcain modules
 FROM caddy:${CADDY_VERSION}-builder-alpine AS app_caddy_builder

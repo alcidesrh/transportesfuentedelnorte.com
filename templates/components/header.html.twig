@@ -1,0 +1,78 @@
+<nav class="bg-indigo-800 top-0 fixed z-50 w-full flex flex-wrap items-center justify-between px-5 sm:px-7 md:px-5 lg:px-4 xl:px-20 py-3">
+	<div class="relative flex justify-between w-full md:w-auto lg:static md:block lg:justify-start">
+		<a class="text-xl inline-block md:hidden lg:inline-block lg:text-xl xl:text-2xl py-2 whitespace-nowrap empresa-nombre text-teal-50" href="{{path('inicio')}}">Transporte Fuente del Norte</a>
+		<button class="cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block md:hidden outline-none focus:outline-none" type="button" onclick="toggleNavbar('example-collapse-navbar')">
+			<span class="material-symbols-outlined text-white text-3xl">
+				menu
+			</span>
+		</button>
+	</div>
+	<div>
+		<div class="md:flex justify-end items-center bg-transparent lg:shadow-none hidden" id="example-collapse-navbar">
+			<div>
+				<span onclick="toggleNavbar('example-collapse-navbar')" class="material-symbols-outlined block md:hidden absolute mt-[10px] right-[6%] text-[25px] text-teal-50">
+					close
+				</span>
+				<ul class="flex flex-col md:flex-row list-none mr-auto">
+					<li class="flex items-center">
+						<div class="relative group">
+							<a class="menu-header" href="{{path('servicio')}}">
+								{{'Servicios' | trans}}</a>
+							<div class="absolute z-10 hidden md:group-hover:block bg-indigo-800 -mt-2 rounded py-3">
+								<ul class="list-none">
+									{% for key, servicio in this.servicios %}
+										<li class="flex items-center">
+											<a class="submenu-header" href="{{path('servicio', {'_fragment': servicio.slug})}}">
+												{{servicio.nombre}}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li class="flex items-center">
+						<a class="menu-header" href="{{path('estacion')}}">
+							{{'Estaciones' | trans}}</a>
+					</li>
+					<li class="flex items-center">
+						<a class="menu-header" href="{{path('historia')}}">
+							{{'Quiénes somos' | trans}}</a>
+					</li>
+					<li class="flex items-center">
+						<a class="menu-header mr-3" href="{{path('contacto')}}">
+							{{'Contáctenos' | trans}}</a>
+					</li>
+				</ul>
+			</div>
+			<ul class="flex my-3 md:my-0">
+				{% if not is_granted('ROLE_USER') %}
+					<li class="flex items-center mr-1">
+						{{ component('button_link', {text: 'English', link: '/en', class: 'sm font-medium !px-2'  ~ (app.request.locale == 'en' ? ' text-[13px] bg-teal-50 hover:bg-teal-50 text-slate-700' : ' text-[13px] btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50')}) }}
+
+					</li>
+					<li class="flex items-center mr-1">
+						{{ component('button_link', {text: 'Español', link: '/', class: 'sm font-medium !px-2' ~ (app.request.locale == 'es' ? ' text-[13px] bg-teal-50 hover:bg-teal-50 text-slate-700' : ' text-[13px] btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50')}) }}
+
+					</li>
+				{% else %}
+					<li class="flex items-center">
+						{{ component('button_link', {text: 'Administración', link: path('admin'), class: 'btn sm text-xs bg-teal-50 text-slate-900 hover:bg-teal-500'}) }}
+					</li>
+				{% endif %}
+			</ul>
+			{% if app.request.locale == 'es'%}
+				<ul class="flex my-3 md:my-0">
+					<li class="flex items-center">
+						{% if is_granted('ROLE_USER') %}
+							{{ component('button_link', {text: 'Cerrar sesión', link: path('app_logout'), class: ' btn sm !px-2 !pr-0 text-xs btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50' }) }}
+						{% else %}
+							{{ component('button_link', {text: 'Iniciar sesión', link: path('app_login'), class: ' btn sm !px-2 !pr-0 text-xs btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50' }) }}
+						{% endif %}
+					</li>
+				</ul>
+			{% endif %}
+		</div>
+	</div>
+
+</nav>
+<div class="h-[69px] w-full"></div>

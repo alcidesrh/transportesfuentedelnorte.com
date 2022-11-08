@@ -3,6 +3,9 @@ liip_imagine:
     # valid drivers options include "gd" or "gmagick" or "imagick"
     driver: "gd"
 
+    twig:
+        mode: lazy
+
     webp:
         generate: true
 
@@ -17,11 +20,14 @@ liip_imagine:
         # use the default cache configuration
         cache: ~
 
-        slider_webp:
+        slider:
             filters:
-                thumbnail: { size: [1200, 800], mode: inset }
+                fixed: { width: 1080, height: 608 }
 
-        slider_image:
-            format: jpeg
+        imagen_servicio:
             filters:
-                thumbnail: { size: [1200, 800], mode: inset }
+                fixed: { width: 250, height: 166 }
+
+        imagen_servicio_inicio:
+            filters:
+                fixed: { width: 150, height: 90 }

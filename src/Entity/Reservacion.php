@@ -12,6 +12,9 @@ class Reservacion
 {
     const STATUS_INCOMPLETA = "incompleta";
     const STATUS_COMPLETADA = "completada";
+    const STATUS_ANULADA = "anulada";
+    const STATUS_ANULADA_ERROR = "anular_pendiente";
+    const STATUS_CANCELADA = "cancelada";
 
     use TimestampableEntity;
 
@@ -62,9 +65,13 @@ class Reservacion
     #[ORM\Column(nullable: true)]
     private ?int $boleto_ticket_id = null;
 
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $anular_intentos = null;
+
     public function __construct()
     {
         $this->status = self::STATUS_INCOMPLETA;
+        $this->anular_intentos = 0;
     }
 
     public function getId(): ?int
@@ -233,5 +240,24 @@ class Reservacion
     public function getRutaForAdmin()
     {
         return $this->ruta->getEstacionSalida()->getNombre() . ' - ' . $this->ruta->getEstacionLlegada()->getNombre();
+    }
+
+    public function getAnularIntentos(): ?int
+    {
+        return $this->anular_intentos;
+    }
+
+    public function setAnularIntentos(?int $anular_intentos): self
+    {
+        $this->anular_intentos = $anular_intentos;
+
+        return $this;
+    }
+
+    public function incrementarAnularIntentos(): self
+    {
+        $this->anular_intentos++;
+
+        return $this;
     }
 }

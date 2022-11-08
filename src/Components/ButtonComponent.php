@@ -14,4 +14,6 @@ class ButtonComponent
     public array $icon;
 
     public array $attr;
+
+    public string|null $class = null;
 }

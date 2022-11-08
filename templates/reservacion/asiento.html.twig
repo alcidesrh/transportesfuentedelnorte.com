@@ -1,51 +1,57 @@
 <turbo-frame id="reservacion-form">
-	<fieldset data-controller="asiento" data-asiento-primer-render-value="{{primer_render}}" class="border px-1 sm:px-5 py-10 rounded-md border-slate-500">
+	<div data-controller="asiento" data-asiento-primer-render-value="{{primer_render}}">
 		{% if errors is not empty %}
-			<ul class="m-auto w-fit mb-10">
-				{% for error in errors %}
-					<li class="text-red-700">{{ error }}</li>
-				{% endfor %}
-			</ul>
+			{% for error in errors %}
+				<div class="text-red-700 text-center mb-10">{{ error }}</div>
+			{% endfor %}
 		{% endif %}
 
 		{% for message in app.flashes('error_asientos_ocupados') %}
-			<ul class="m-auto w-fit mb-1">
-				<li class="text-red-700">{{ message }}</li>
-			</ul>
+			<div class="text-red-700 text-center mb-10">{{ message }}</div>
 		{% endfor %}
 
-		{{ component('alert', {text: 'Puede escoger más de un asiento si viajan varias personas.' | trans}) }}
+		<div class="text-center mb-5">
+			{{ component('alert', {text: 'Puede escoger más de un asiento si viajan varias personas.' | trans}) }}
+		</div>
 
-		<div class="grid grid-rows-1 gap-2 mt-10">
 
-			<div class="{{reservacion.isIdaVuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
-				<div>
-					<h1 class="mb-5 font-medium text-lg">{{'Salida' | trans}}</h1>
-					{{ render(controller('App\\Controller\\ReservacionController::getAsientos', {id: reservacion.salida.id})) }}
-				</div>
-				{% if reservacion.isIdaVuelta %}
-					<div class="md:pl-5 pt-10 md:pt-0">
-						<div class="border-t mb-10 mt-3 md:hidden"></div>
-						<h1 class="mb-5 font-medium text-lg">{{'Regreso' | trans}}</h1>
-						{{render(controller('App\\Controller\\ReservacionController::getAsientos',{id: reservacion.regreso.id, regreso: true}))}}
+		<div class="flex sm:block justify-center">
+			<div class="flex justify-center">
+
+				<div class="{{reservacion.isIdaVuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
+					<div>
+						<h1 class="mb-5 font-medium text-lg">{{'Salida' | trans}}</h1>
+						{{ render(controller('App\\Controller\\ReservacionController::getAsientos', {id: reservacion.salida.id})) }}
 					</div>
-				{% endif %}
+					{% if reservacion.isIdaVuelta %}
+						<div class="md:pl-10 pt-10 md:pt-0">
+							<div class="border-t mb-10 mt-3 md:hidden"></div>
+							<h1 class="mb-5 font-medium text-lg">{{'Regreso' | trans}}</h1>
+							{{render(controller('App\\Controller\\ReservacionController::getAsientos',{id: reservacion.regreso.id, regreso: true}))}}
+						</div>
+					{% endif %}
+				</div>
 			</div>
+
 		</div>
 
+		<div class="flex justify-center sm:justify-between mt-10 flex-col sm:flex-row">
+			<div class="flex order-2 sm:order-1 mt-5 sm:mt-0 justify-center sm:justify-start">
+				{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'bg-orange-600 hover:bg-orange-500', link: path('cancelar'), attr: 'data-turbo=false'}) }}
 
-		<div class="flex justify-between mt-10">
-			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('salida', {'reservacion': reservacion.id})}) }}
-			{{ form_start(form, {'action': path('asientos', {reservacion: reservacion.id})}) }}
-			<div class="hidden">
-				{{ form_row(form.asientos_salida, {attr: {'data-asiento-target': 'asientos_salida'}}) }}
-				{% if reservacion.isIdaVuelta %}
-					{{ form_row(form.asientos_regreso, {attr: {'data-asiento-target': 'asientos_regreso'}}) }}
-				{% endif %}
 			</div>
-			{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit'}}) }}
-			{{ form_end(form) }}
-
+			<div class="flex justify-between smjustify-end sm:gap-5 order-1 sm:order-2">
+				{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('salida', {'reservacion': reservacion.id})}) }}
+				{{ form_start(form, {'action': path('asientos', {reservacion: reservacion.id})}) }}
+				<div class="hidden">
+					{{ form_row(form.asientos_salida, {attr: {'data-asiento-target': 'asientos_salida'}}) }}
+					{% if reservacion.isIdaVuelta %}
+						{{ form_row(form.asientos_regreso, {attr: {'data-asiento-target': 'asientos_regreso'}}) }}
+					{% endif %}
+				</div>
+				{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit'}}) }}
+				{{ form_end(form) }}
+			</div>
 		</div>
-	</fieldset>
-</turbo-frame>
+	</div>
+</div></turbo-frame>

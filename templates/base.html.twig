@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<meta name="theme-color" content="#000000"/>
+		<meta name="description" content="{{'Empresa de transporte Guatemala. Servicios de buses.' | trans}}">
 		<link rel="shortcut icon" href="./assets/img/favicon.ico"/>
 		<link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png"/>
 
@@ -15,23 +15,22 @@
 		{% endblock %}
 		<title>
 			{% block title %}
-				Welcome!
+				{{'Empresa de transporte Guatemala. Servicios de buses.' | trans}}
 			{% endblock %}
 		</title>
 
 	</head>
 	<body class="antialiased">
-		{{ include('header.html.twig') }}
-		<main class="mt-[70px]"> {% block body %}{% endblock %}
-			</main>
-			{% block footer %}
-				{{ include('footer.html.twig') }}
-			{% endblock %}
-		</body>
-		<script>
-			function toggleNavbar(collapseID) {
+		{{component('header')}}
+		<main>
+			{% block body %}{% endblock %}
+		</main>
+		{{component('footer')}}
+	</body>
+	<script>
+		function toggleNavbar(collapseID) {
 document.getElementById(collapseID).classList.toggle("hidden");
 document.getElementById(collapseID).classList.toggle("block");
 }
-		</script>
-	</html>
+	</script>
+</html>

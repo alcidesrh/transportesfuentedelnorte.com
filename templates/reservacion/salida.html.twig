@@ -1,35 +1,35 @@
 <turbo-frame id="reservacion-form">
-	<fieldset class="border px-2 sm:px-5 py-10 rounded-md border-slate-500">
 
-		{% if errors is not empty %}
-			<ul class="m-auto w-fit mb-10">
-				{% for error in errors %}
-					<li class="text-red-700">{{ error }}</li>
-				{% endfor %}
-			</ul>
-		{% endif %}
+	{% if errors is not empty %}
+		<ul class="m-auto w-fit mb-10">
+			{% for error in errors %}
+				<li class="text-red-700">{{ error }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
 
-		<div class="{{ida_vuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
-			<div>
-				<h1 class="mb-5 font-medium text-lg">{{'Salida' | trans}}</h1>
-				{{ render(controller('App\\Controller\\ReservacionController::salidaForm', {reservacion: reservacion_id, primer_render: primer_render})) }}
-			</div>
-			{% if ida_vuelta %}
-				<div class="md:pl-5 pt-10 md:pt-0">
-					<div class="border-t mb-10 mt-3 md:hidden"></div>
-					<h1 class="mb-5 font-medium text-lg">{{'Regreso' | trans}}</h1>
-					{{render(controller('App\\Controller\\ReservacionController::salidaForm',{reservacion:reservacion_id,ida_vuelta:true, primer_render: primer_render}))}}
-				</div>
-			{% endif %}
+	<div class="{{ida_vuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
+		<div>
+			{{ render(controller('App\\Controller\\ReservacionController::salidaForm', {reservacion: reservacion_id, primer_render: primer_render})) }}
 		</div>
+		{% if ida_vuelta %}
+			<div class="md:pl-5 pt-10 md:pt-0">
+				<div class="border-t mb-10 mt-3 md:hidden"></div>
+				{{render(controller('App\\Controller\\ReservacionController::salidaForm',{reservacion:reservacion_id,ida_vuelta:true, primer_render: primer_render}))}}
+			</div>
+		{% endif %}
+	</div>
 
-		<div class="flex justify-between mt-10">
+	<div class="flex justify-center sm:justify-between mt-10 flex-col sm:flex-row">
+		<div class="flex order-2 sm:order-1 mt-5 sm:mt-0 justify-center sm:justify-start">
+			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'bg-orange-600 hover:bg-orange-500', link: path('cancelar'), attr: 'data-turbo=false'}) }}
+		</div>
+		<div class="flex justify-between smjustify-end sm:gap-5 order-1 sm:order-2">
 			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('ruta', {'reservacion': reservacion_id})}) }}
 			<form action="{{path('salida', {reservacion: reservacion_id})}}">
 				<input type="hidden" name="siguiente" value="1">
 				{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit', onclick: 'this.click()'}}) }}
 			</form>
-
 		</div>
-	</fieldset>
-</turbo-frame>
+	</div>
+</div></turbo-frame>

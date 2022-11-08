@@ -51,6 +51,7 @@ export default class extends Controller {
     this.salida_calendario = flatpickr(this.salida_fechaTarget, {
       locale: this.idiomaValue,
       dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",
+      disableMobile: "true",
     });
 
     if (!this.idaVueltaValue && this.salida_fechaTarget.value) {
@@ -103,6 +104,7 @@ export default class extends Controller {
         locale: this.idiomaValue,
         dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",
         minDate: event.detail.fecha,
+        disableMobile: "true",
       });
     }
   }

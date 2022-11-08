@@ -1,0 +1,9 @@
+<turbo-frame id="contacto-form">
+
+	{{form(form)}}
+
+		{% if guardado %}
+			{{ component('alert', {text: 'Hemos recibido su mensaje. Gracias por contactarnos.' | trans}) }}
+		{% endif %}
+
+	</turbo>

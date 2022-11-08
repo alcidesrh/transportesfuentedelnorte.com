@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Reservacion;
+use DateInterval;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +41,29 @@ class ReservacionRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Reservacion[] Returns an array of Reservacion objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    //    /**
+    //     * @return Reservacion[] Returns an array of Reservacion objects
+    //     */
+    public function getReservacionVencidas(int $minutos): array
+    {
+        $date = (new DateTime())->sub(new DateInterval("PT{$minutos}M"));
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.status = :statu_incompleta or r.status is null or r.status = :status_error')
+            ->andWhere('r.createdAt < :date')
+            ->setParameter('statu_incompleta', Reservacion::STATUS_INCOMPLETA)
+            ->setParameter('status_error', Reservacion::STATUS_ANULADA_ERROR)
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Reservacion
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    //    public function findOneBySomeField($value): ?Reservacion
+    //    {
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

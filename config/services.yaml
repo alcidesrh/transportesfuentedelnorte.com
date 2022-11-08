@@ -4,6 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    default_locale: es
+    set_locale_from_accept_language: false
+    set_content_language_from_locale: false
+    enabled_locales: ["es", "en"]
+    reservacion_minutos: 150
 
 services:
     # default configuration for services in *this* file
@@ -35,6 +40,18 @@ services:
             $cybersource_merchant_secret_key: "%env(cybersource_merchant_secret_key)%"
             $CYBERSOURCE_HOST: "%env(CYBERSOURCE_HOST)%"
             $CYBERSOURCE_PAYMENTS: "%env(CYBERSOURCE_PAYMENTS)%"
+
+    App\EventSubscriber\LocaleRedirectSubscriber:
+        arguments:
+            $enabled_locales: "%enabled_locales%"
+
+    App\EventSubscriber\SessionReservacionSubscriber:
+        arguments:
+            $reservacion_minutos: "%reservacion_minutos%"
+
+    App\Command\AnularReservacionCommand:
+        arguments:
+            $RESERVACION_MINUTOS: "%reservacion_minutos%"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

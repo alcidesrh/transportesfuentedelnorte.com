@@ -48,6 +48,8 @@ class EstacionRepository extends ServiceEntityRepository
             ->select('e, d')
             ->leftJoin('e.departamento', 'd')
             ->where('e.activa = :true')
+            ->orderBy('d.prioridad', 'desc')
+            ->addOrderBy('e.prioridad', 'desc')
             ->setParameter('true', true);
     }
 

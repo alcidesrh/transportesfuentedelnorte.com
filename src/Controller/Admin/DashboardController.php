@@ -4,12 +4,17 @@ namespace App\Controller\Admin;
 
 use App\Entity\Archivo;
 use App\Entity\ClienteReservacion;
+use App\Entity\Contacto;
+use App\Entity\Departamento;
 use App\Entity\Estacion;
 use App\Entity\Reservacion;
+use App\Entity\Servicio;
 use App\Entity\Slider;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -54,7 +59,10 @@ class DashboardController extends AbstractDashboardController
         // yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Reservaciones', 'fas fa-list', Reservacion::class);
         yield MenuItem::linkToCrud('Clientes', 'fas fa-list', ClienteReservacion::class);
+        yield MenuItem::linkToCrud('Servicio', 'fas fa-list', Servicio::class);
         yield MenuItem::linkToCrud('Estaciones', 'fas fa-list', Estacion::class);
+        yield MenuItem::linkToCrud('Departamento', 'fas fa-list', Departamento::class);
+        yield MenuItem::linkToCrud('Contactos', 'fas fa-list', Contacto::class);
         yield MenuItem::linkToCrud('Slider', 'fas fa-list', Slider::class);
         yield MenuItem::linkToCrud('Imágenes', 'fas fa-list', Archivo::class);
     }

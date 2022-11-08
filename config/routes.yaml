@@ -2,5 +2,8 @@ controllers:
     resource: ../src/Controller/
     type: attribute
     prefix:
-        es: ''
-        en: '/en'
+        es: ""
+        en: "/{_locale}"
+    requirements:
+        _locale: es|en
+    locale: "%default_locale%"

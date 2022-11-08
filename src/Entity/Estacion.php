@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EstacionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -38,6 +39,14 @@ class Estacion
 
     #[ORM\Column(nullable: true)]
     private ?bool $activa = null;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $prioridad = null;
+
+    public function __construct()
+    {
+        $this->prioridad = 0;
+    }
 
     public function getId(): ?int
     {
@@ -126,5 +135,17 @@ class Estacion
     public function __toString()
     {
         return $this->nombre;
+    }
+
+    public function getPrioridad(): ?int
+    {
+        return $this->prioridad;
+    }
+
+    public function setPrioridad(?int $prioridad): self
+    {
+        $this->prioridad = $prioridad;
+
+        return $this;
     }
 }

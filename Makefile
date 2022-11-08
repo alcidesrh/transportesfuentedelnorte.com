@@ -132,6 +132,18 @@ check: ## Docker check
 sh: ## Log to the docker container
 	@$(DOCKER_COMP) exec php sh
 
+kill: ## Force Stop containers
+	@$(DOCKER_COMP) kill
+
+start: ## Stop containers
+	@$(DOCKER_COMP) start
+
+stop: ## Stop containers
+	@$(DOCKER_COMP) kill
+
+restart: ## restart containers
+	@$(DOCKER_COMP) restart
+
 logs: ## Show live logs
 	@$(DOCKER_COMP) logs --tail=0 --follow
 
@@ -145,7 +157,7 @@ bash: ## Connect to the application container
 	@$(DOCKER) container exec -it php bash
 
 ## —— Project 🐝 ———————————————————————————————————————————————————————————————
-start: up wait-for-mysql load-fixtures wait-for-elasticsearch populate serve ## Start docker, load fixtures, populate the Elasticsearch index and start the webserver
+#start: up wait-for-mysql load-fixtures wait-for-elasticsearch populate serve ## Start docker, load fixtures, populate the Elasticsearch index and start the webserver
 
 reload: load-fixtures populate ## Load fixtures and repopulate the Elasticserch index
 

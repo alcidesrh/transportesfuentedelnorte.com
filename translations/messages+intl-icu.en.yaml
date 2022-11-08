@@ -1,0 +1,1 @@
+session_terminada_mensaje: The session has expired. In order to preserve the seats, the reservation must be made in less than {RESERVACION_MINUTOS} minutes.

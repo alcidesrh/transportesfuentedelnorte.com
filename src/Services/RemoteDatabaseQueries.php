@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Entity\Asiento;
 use App\Entity\Reservacion;
+use DateInterval;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Constraints\Timezone;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class RemoteDatabaseQueries
@@ -73,9 +76,11 @@ class RemoteDatabaseQueries
         //     ]
         // ];
 
+        $fecha->setTimeZone(new DateTimeZone('UTC'));
         $fecha->setTime(0, 0, 0);
         $fecha2 = clone $fecha;
         $fecha2->setTime(23, 59, 59);
+        $fecha2->setTimeZone(new DateTimeZone('UTC'));
 
         $sql = "SELECT DISTINCT salida.id as salida_id, salida.fecha as horario, bus_clase.nombre as bus_clase, ruta.kilometros, (select tiempo.minutos from tiempo where tiempo.clasebus_id = bus_clase.id and tiempo.ruta_codigo = ruta.codigo and tiempo.estacion_destino_id = ruta.estacion_destino_id) as minutos 
         from salida
@@ -83,7 +88,8 @@ class RemoteDatabaseQueries
         left join bus_clase on bus_tipo.clase_id = bus_clase.id 
         left join itineario on itineario.id = salida.itinerario_id
         left join ruta on itineario.ruta_codigo = ruta.codigo
-        where ruta.estacion_origen_id = ? and ruta.estacion_destino_id = ? and salida.fecha between ? and ? 
+        left join salida_estado on salida_estado.id = salida.estado_id
+        where salida_estado.id in (1,2,3) and ruta.estacion_origen_id = ? and ruta.estacion_destino_id = ? and salida.fecha between ? and ? 
         order by salida.fecha asc";
 
         try {
@@ -231,5 +237,46 @@ class RemoteDatabaseQueries
         }
 
         return $result;
+    }
+
+    public function anularReservacion(Reservacion $reservacion)
+    {
+        $param = ['id' => $reservacion->getBoletoTicketId()];
+        if ($reservacion->getStatus() == Reservacion::STATUS_ANULADA_ERROR) {
+            $param['anular_sat'] = true;
+        }
+
+        try {
+            $reservacion->incrementarAnularIntentos();
+            $response = $this->client->request(
+                'POST',
+                $this->FDN_HOST . 'anularBoleto',
+                // 'http://grupofuentedelnorte.com/app_dev.php/api/calcularImporteTotalMonedaBase.json',
+
+                [
+                    'body' => $param
+                ]
+            );
+
+            $result = json_decode($response->getContent(), true);
+            if (isset($result['anulado'])) {
+                if ($result['anulado']) {
+                    $reservacion->setStatus(Reservacion::STATUS_ANULADA);
+                } else {
+                    $reservacion->setStatus(Reservacion::STATUS_ANULADA_ERROR);
+                }
+                return true;
+            } else if (isset($result['error'])) {
+                return ['error' => $result['error']];
+            }
+            if ($reservacion->getAnularIntentos() >= 10) {
+                $reservacion->setStatus(Reservacion::STATUS_ANULADA);
+            }
+        } catch (\Exception $e) {
+
+            return ['error' => $e->getMessage()];
+        }
+
+        return false;
     }
 }

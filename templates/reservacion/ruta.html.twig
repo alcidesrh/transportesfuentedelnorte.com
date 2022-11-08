@@ -1,15 +1,20 @@
 <turbo-frame id="reservacion-form">
+
 	{{ form_start(form, {attr: {class: 'm-auto', 'data-controller': 'ruta-form', 'data-ruta-form-primer-render-value': primer_render}}) }}
-	<fieldset class="border px-5 py-20 rounded-md border-slate-500">
+
+	{% for message in app.flashes('session_terminada') %}
+		{{ component('alert', {text: message | trans({'RESERVACION_MINUTOS' :  app.flashes('RESERVACION_MINUTOS')[0]})})}}
+	{% endfor %}
 
 
-		{{ form_row(form._token) }}
-		<div class="grid gap-4 w-fit m-auto sm:grid-cols-[repeat(2,minmax(250px,300px))] lg:grid-cols-[repeat(3,minmax(250px,300px))]">
-			{{ form_row(form.estacion_salida)}}
-			{{ form_row(form.estacion_llegada)}}
-			{{ form_row(form.ida_vuelta, {attr: {class: 'flex gap-2 h-full items-center'}}) }}
-			{{ form_row(form.submit,{row_attr: {class: 'flex justify-end row-start-4 sm:row-start-3 sm:col-start-2 lg:col-start-3'}, button_icon: {icon: 'arrow_forward'}})}}
+	{{ form_row(form._token) }}
+	<div class="grid gap-4 w-fit m-auto sm:grid-cols-[repeat(2,minmax(250px,300px))] lg:grid-cols-[repeat(3,minmax(250px,300px))]">
+		{{ form_row(form.estacion_salida)}}
+		{{ form_row(form.estacion_llegada)}}
+		{{ form_row(form.ida_vuelta, {attr: {class: 'flex gap-2 h-full items-center'}}) }}
+		<div class="flex justify-end row-start-4 sm:row-start-3 sm:col-start-2 lg:col-start-3">
+			{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit'}}) }}
 		</div>
-	</fieldset>
+	</div>
 	{{ form_end(form) }}
 </turbo-frame>

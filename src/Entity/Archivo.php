@@ -70,6 +70,11 @@ class Archivo
         return self::IMAGEN == $this->tipo ? 'images/' . $this->path : '';
     }
 
+    public function getFileName(): ?string
+    {
+        return $this->path ?? '';
+    }
+
     public function setPath(?string $path): self
     {
         $this->path = $path;
@@ -103,6 +108,6 @@ class Archivo
 
     public function __toString()
     {
-        return $this->path;
+        return $this->path ?? '';
     }
 }

@@ -20,11 +20,6 @@ class SliderComponent
     {
         $slider = $this->sliderRepository->findOneBy([]);
 
-        $images = [];
-        foreach ($slider->getImages() as $image) {
-            $images[] = $this->imagineCacheManager->getBrowserPath($image->getPath(), 'slider_webp');
-        }
-
-        return $slider; //$images;
+        return $slider;
     }
 }
