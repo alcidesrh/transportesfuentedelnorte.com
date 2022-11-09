@@ -37,7 +37,7 @@
 
 		<div class="flex justify-between mt-14">
 			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('salida', {'reservacion': reservacion.id})}) }}
-			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel px-2', link: path('cancelar'), attr: 'data-turbo=false'}) }}
+			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
 			{{ form_start(form, {'action': path('asientos', {reservacion: reservacion.id})}) }}
 			<div class="hidden">
 				{{ form_row(form.asientos_salida, {attr: {'data-asiento-target': 'asientos_salida'}}) }}

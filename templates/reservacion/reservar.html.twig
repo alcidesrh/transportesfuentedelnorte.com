@@ -2,14 +2,9 @@
 	{{ encore_entry_link_tags('reserva') }}
 {% endblock %}
 
-{# <section
-	class="relative flex justify-center z-10"> #}
-
-{# sm:shadow-lg sm:shadow-slate-500/50 -mt-[25vw] px-0 pt-10 sm:p-5 md:p-10 xl:p-20 #}
 <div class="reserva absolute top-0 z-40 mx-auto mt-0 md:mt-16 bg-white sm:rounded-lg w-full max-w-full md:min-w-[700px] md:w-fit px-5 md:px-10 drop-shadow-lg">
 
-
-	<div data-controller="reservacion" data-reservacion-paso-value="{{reservacion_paso}}" class="w-full m-auto">
+	<div class="w-full m-auto" data-controller="reservacion" data-reservacion-paso-value="{{reservacion_paso}}">
 
 		{% if reservacion_paso == 0 %}
 			<div class="text-center pt-5" data-reservacion-target="alert">
@@ -21,7 +16,9 @@
 		<div data-action='buscar-salida:reservacion_paso@window->reservacion#setPaso'></div>
 		<div data-action='asiento:reservacion_paso@window->reservacion#setPaso'></div>
 		<div data-action='pagar:reservacion_paso@window->reservacion#setPaso'></div>
+
 		<div class="py-20">
+
 			{% include 'reservacion/_steps.html.twig' %}
 
 
@@ -38,5 +35,3 @@
 	</div>
 
 </div>
-
-{# </section> #}

@@ -111,9 +111,6 @@
 .asiento.elegido {
     @apply bg-teal-400 rounded-2xl;
 }
-.asiento.elegido.libre:hover {
-    @apply bg-teal-200;
-}
 .elegido > svg {
     @apply fill-teal-700;
 }
@@ -135,7 +132,7 @@
     .banner {
         @apply block;
     }
-    .slider {
-        /* @apply hidden; */
+    .slider-wrap {
+        @apply bg-transparent;
     }
 }

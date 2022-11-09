@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
@@ -12,8 +11,10 @@ export default class extends Controller {
   };
 
   connect() {
+    console.log(1);
     if (this.pasoValue != 0) {
       this.blur();
+      this.dispatch("slider", { detail: { stop: true } });
     }
   }
 
@@ -23,8 +24,10 @@ export default class extends Controller {
     }
     if (paso != 0) {
       this.blur();
+      this.dispatch("slider", { detail: { stop: true } });
     } else {
       this.blur(false);
+      this.dispatch("slider", { detail: { stop: false } });
     }
     if (typeof this.pasosTarget.querySelector(".active") != "undefined") {
       this.pasosTarget.querySelector(".active").classList.remove("active");
