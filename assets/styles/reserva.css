@@ -135,4 +135,7 @@
     .slider-wrap {
         @apply bg-transparent;
     }
+    .section-blur {
+        @apply hidden;
+    }
 }
