@@ -11,7 +11,6 @@ export default class extends Controller {
   };
 
   connect() {
-    console.log(1);
     if (this.pasoValue != 0) {
       this.blur();
       this.dispatch("slider", { detail: { stop: true } });

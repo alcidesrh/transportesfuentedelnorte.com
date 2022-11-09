@@ -19,14 +19,12 @@ export default class extends Controller {
     this.slider = gsap.timeline({ repeat: -1, yoyo: true });
     for (let i = 0; i < this.sliderTarget.children.length; i++) {
       this.slider.to(this.sliderTarget.children[i], {
-        x: "110%",
+        x: "100%",
         y: "-100%",
         display: "none",
         rotation: -27,
         duration: 3,
         delay: 3,
-        ease: Linear.easeInOut,
-        force3D: true,
       });
     }
     this.slider.play();
