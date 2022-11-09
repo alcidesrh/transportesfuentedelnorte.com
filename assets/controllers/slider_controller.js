@@ -16,7 +16,7 @@ export default class extends Controller {
     if (!this.hasSliderTarget) {
       return;
     }
-    this.slider = gsap.timeline({ repeat: -1, yoyo: true });
+    this.slider = gsap.timeline({ repeat: -1, yoyo: true, delay: 8 });
     for (let i = 0; i < this.sliderTarget.children.length; i++) {
       this.slider.to(this.sliderTarget.children[i], {
         x: "100%",
@@ -24,7 +24,7 @@ export default class extends Controller {
         display: "none",
         rotation: -27,
         duration: 3,
-        delay: 3,
+        delay: 5,
       });
     }
     this.slider.play();
