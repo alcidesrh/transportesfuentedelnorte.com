@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Asiento;
 use App\Entity\ClienteReservacion;
-use App\Entity\Estacion;
 use App\Entity\Reservacion;
 use App\Entity\RutaReservacion;
 use App\Entity\SalidaReservacion;
@@ -16,7 +15,6 @@ use App\Form\RutaReservacionType;
 use App\Form\SalidaReservacionType;
 use App\Repository\AsientoRepository;
 use App\Repository\ReservacionRepository;
-use App\Services\CybersourceApi;
 use App\Services\RemoteDatabaseQueries;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -422,7 +420,7 @@ class ReservacionController extends AbstractController
         return $this->render('pdf/factura.html.twig', ['reservacion' => $reservacion]);
     }
     #[Route('/pagar/{reservacion}', name: 'pagar')]
-    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, CybersourceApi $cybersourceApi, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
     {
 
         $cliente = new ClienteReservacion();
@@ -482,13 +480,13 @@ class ReservacionController extends AbstractController
                 }
                 $entityManagerInterface->flush();
 
-                $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData());
+                $resultado = ['status' => 'AUTHORIZED']; //$cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData());
 
                 if (is_array($resultado)) {
                     if (isset($resultado['status']) && $resultado['status'] == 'AUTHORIZED') {
                         $entityManagerInterface->persist($cliente);
                         $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
-                        $reservacion->setTransaccionId($resultado['id'] ?? null);
+                        // $reservacion->setTransaccionId($resultado['id'] ?? null);
                         $entityManagerInterface->flush();
                         return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
                     } else {

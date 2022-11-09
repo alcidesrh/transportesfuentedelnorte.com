@@ -168,6 +168,7 @@ class RemoteDatabaseQueries
 
     public function getAsientosPrecios(Reservacion $reservacion)
     {
+        $host = $this->FDN_HOST;
         $response = $this->client->request(
             'POST',
             $this->FDN_HOST . 'calcularImporteTotalMonedaBase.json',
