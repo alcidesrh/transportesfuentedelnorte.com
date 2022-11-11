@@ -490,7 +490,7 @@ class ReservacionController extends AbstractController
                 }
                 $entityManagerInterface->flush();
 
-                $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData());
+                $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData(), $request->getSession()->getId());
 
                 if (is_array($resultado)) {
                     if (isset($resultado['status']) && $resultado['status'] == 'AUTHORIZED') {

@@ -53,7 +53,7 @@
 		<div class="flex justify-between mt-14">
 			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('asientos', {'reservacion': reservacion.id})}) }}
 			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
-			{{ form_row(form.submit, {attr: {class: 'btn'}})}}
+			{{ component('button', {text: 'Pagar' | trans, icon: {left: true, name: 'payments'}, attr: {'type': 'submit'}}) }}
 		</div>
 		{{ form_end(form) }}
 

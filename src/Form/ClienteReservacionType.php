@@ -114,9 +114,6 @@ class ClienteReservacionType extends AbstractType
                     new NotBlank(['message' => $this->translator->trans('Este campo es requerido')])
                 ],
                 'help' => '* obligatorio',
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => $this->translator->trans('Pagar'),
             ]);
     }
 

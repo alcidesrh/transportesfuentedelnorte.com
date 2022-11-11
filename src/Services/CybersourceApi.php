@@ -12,7 +12,7 @@ class CybersourceApi
     {
     }
 
-    public function procesarPago(Reservacion $reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad)
+    public function procesarPago(Reservacion $reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad, $fingerprintSessionId)
     {
         $request_host = $this->CYBERSOURCE_HOST;
         $merchant_id = $this->cybersource_merchant_id;
@@ -24,7 +24,7 @@ class CybersourceApi
         $method = "post";
         $url = "https://" . $request_host . $resource;
 
-        $payload = json_encode($this->getPayload($reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad));
+        $payload = json_encode($this->getPayload($reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad, $fingerprintSessionId));
 
         $resource = utf8_encode($resource);
 
@@ -107,7 +107,7 @@ class CybersourceApi
         return base64_encode($digestEncode);
     }
 
-    public function getPayload(Reservacion $reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad)
+    public function getPayload(Reservacion $reservacion, $numero, $expira_mes, $expira_year, $codigo_seguridad, $fingerprintSessionId)
     {
 
         $cliente = $reservacion->getCliente();
@@ -169,16 +169,11 @@ class CybersourceApi
                     'number' => '4622 9431 2701 3705', //$numero,
                     'securityCode' => 838, //$codigo_seguridad,
                     'expirationMonth' => 12, //$expira_mes,
-                    // 'type' => $data['type'],
                 ]
-                // 'card' => [
-                //     'expirationYear' => $data['expirationYear'],
-                //     'number' => $data['number'],
-                //     'securityCode' => $data['securityCode'],
-                //     'expirationMonth' => $data['expirationMonth'],
-                //     // 'type' => $data['type'],
-                // ]
             ],
+            'deviceInformation' => [
+                'fingerprintSessionId' => $fingerprintSessionId
+            ]
         ];
 
         // return '{

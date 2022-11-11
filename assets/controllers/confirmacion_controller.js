@@ -9,7 +9,7 @@ export default class extends Controller {
   static targets = ["pdf_link"];
   connect() {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    // this.pdf_linkTarget.click();
+    this.pdf_linkTarget.click();
 
     this.dispatch("slider", { detail: { stop: false } });
 
