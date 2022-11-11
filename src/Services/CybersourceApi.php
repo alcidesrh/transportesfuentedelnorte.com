@@ -165,10 +165,10 @@ class CybersourceApi
             ],
             'paymentInformation' => [
                 'card' => [
-                    'expirationYear' => $expira_year,
-                    'number' => $numero,
-                    'securityCode' => $codigo_seguridad,
-                    'expirationMonth' => $expira_mes,
+                    'expirationYear' => 2022, //$expira_year,
+                    'number' => '4622 9431 2701 3705', //$numero,
+                    'securityCode' => 838, //$codigo_seguridad,
+                    'expirationMonth' => 12, //$expira_mes,
                     // 'type' => $data['type'],
                 ]
                 // 'card' => [
