@@ -61,23 +61,17 @@
     @apply bg-teal-500;
 }
 
-#reservacion-form[busy],
+/* #reservacion-form[busy],
 #salida-form[busy] {
     opacity: 0.5;
 }
 
-#reservacion-form[busy] button,
-#reservacion-form[busy] a.btn,
-#salida-form[busy] .calendar-icon {
-    @apply hidden;
-}
+#reservacion-form[busy] + div {
+    @apply block;
+} */
 
-#salida-form[busy] .button-loading {
-    @apply inline;
-}
-
-#reservacion-form[busy] div.loading-div {
-    @apply flex;
+#turbo-loading {
+    @apply hidden fixed justify-center items-center z-50 top-0 left-0 h-full w-full bg-white/50;
 }
 
 .calendar-icon {

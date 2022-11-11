@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\ClienteReservacion;
+use App\Entity\Reservacion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -60,20 +61,25 @@ class ClienteReservacionType extends AbstractType
                 'label' => $this->translator->trans('Cantidad a pagar'),
                 'mapped' => false,
                 'disabled' => true,
-                'data' => number_format($options['reservacion']->getPrecio(), 2, ".", ","),
+                'data' => number_format($options['reservacion']->getPrecioVisual(), 2, ".", ","),
                 'constraints' => [
                     new NotBlank(['message' => $this->translator->trans('Este campo es requerido')])
                 ],
+                'attr' => ['data-pagar-target' => 'precio']
             ])
             ->add('tipo_moneda', ChoiceType::class, [
                 'mapped' => false,
                 'choices'  => [
-                    'Q' => 'GTQ',
-                    'USD' => 'US',
+                    Reservacion::MONEDA_GTQ => Reservacion::MONEDA_GTQ,
+                    Reservacion::MONEDA_USD => Reservacion::MONEDA_USD,
                 ],
                 'expanded' => true,
                 'multiple' => false,
-                'data' => 'GTQ'
+                'data' => $options['reservacion']->getMoneda(),
+                'choice_attr' => [
+                    Reservacion::MONEDA_GTQ => ['data-action' => 'click->pagar#moneda', 'data-precio' => number_format($options['reservacion']->getPrecio(), 2, ".", ",")],
+                    Reservacion::MONEDA_USD => ['data-action' => 'click->pagar#moneda', 'data-precio' => number_format($options['reservacion']->getPrecioDolar(), 2, ".", ",")],
+                ],
             ])
             ->add('numero', TextType::class, [
                 'label' => $this->translator->trans('Número de la tarjeta'),
@@ -110,7 +116,7 @@ class ClienteReservacionType extends AbstractType
                 'help' => '* obligatorio',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => $this->translator->trans('Efectuar pago'),
+                'label' => $this->translator->trans('Pagar'),
             ]);
     }
 

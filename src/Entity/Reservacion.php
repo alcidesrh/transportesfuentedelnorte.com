@@ -16,6 +16,10 @@ class Reservacion
     const STATUS_ANULADA_ERROR = "anular_pendiente";
     const STATUS_CANCELADA = "cancelada";
 
+
+    const MONEDA_GTQ = "GTQ";
+    const MONEDA_USD = "USD";
+
     use TimestampableEntity;
 
     #[ORM\Id]
@@ -68,10 +72,20 @@ class Reservacion
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $anular_intentos = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $precio_dolar = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?float $compra_porciento_actual = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $dolar_cambio_actual = null;
+
     public function __construct()
     {
         $this->status = self::STATUS_INCOMPLETA;
         $this->anular_intentos = 0;
+        $this->moneda = self::MONEDA_GTQ;
     }
 
     public function getId(): ?int
@@ -153,14 +167,19 @@ class Reservacion
 
     public function getPrecio(): ?float
     {
-        return $this->precio;
+        return number_format($this->precio, 2, '.', '');
     }
 
     public function setPrecio(?float $precio): self
     {
-        $this->precio = $precio;
+        $this->precio = $precio + ($precio * $this->compra_porciento_actual / 100);
 
         return $this;
+    }
+
+    public function getPrecioVisual(): ?float
+    {
+        return $this->moneda == self::MONEDA_GTQ ? $this->precio : $this->precio_dolar;
     }
 
     public function getTransaccionId(): ?string
@@ -257,6 +276,42 @@ class Reservacion
     public function incrementarAnularIntentos(): self
     {
         $this->anular_intentos++;
+
+        return $this;
+    }
+
+    public function getPrecioDolar(): ?float
+    {
+        return number_format($this->precio_dolar, 2);
+    }
+
+    public function setPrecioDolar(?float $precio_dolar): self
+    {
+        $this->precio_dolar = $precio_dolar / $this->dolar_cambio_actual;
+
+        return $this;
+    }
+
+    public function getCompraPorcientoActual(): ?float
+    {
+        return $this->compra_porciento_actual;
+    }
+
+    public function setCompraPorcientoActual(?float $compra_porciento_actual): self
+    {
+        $this->compra_porciento_actual = $compra_porciento_actual;
+
+        return $this;
+    }
+
+    public function getDolarCambioActual(): ?float
+    {
+        return $this->dolar_cambio_actual;
+    }
+
+    public function setDolarCambioActual(?float $dolar_cambio_actual): self
+    {
+        $this->dolar_cambio_actual = $dolar_cambio_actual;
 
         return $this;
     }

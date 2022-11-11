@@ -57,7 +57,7 @@ class AsientoComponent
             }
         } else {
 
-            if ($data['boleto'] || $data['reservacion']) {
+            if (($data['boleto'] && $data['boleto_estado'] != 4) || $data['reservacion']) {
                 $this->color = '#EF4443';
                 $this->ocupado = true;
             }

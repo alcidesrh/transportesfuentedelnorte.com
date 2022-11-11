@@ -10,6 +10,8 @@ parameters:
     enabled_locales: ["es", "en"]
     reservacion_minutos: 150
 
+    cybersource_merchant_id: "%env(cybersource_merchant_id)%"
+
 services:
     # default configuration for services in *this* file
     _defaults:

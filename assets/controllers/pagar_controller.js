@@ -6,7 +6,11 @@ import { useDispatch } from "stimulus-use";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-  static targets = ["test"];
+  static targets = [ "precio" ]
+  static values = {
+    precio: Number,
+    precioDolar: Number,
+  }
 
   connect() {
     if (!this.primerRenderValue) {
@@ -14,5 +18,8 @@ export default class extends Controller {
       this.dispatch("reservacion_paso", { paso: 3 });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  }
+  moneda(event){
+    this.precioTarget.value = event.currentTarget.dataset.precio;
   }
 }

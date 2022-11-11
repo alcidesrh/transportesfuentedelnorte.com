@@ -16,7 +16,7 @@ export default class extends Controller {
     if (!this.hasSliderTarget) {
       return;
     }
-    this.slider = gsap.timeline({ repeat: -1, yoyo: true, delay: 8 });
+    this.slider = gsap.timeline({ repeat: -1, yoyo: true, delay: 10 });
     for (let i = 0; i < this.sliderTarget.children.length; i++) {
       this.slider.to(this.sliderTarget.children[i], {
         x: "100%",

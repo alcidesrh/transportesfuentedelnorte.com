@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Asiento;
 use App\Entity\ClienteReservacion;
+use App\Entity\Configuracion;
 use App\Entity\Reservacion;
 use App\Entity\RutaReservacion;
 use App\Entity\SalidaReservacion;
@@ -15,6 +16,7 @@ use App\Form\RutaReservacionType;
 use App\Form\SalidaReservacionType;
 use App\Repository\AsientoRepository;
 use App\Repository\ReservacionRepository;
+use App\Services\CybersourceApi;
 use App\Services\RemoteDatabaseQueries;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -325,7 +327,11 @@ class ReservacionController extends AbstractController
                     if ($precio->error) {
                         $errors[] = $precio->error;
                     } else {
+                        $confi = $entityManagerInterface->getRepository(Configuracion::class)->findOneBy([]);
+                        $reservacion->setCompraPorcientoActual($confi->getCompraPorciento());
+                        $reservacion->setDolarCambioActual($confi->getDolarCambio());
                         $reservacion->setPrecio($precio->total);
+                        $reservacion->setPrecioDolar($precio->total);
                         $reservacion->setPasoCompletado(3);
                         $entityManagerInterface->flush();
                         return $this->redirectToRoute('pagar', ['reservacion' => $reservacion->getId()]);
@@ -420,11 +426,15 @@ class ReservacionController extends AbstractController
         return $this->render('pdf/factura.html.twig', ['reservacion' => $reservacion]);
     }
     #[Route('/pagar/{reservacion}', name: 'pagar')]
-    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
     {
 
-        $cliente = new ClienteReservacion();
+        $cliente = $reservacion->getCliente() ?? new ClienteReservacion();
 
+        $param = $request->request->all();
+        if (key_exists('cliente_reservacion', $param) && isset($param['cliente_reservacion']['tipo_moneda'])) {
+            $reservacion->setMoneda($param['cliente_reservacion']['tipo_moneda']);
+        }
         $form = $this->createForm(ClienteReservacionType::class, $cliente, [
             'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion?->getId()]),
             'reservacion' => $reservacion
@@ -434,7 +444,7 @@ class ReservacionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $reservacion->setCliente($cliente)->setMoneda($form->get('tipo_moneda')->getData());
+            $reservacion->setCliente($cliente);
 
             $result = $remoteDatabaseQueries->crearBoleto($reservacion);
 
@@ -480,13 +490,13 @@ class ReservacionController extends AbstractController
                 }
                 $entityManagerInterface->flush();
 
-                $resultado = ['status' => 'AUTHORIZED']; //$cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData());
+                $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData());
 
                 if (is_array($resultado)) {
                     if (isset($resultado['status']) && $resultado['status'] == 'AUTHORIZED') {
                         $entityManagerInterface->persist($cliente);
                         $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
-                        // $reservacion->setTransaccionId($resultado['id'] ?? null);
+                        $reservacion->setTransaccionId($resultado['id'] ?? null);
                         $entityManagerInterface->flush();
                         return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
                     } else {
@@ -515,7 +525,7 @@ class ReservacionController extends AbstractController
             'form' => $form,
             'primer_render' => $primer_render,
             'reservacion' => $reservacion,
-            'error_tarjeta' => $error_tarjeta ?? null
+            'error_tarjeta' => $error_tarjeta ?? null,
         ]);
     }
 
@@ -538,8 +548,8 @@ class ReservacionController extends AbstractController
                 ->from('reservacion@transportesfuentedelnorte.com')
                 ->to($reservacion->getCliente()->getEmail())
                 ->priority(Email::PRIORITY_HIGH)
-                ->subject($translatorInterface->trans('Boleto Transporte Fuente del Norte. Servcio de Bus. Guatemala.'))
-                ->text($translatorInterface->trans('Boleto Transporte Fuente del Norte. Servcio de Bus. Guatemala.'))
+                ->subject($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
+                ->text($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
                 ->html($this->renderView('pdf/factura.html.twig', ['reservacion' => $reservacion]))
                 ->attachFromPath('facturas/' . $pdf_nombre);
 
@@ -547,6 +557,7 @@ class ReservacionController extends AbstractController
         }
 
         $request->getSession()->clear();
+        $request->getSession()->set('_to_kepp_locale', true);
 
         return $this->renderForm('reservacion/confirmacion.html.twig', [
             'reservacion' => $reservacion

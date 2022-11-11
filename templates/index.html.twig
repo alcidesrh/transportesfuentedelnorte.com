@@ -1,9 +1,24 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+	{{ parent() }}
+	{{ encore_entry_link_tags('reserva') }}
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="https://h.online-metrix.net/fp/tags.js?org_id=1snn5n9w&session_id={{cybersource_session_id}}"></script>
+	{{ parent() }}
+{% endblock %}
+
 {% block title %}Hello AppController!
 {% endblock %}
 
+
 {% block body %}
+
+	<noscript>
+		<iframe style="width: 100px; height: 100px; border: 0; position:absolute; top: -5000px;" src="https://h.online-metrix.net/fp/tags?org_id=1snn5n9w&session_id={{cybersource_session_id}}"></iframe>
+	</noscript>
 
 
 	<div class="relative flex justify-center items-center banner">
@@ -120,4 +135,25 @@
 			</div>
 		</div>
 	</section>
+
+	<div id="turbo-loading" class="modal">
+		<svg class="w-24" version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+			<circle fill="#3D92B2" stroke="none" cx="6" cy="50" r="6">
+				<animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate>
+			</circle>
+			<circle fill="#3D92B2" stroke="none" cx="26" cy="50" r="6">
+				<animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate>
+			</circle>
+			<circle fill="#3D92B2" stroke="none" cx="46" cy="50" r="6">
+				<animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate>
+			</circle>
+			<circle fill="#3D92B2" stroke="none" cx="66" cy="50" r="6">
+				<animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate>
+			</circle>
+			<circle fill="#3D92B2" stroke="none" cx="86" cy="50" r="6">
+				<animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate>
+			</circle>
+		</svg>
+	</div>
+
 {% endblock %}

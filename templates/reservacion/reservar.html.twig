@@ -1,7 +1,3 @@
-{% block stylesheets %}
-	{{ encore_entry_link_tags('reserva') }}
-{% endblock %}
-
 <div class="reserva absolute top-0 z-40 mx-auto mt-0 md:mt-16 bg-white sm:rounded-lg w-full max-w-full md:min-w-[700px] md:w-fit px-5 md:px-10 drop-shadow-lg">
 
 	<div class="w-full m-auto" data-controller="reservacion" data-reservacion-paso-value="{{reservacion_paso}}">
@@ -22,15 +18,18 @@
 			{% include 'reservacion/_steps.html.twig' %}
 
 
-			{% if reservacion_paso == 0 %}
-				{{ render_esi(controller('App\\Controller\\ReservacionController::ruta', {'reservacion': reservacion_id, primer_render: true})) }}
-			{% elseif reservacion_paso == 1 %}
-				{{ render(controller('App\\Controller\\ReservacionController::salida', {'reservacion': reservacion_id, primer_render: true})) }}
-			{% elseif reservacion_paso == 2 %}
-				{{ render(controller('App\\Controller\\ReservacionController::asientos', {'reservacion': reservacion_id, primer_render: true})) }}
-			{% elseif reservacion_paso == 3 %}
-				{{ render(controller('App\\Controller\\ReservacionController::pagar', {'reservacion': reservacion_id, primer_render: true})) }}
-			{% endif %}
+			<div class="relative">
+
+				{% if reservacion_paso == 0 %}
+					{{ render_esi(controller('App\\Controller\\ReservacionController::ruta', {'reservacion': reservacion_id, primer_render: true})) }}
+				{% elseif reservacion_paso == 1 %}
+					{{ render(controller('App\\Controller\\ReservacionController::salida', {'reservacion': reservacion_id, primer_render: true})) }}
+				{% elseif reservacion_paso == 2 %}
+					{{ render(controller('App\\Controller\\ReservacionController::asientos', {'reservacion': reservacion_id, primer_render: true})) }}
+				{% elseif reservacion_paso == 3 %}
+					{{ render(controller('App\\Controller\\ReservacionController::pagar', {'reservacion': reservacion_id, primer_render: true})) }}
+				{% endif %}
+			</div>
 		</div>
 	</div>
 

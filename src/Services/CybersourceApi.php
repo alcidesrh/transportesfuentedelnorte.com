@@ -159,7 +159,7 @@ class CybersourceApi
                     'email' => $cliente->getEmail(),
                 ],
                 'amountDetails' => [
-                    'totalAmount' => $reservacion->getPrecio(),
+                    'totalAmount' => $reservacion->getPrecioVisual(),
                     'currency' => $reservacion->getMoneda()
                 ]
             ],

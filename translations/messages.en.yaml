@@ -55,10 +55,10 @@ Reservacion número: Reservation number
 Guarde y muestre este boleto ha la hora de abordar. Feliz viaje!: Keep and show this ticket at boarding time. Happy journey!
 Boleto: Ticket
 boleto: ticket
-Boleto Transporte Fuente del Norte. Servcio de Bus. Guatemala.: Bus Service Ticket Guatemala. Transporte Fuente del Norte.
+Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.: Bus Service Ticket Guatemala. Transporte Fuente del Norte.
 Descargar boleto: Download ticket
-Si no se ha descargado el boleto automáticamente pulse el boton para descargarlo.: If the ticket has not been downloaded automatically, press the button to download it.
-Su reserva ha sido creada con exito. Guarde el boleto y llévelo en el teléfono o impreso el día de su viaje.: Your reservation has been created successfully. Keep the ticket and take it on the phone or printed on the day of your trip.
+Si no se ha <span class="font-semibold">descargado el boleto</span> automáticamente pulse el boton para descargarlo.: If the <span class="font-semibold">ticket has not been downloaded automatically</span>, press the button to download it.
+Su reserva ha sido creada con exito. Guarde el boleto y <span class="font-semibold">llévelo en el teléfono o impreso el día de su viaje</span>.: Your reservation has been created successfully. <span class="font-semibold">Keep the ticket and take it on the phone or printed on the day of your trip</span>.
 Se ha enviado un correo a: An email has been sent to
 con una copia del boleto.: with a copy of the ticket.
 Factura dte: Invoice number
@@ -66,7 +66,7 @@ Fecha de creación: Creation date
 Quiénes somos: About us
 Iniciar sesión: Log in
 Estaciones: Stations
-Efectuar pago: Make payment
+Pagar: Pay
 Teléfono: Phone
 Servicios: Services
 Nuestros Servicios: Our Services

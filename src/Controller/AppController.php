@@ -28,7 +28,8 @@ class AppController extends AbstractController
             'reservacion_paso' => $paso,
             'reservacion_id' => $request->getSession()->get('reservacion'),
             'servicios' => $servicioRepository->findBy(['inicio' => true], ['prioridad' => 'ASC']),
-            'slider' => $sliderRepository->findOneBy([])
+            'slider' => $sliderRepository->findOneBy([]),
+            'cybersource_session_id' => $this->getParameter('cybersource_merchant_id') . $request->getSession()->getId()
         ]);
     }
 

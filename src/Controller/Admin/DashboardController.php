@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Archivo;
 use App\Entity\ClienteReservacion;
+use App\Entity\Configuracion;
 use App\Entity\Contacto;
 use App\Entity\Departamento;
 use App\Entity\Estacion;
@@ -65,6 +66,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Contactos', 'fas fa-list', Contacto::class);
         yield MenuItem::linkToCrud('Slider', 'fas fa-list', Slider::class);
         yield MenuItem::linkToCrud('Imágenes', 'fas fa-list', Archivo::class);
+        yield MenuItem::linkToCrud('Configuración', 'fas fa-list', Configuracion::class);
     }
 
     // public function configureUserMenu(UserInterface $user): UserMenu

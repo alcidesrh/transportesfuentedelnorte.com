@@ -101,7 +101,7 @@ class RemoteDatabaseQueries
 
     public function getAsientos($id_salida): array | null
     {
-        $sql_asientos = "SELECT boleto.id as boleto, reservacion.id as reservacion, bus_asiento.id, bus_asiento.nivel2, bus_asiento.numero, bus_asiento.coordenadaX, bus_asiento.coordenadaY, bus_tipo.totalAsientos, clase_asiento.id as clase, salida.id as salida_id from bus_tipo
+        $sql_asientos = "SELECT boleto.id as boleto, boleto.estado_id as boleto_estado, reservacion.id as reservacion, bus_asiento.id, bus_asiento.nivel2, bus_asiento.numero, bus_asiento.coordenadaX, bus_asiento.coordenadaY, bus_tipo.totalAsientos, clase_asiento.id as clase, salida.id as salida_id from bus_tipo
                 left join salida on bus_tipo.id = salida.tipo_bus_id
                 left join bus_asiento on bus_asiento.tipoBus_id = bus_tipo.id
                 left join clase_asiento on clase_asiento.id = bus_asiento.clase_id
@@ -221,8 +221,8 @@ class RemoteDatabaseQueries
 
         $response = $this->client->request(
             'POST',
-            // $this->FDN_HOST . 'emitirBoletos.json',
-            'http://grupofuentedelnorte.com/app_dev.php/api/emitirBoletos.json',
+            $this->FDN_HOST . 'emitirBoletos.json',
+            // 'http://grupofuentedelnorte.com/app_dev.php/api/emitirBoletos.json',
             [
                 'body' => [
                     'salidas' => json_encode(array_merge($salida, $regreso)),
@@ -268,11 +268,15 @@ class RemoteDatabaseQueries
                 }
                 return true;
             } else if (isset($result['error'])) {
-                return ['error' => $result['error']];
+                $error = ['error' => $result['error']];
+            } else {
+                $error = ['error' => 'desconocido'];
             }
             if ($reservacion->getAnularIntentos() >= 10) {
                 $reservacion->setStatus(Reservacion::STATUS_ANULADA);
             }
+
+            return $error;
         } catch (\Exception $e) {
 
             return ['error' => $e->getMessage()];

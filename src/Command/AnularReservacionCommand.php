@@ -34,6 +34,9 @@ class AnularReservacionCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        return Command::SUCCESS;
+
         if ($reservaciones = $this->entityManagerInterface->getRepository(Reservacion::class)->getReservacionVencidas($this->RESERVACION_MINUTOS + 5)) {
             foreach ($reservaciones as $reservacion) {
 

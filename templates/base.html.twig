@@ -10,9 +10,11 @@
 		{% block stylesheets %}
 			{{ encore_entry_link_tags('app') }}
 		{% endblock %}
+
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
+
 		<title>
 			{% block title %}
 				{{'Empresa de transporte Guatemala. Servicios de buses.' | trans}}
@@ -21,16 +23,18 @@
 
 	</head>
 	<body class="antialiased">
+
 		{{component('header')}}
 		<main>
 			{% block body %}{% endblock %}
 		</main>
 		{{component('footer')}}
-	</body>
-	<script>
-		function toggleNavbar(collapseID) {
+
+		<script>
+			function toggleNavbar(collapseID) {
 document.getElementById(collapseID).classList.toggle("hidden");
 document.getElementById(collapseID).classList.toggle("block");
 }
-	</script>
+		</script>
+	</body>
 </html>
