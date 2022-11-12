@@ -1,18 +1,23 @@
 <turbo-frame id="reservacion-form">
-	<div data-controller="confirmacion" class="max-w-3xl m-auto">
+	<div data-controller="confirmacion" class="max-w-3xl m-auto" data-confirmacion-descargar-value="{{descargar}}">
 
 		<div class="mb-5">
 			{{ component('alert', {class: 'info', icon: 'done', text: ('Su reserva ha sido creada con exito. Guarde el boleto y <span class="font-semibold">llévelo en el teléfono o impreso el día de su viaje</span>.' | trans) ~ (reservacion.cliente and reservacion.cliente.email ? (' ' ~ 'Se ha enviado un correo a' | trans ~ ' <span class="font-semibold">' ~reservacion.cliente.email ~ '</span> ' ~ 'con una copia del boleto.' | trans))}) }}
 		</div>
-		<div class="mb-5 block md:flex items-center gap-5">
-			{% if error is defined %}
-				{{ component('alert', {class: 'error', icon: 'error', text: 'error_pdf' | trans({'BOLETO' :  reservacion.getBoletoTicketId})})}}
-			{% else %}
+
+		{% if error is defined %}
+			{{ component('alert', {class: 'error', icon: 'error', text: 'error_pdf' | trans({'BOLETO' :  reservacion.getBoletoTicketId})})}}
+		{% else %}
+			<div class="mb-5 block md:flex items-center gap-5">
 				{{ component('alert', {class: 'warning mb-5 md:mb-0', icon: 'notification_important', text: 'Si no se ha <span class="font-semibold">descargado el boleto</span> automáticamente pulse el boton para descargarlo.' | trans}) }}
 				<div class="flex justify-center md:justify-start">
 					{{ component('button_link', {text: 'Descargar boleto' | trans, icon: {right: true, name: 'file_download'}, link: path('pdf', {reservacion: reservacion.id}), attr: 'data-turbo=false  data-turbo-cache=false data-confirmacion-target=pdf_link'}) }}
 				</div>
-			{% endif %}
+			</div>
+		{% endif %}
+
+		<div class="flex justify-center mt-10">
+			{{ component('button_link', {text: 'Volver a reservar' | trans, link: path('cancelar'), attr: 'data-turbo=false'}) }}
 		</div>
 	</div>
 </turbo-frame>

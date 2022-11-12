@@ -6,18 +6,25 @@ import { Controller } from "@hotwired/stimulus";
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
   static targets = ["pdf_link"];
+
+  static values = {
+    descargar: Boolean,
+  };
+
   connect() {
     window.scrollTo(0, 0);
+    console.log(this.descargarValue, !!this.descargarValue);
+    if (this.descargarValue) {
+      const mensaje = document.getElementById("msg-pagando");
+      if (mensaje) {
+        mensaje.classList.add("hidden");
+      }
 
-    const mensaje = document.getElementById("msg-pagando");
-    if (mensaje) {
-      mensaje.classList.add("hidden");
-    }
+      this.dispatch("reserva", { detail: { paso: 4 } });
 
-    this.dispatch("reserva", { detail: { paso: 4 } });
-
-    if (this.hasPdf_linkTarget) {
-      this.pdf_linkTarget.click();
+      if (this.hasPdf_linkTarget) {
+        this.pdf_linkTarget.click();
+      }
     }
   }
 }

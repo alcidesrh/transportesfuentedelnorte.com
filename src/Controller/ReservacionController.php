@@ -435,7 +435,7 @@ class ReservacionController extends AbstractController
 
                 $data = json_decode($result['data']);
 
-                $reservacion->setFacturaId($data->factura_id)->setFacturaDte($data->dte)->setBoletoTicketId($data->boletos_ticket)->setStatus(Reservacion::STATUS_COMPLETADA);
+                $reservacion->setFacturaId($data->factura_id)->setFacturaDte($data->dte)->setBoletoTicketId($data->boletos_ticket);
 
                 $salida = $reservacion->getSalida();
                 foreach ($salida->getAsientos() as $index => $asiento) {
@@ -499,40 +499,44 @@ class ReservacionController extends AbstractController
 
         $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';
 
-        try {
-            if (!$filesystem->exists('facturas/' . $pdf_nombre)) {
+        $locale = $request->getLocale() == 'es' ? 'en' : 'es';
+
+        $pdf_nombre_2 = $translatorInterface->trans('boleto', [], null, $locale) . '_' . $reservacion->getBoletoTicketId() . '.pdf';
+
+        if (!$filesystem->exists('facturas/' . $pdf_nombre) && !$filesystem->exists('facturas/' . $pdf_nombre_2)) {
+
+            try {
 
                 $dompdf = new Dompdf();
                 $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
                 $dompdf->render();
                 $filesystem->dumpFile('facturas/' . $pdf_nombre, $dompdf->output());
+            } catch (IOException $th) {
+                return $this->renderForm('reservacion/confirmacion.html.twig', [
+                    'error' => 'pdf',
+                    'reservacion' => $reservacion
+                ]);
             }
-        } catch (IOException $th) {
-            return $this->renderForm('reservacion/confirmacion.html.twig', [
-                'error' => 'pdf',
-                'reservacion' => $reservacion
-            ]);
+
+            if ($reservacion->getCliente()->getEmail()) {
+                $email = (new Email())
+                    ->from('reservacion@transportesfuentedelnorte.com')
+                    ->to($reservacion->getCliente()->getEmail())
+                    ->priority(Email::PRIORITY_HIGH)
+                    ->subject($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
+                    ->text($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
+                    ->html($this->renderView('pdf/factura.html.twig', ['reservacion' => $reservacion]))
+                    ->attachFromPath('facturas/' . $pdf_nombre);
+
+                $mailer->send($email);
+            }
+        } else {
+            $no_descargar = true;
         }
-
-
-        if ($reservacion->getCliente()->getEmail()) {
-            $email = (new Email())
-                ->from('reservacion@transportesfuentedelnorte.com')
-                ->to($reservacion->getCliente()->getEmail())
-                ->priority(Email::PRIORITY_HIGH)
-                ->subject($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
-                ->text($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
-                ->html($this->renderView('pdf/factura.html.twig', ['reservacion' => $reservacion]))
-                ->attachFromPath('facturas/' . $pdf_nombre);
-
-            $mailer->send($email);
-        }
-
-        $request->getSession()->clear();
-        $request->getSession()->set('_to_kepp_locale', true);
 
         return $this->renderForm('reservacion/confirmacion.html.twig', [
-            'reservacion' => $reservacion
+            'reservacion' => $reservacion,
+            'descargar' => (int) !isset($no_descargar)
         ]);
     }
 
@@ -557,8 +561,10 @@ class ReservacionController extends AbstractController
         if ($reservacion_id = $request->getSession()->get('reservacion')) {
 
             $reservacion = $entityManagerInterface->find(Reservacion::class, $reservacion_id);
-            $reservacion->setStatus(Reservacion::STATUS_CANCELADA);
-            $entityManagerInterface->flush();
+            if ($reservacion->getStatus() != Reservacion::STATUS_COMPLETADA) {
+                $reservacion->setStatus(Reservacion::STATUS_CANCELADA);
+                $entityManagerInterface->flush();
+            }
 
             $session = $request->getSession();
             $session->clear();
