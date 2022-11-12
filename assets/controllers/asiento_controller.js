@@ -64,8 +64,6 @@ export default class extends Controller {
 
     this.asientos_salida = JSON.parse(this.asientos_salidaTarget.value);
 
-    console.log(this.asientos_salida);
-
     if (this.hasAsientos_regresoTarget) {
       this.asientos_regreso = JSON.parse(this.asientos_regresoTarget.value);
     }

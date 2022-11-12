@@ -388,45 +388,6 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/test', name: 'test')]
-    public function test(Request $request, ReservacionRepository $entityManagerInterface, MailerInterface $mailer, RemoteDatabaseQueries $remoteDatabaseQueries): Response
-    {
-
-        $reservacion = $entityManagerInterface->find($request->getSession()->get('reservacion', 49));
-
-        $result = $remoteDatabaseQueries->anularReservacion($reservacion);
-
-        dd($result);
-
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
-        $dompdf->render();
-        file_put_contents('facturas/factura.pdf', $dompdf->output());
-
-        $response = new Response(file_get_contents('facturas/factura.pdf'));
-
-        $disposition = HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            'foo.pdf'
-        );
-        $response->headers->set('Content-Disposition', $disposition);
-        return $response;
-
-        $email = (new Email())
-            ->from('hello@example.com')
-            ->to('you@example.com')
-            //->cc('cc@example.com')
-            //->bcc('bcc@example.com')
-            //->replyTo('fabien@example.com')
-            //->priority(Email::PRIORITY_HIGH)
-            ->subject('Time for Symfony Mailer!')
-            ->text('Sending emails is fun again!')
-            ->html('<p>See Twig integration for better HTML integration!</p>')
-            ->attachFromPath('facturas/factura.pdf');
-
-        $mailer->send($email);
-        return $this->render('pdf/factura.html.twig', ['reservacion' => $reservacion]);
-    }
     #[Route('/pagar/{reservacion}', name: 'pagar')]
     public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
     {
