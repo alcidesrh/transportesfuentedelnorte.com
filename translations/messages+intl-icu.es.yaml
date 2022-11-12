@@ -1,1 +1,2 @@
 session_terminada_mensaje: La session ha caducado. Con motivo de preservar los asientos la reserva debe realizarse en menos de {RESERVACION_MINUTOS} minutos.
+error_pdf: No se ha podido crear el ticket. Su número de boleto es {BOLETO}. Por favor guarde ese número y pongase en contacto con nuestras oficinas.

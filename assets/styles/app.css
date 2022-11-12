@@ -96,6 +96,10 @@
     .alert.warning {
         @apply text-[15px] bg-orange-100 text-orange-700;
     }
+
+    .alert.error {
+        @apply text-[15px] bg-red-100 text-red-700;
+    }
 }
 
 html {
@@ -111,10 +115,6 @@ body {
     font-family: "Montserrat", sans-serif;
     transition: opacity 1000ms;
     @apply text-slate-700 bg-slate-200;
-}
-body.turbo-loading,
-body.turbo-loaded {
-    opacity: 0.2;
 }
 
 *:focus {

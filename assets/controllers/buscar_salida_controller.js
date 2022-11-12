@@ -52,6 +52,7 @@ export default class extends Controller {
       locale: this.idiomaValue,
       dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",
       disableMobile: "true",
+      minDate: "today",
     });
 
     if (!this.idaVueltaValue && this.salida_fechaTarget.value) {
@@ -99,7 +100,6 @@ export default class extends Controller {
 
   minFecha(event) {
     if (this.idaVueltaValue) {
-      // alert(this.salida_fechaTarget.value);
       this.salida_calendario = flatpickr(this.salida_fechaTarget, {
         locale: this.idiomaValue,
         dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",

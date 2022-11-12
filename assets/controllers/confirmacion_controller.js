@@ -8,16 +8,10 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["pdf_link"];
   connect() {
-    this.pdf_linkTarget.click();
-
-    this.dispatch("slider", { detail: { stop: false } });
-
-    const sections = document.getElementsByTagName("section");
-
-    Array.prototype.filter.call(sections, (section) =>
-      section.classList.remove("section-blur")
-    );
+    this.dispatch("reserva", { detail: { paso: 4 } });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    this.pdf_linkTarget.click();
   }
 }

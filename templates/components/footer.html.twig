@@ -1,76 +1,62 @@
 <footer class="relative bg-gray-300 pt-8 pb-6">
 	<section>
-	<div class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20" style="height: 80px;">
-		<svg class="absolute bottom-0 overflow-hidden" xmlns="http://www.w3.org/2000/svg" preserveaspectratio="none" version="1.1" viewbox="0 0 2560 100" x="0" y="0">
-			<polygon class="text-gray-300 fill-current" points="2560 0 2560 100 0 100"></polygon>
-		</svg>
-	</div>
-	<div class="container mx-auto px-4">
-		<div class="flex flex-wrap">
-			<div class="w-full lg:w-6/12 px-4">
-				<h4 class="text-3xl font-semibold">Transporte Fuente del Norte</h4>
-				<h5 class="text-lg mt-6 mb-2 text-gray-700 italic">
-					{{'Desde 1962 habriendo caminos cerrando distancias.' | trans}}
-				</h5>
-				{# <div class="mt-6">
-																					<button class="bg-white text-blue-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3" type="button">
-																						<i class="flex fab fa-twitter"></i>
-																					</button>
-																					<button class="bg-white text-blue-600 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3" type="button">
-																						<i class="flex fab fa-facebook-square"></i>
-																					</button>
-																					<button class="bg-white text-pink-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3" type="button">
-																						<i class="flex fab fa-dribbble"></i>
-																					</button>
-																					<button class="bg-white text-gray-900 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3" type="button">
-																						<i class="flex fab fa-github"></i>
-																					</button>
-																				</div> #}
-			</div>
-			<div class="w-full lg:w-6/12 px-4">
-				<div class="flex flex-wrap items-top mb-6">
-					<div class="w-full lg:w-4/12 px-4 ml-auto">
-						<span class="block text-gray-600 text-sm font-semibold mb-2">{{'Menú' | trans}}</span>
-						<ul class="list-unstyled">
-							<li>
-								<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="{{path('estacion')}}">
-									{{'Estaciones' | trans}}</a>
-							</li>
-							<li>
-								<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="https://blog.creative-tim.com">
-									{{'Quiénes somos' | trans}}
-								</a>
-							</li>
-							<li>
-								<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="https://www.github.com/creativetimofficial">
-									{{'Contáctenos' | trans}}</a>
-							</li>
-						</ul>
-					</div>
-					<div class="w-full lg:w-4/12 px-4">
-						<span class="block text-gray-600 text-sm font-semibold mb-2">{{'Servicios' | trans}}</span>
-						<ul class="list-unstyled">
-							{% for key, servicio in this.servicios %}
+		<div class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20" style="height: 80px;">
+			<svg class="absolute bottom-0 overflow-hidden" xmlns="http://www.w3.org/2000/svg" preserveaspectratio="none" version="1.1" viewbox="0 0 2560 100" x="0" y="0">
+				<polygon class="text-gray-300 fill-current" points="2560 0 2560 100 0 100"></polygon>
+			</svg>
+		</div>
+		<div class="container mx-auto px-4">
+			<div class="flex flex-wrap">
+				<div class="w-full lg:w-6/12 px-4">
+					<h4 class="text-lg md:text-3xl font-semibold">Transporte Fuente del Norte</h4>
+					<h5 class="text-lg mt-6 mb-2 text-gray-700 italic">
+						{{'Desde 1962 habriendo caminos cerrando distancias.' | trans}}
+					</h5>
+				</div>
+				<div class="w-full lg:w-6/12 px-4">
+					<div class="flex flex-wrap items-top mb-6">
+						<div class="w-full lg:w-4/12 px-4 ml-auto">
+							<span class="block text-gray-600 text-sm font-semibold mb-2">{{'Menú' | trans}}</span>
+							<ul class="list-unstyled">
 								<li>
-									<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="{{path('servicio', {'_fragment': servicio.slug})}}">
-										{{servicio.nombre}}
+									<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="{{path('estacion')}}">
+										{{'Estaciones' | trans}}</a>
+								</li>
+								<li>
+									<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="https://blog.creative-tim.com">
+										{{'Quiénes somos' | trans}}
 									</a>
 								</li>
-							{% endfor %}
-						</ul>
+								<li>
+									<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="https://www.github.com/creativetimofficial">
+										{{'Contáctenos' | trans}}</a>
+								</li>
+							</ul>
+						</div>
+						<div class="w-full lg:w-4/12 px-4">
+							<span class="block text-gray-600 text-sm font-semibold mb-2">{{'Servicios' | trans}}</span>
+							<ul class="list-unstyled">
+								{% for key, servicio in this.servicios %}
+									<li>
+										<a class="text-gray-700 hover:text-gray-900 font-semibold block pb-2 text-sm" href="{{path('servicio', {'_fragment': servicio.slug})}}">
+											{{servicio.nombre}}
+										</a>
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr class="my-6 border-gray-400"/>
+			<div class="flex flex-wrap items-center md:justify-between justify-center">
+				<div class="w-full md:w-4/12 px-4 mx-auto text-center">
+					<div class="text-sm text-gray-600 font-semibold py-1">
+						Copyright © 2022 Webmaster
+						<a href="mailto:alcidesrhgemail.com" class="text-gray-800 hover:text-gray-900">alcidesrh@gmail.com</a>.
 					</div>
 				</div>
 			</div>
 		</div>
-		<hr class="my-6 border-gray-400"/>
-		<div class="flex flex-wrap items-center md:justify-between justify-center">
-			<div class="w-full md:w-4/12 px-4 mx-auto text-center">
-				<div class="text-sm text-gray-600 font-semibold py-1">
-					Copyright © 2022 Webmaster
-					<a href="mailto:alcidesrhgemail.com" class="text-gray-800 hover:text-gray-900">alcidesrh@gmail.com</a>.
-				</div>
-			</div>
-		</div>
-	</div>
 	</section>
 </footer>

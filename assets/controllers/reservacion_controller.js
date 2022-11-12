@@ -11,10 +11,10 @@ export default class extends Controller {
   };
 
   connect() {
-    if (this.pasoValue != 0) {
-      this.blur();
-      this.dispatch("slider", { detail: { stop: true } });
-    }
+    // if (this.pasoValue != 0) {
+    //   this.blur();
+    //   this.dispatch("slider", { detail: { stop: true } });
+    // }
 
     document.addEventListener("turbo:before-fetch-response", (event) => {
       const fetchResponse = event.detail.fetchResponse;
@@ -33,8 +33,6 @@ export default class extends Controller {
     });
 
     document.addEventListener("turbo:before-fetch-request", async (event) => {
-      event.preventDefault();
-
       const loading = document.getElementById("turbo-loading");
 
       if (loading) {
@@ -44,9 +42,18 @@ export default class extends Controller {
       event.detail.fetchOptions.headers["turbo-request"] = true;
       event.detail.resume();
     });
+
+    const mensaje = document.getElementById("msg-pagando");
+    if (mensaje) {
+      mensaje.classList.add("hidden");
+    }
   }
 
-  setPaso({ detail: { paso } }) {
+  setPaso(event) {
+    event.preventDefault();
+
+    const paso = event.detail.paso;
+
     if (this.hasAlertTarget && paso != 0) {
       this.alertTarget.classList.add("hidden");
     }
@@ -62,6 +69,10 @@ export default class extends Controller {
     }
     if (paso > 0) {
       this.pasosTarget.children[paso - 1].classList.add("complete");
+      if (paso == 4) {
+        this.blur(false);
+        this.dispatch("slider", { detail: { stop: false } });
+      }
     }
     if (typeof this.pasosTarget.children[paso] != "undefined") {
       this.pasosTarget.children[paso].classList.remove("complete");

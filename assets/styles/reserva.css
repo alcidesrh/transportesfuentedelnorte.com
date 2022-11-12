@@ -71,7 +71,7 @@
 } */
 
 #turbo-loading {
-    @apply hidden fixed justify-center items-center z-50 top-0 left-0 h-full w-full bg-white/50;
+    @apply hidden flex-col fixed justify-center items-center z-50 top-0 left-0 h-full w-full bg-white/60;
 }
 
 .calendar-icon {

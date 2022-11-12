@@ -25,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Dompdf\Dompdf;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -498,6 +499,7 @@ class ReservacionController extends AbstractController
                         $entityManagerInterface->persist($cliente);
                         $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
                         $reservacion->setTransaccionId($resultado['id'] ?? null);
+                        $reservacion->setPasoCompletado(4);
                         $entityManagerInterface->flush();
                         return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
                     } else {
@@ -536,13 +538,20 @@ class ReservacionController extends AbstractController
 
         $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';
 
-        if (!$filesystem->exists('facturas/' . $pdf_nombre)) {
+        try {
+            if (!$filesystem->exists('facturas/' . $pdf_nombre)) {
 
-            $dompdf = new Dompdf();
-            $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
-            $dompdf->render();
-            $filesystem->dumpFile('facturas/' . $pdf_nombre, $dompdf->output());
+                $dompdf = new Dompdf();
+                $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
+                $dompdf->render();
+                $filesystem->dumpFile('facturas/' . $pdf_nombre, $dompdf->output());
+            }
+        } catch (IOException $th) {
+            return $this->renderForm('reservacion/confirmacion.html.twig', [
+                'error' => 'pdf'
+            ]);
         }
+
 
         if ($reservacion->getCliente()->getEmail()) {
             $email = (new Email())
@@ -561,7 +570,7 @@ class ReservacionController extends AbstractController
         $request->getSession()->set('_to_kepp_locale', true);
 
         return $this->renderForm('reservacion/confirmacion.html.twig', [
-            'reservacion' => $reservacion
+            'reservacion' => $reservacion,
         ]);
     }
 

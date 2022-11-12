@@ -1,1 +1,2 @@
 session_terminada_mensaje: The session has expired. In order to preserve the seats, the reservation must be made in less than {RESERVACION_MINUTOS} minutes.
+error_pdf: The ticket could not be created. Your ticket number is {BOLETO}. Please save that number and contact our offices.
