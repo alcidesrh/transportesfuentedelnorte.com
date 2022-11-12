@@ -327,9 +327,10 @@ class ReservacionController extends AbstractController
                     if ($precio->error) {
                         $errors[] = $precio->error;
                     } else {
-                        $confi = $entityManagerInterface->getRepository(Configuracion::class)->findOneBy([]);
-                        $reservacion->setCompraPorcientoActual($confi->getCompraPorciento());
-                        $reservacion->setDolarCambioActual($confi->getDolarCambio());
+                        if ($confi = $entityManagerInterface->getRepository(Configuracion::class)->findOneBy([])) {
+                            $reservacion->setCompraPorcientoActual($confi->getCompraPorciento());
+                            $reservacion->setDolarCambioActual($confi->getDolarCambio());
+                        }
                         $reservacion->setPrecio($precio->total);
                         $reservacion->setPrecioDolar($precio->total);
                         $reservacion->setPasoCompletado(3);

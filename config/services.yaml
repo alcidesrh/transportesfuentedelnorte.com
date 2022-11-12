@@ -10,7 +10,7 @@ parameters:
     enabled_locales: ["es", "en"]
     reservacion_minutos: 150
 
-    cybersource_merchant_id: "%env(cybersource_merchant_id)%"
+    cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
 
 services:
     # default configuration for services in *this* file
@@ -37,9 +37,9 @@ services:
 
     App\Services\CybersourceApi:
         arguments:
-            $cybersource_merchant_id: "%env(cybersource_merchant_id)%"
-            $cybersource_merchant_key_id: "%env(cybersource_merchant_key_id)%"
-            $cybersource_merchant_secret_key: "%env(cybersource_merchant_secret_key)%"
+            $cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
+            $cybersource_merchant_key_id: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"
+            $cybersource_merchant_secret_key: "%env(CYBERSOURCE_MERCHANT_SECRET_KEY)%"
             $CYBERSOURCE_HOST: "%env(CYBERSOURCE_HOST)%"
             $CYBERSOURCE_PAYMENTS: "%env(CYBERSOURCE_PAYMENTS)%"
 
