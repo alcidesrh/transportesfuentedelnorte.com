@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
@@ -10,8 +9,15 @@ export default class extends Controller {
   connect() {
     window.scrollTo(0, 0);
 
+    const mensaje = document.getElementById("msg-pagando");
+    if (mensaje) {
+      mensaje.classList.add("hidden");
+    }
+
     this.dispatch("reserva", { detail: { paso: 4 } });
 
-    this.pdf_linkTarget.click();
+    if (this.hasPdf_linkTarget) {
+      this.pdf_linkTarget.click();
+    }
   }
 }

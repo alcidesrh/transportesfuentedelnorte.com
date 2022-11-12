@@ -18,6 +18,11 @@ export default class extends Controller {
       this.dispatch("reservacion_paso", { paso: 3 });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+
+    const mensaje = document.getElementById("msg-pagando");
+    if (mensaje) {
+      mensaje.classList.add("hidden");
+    }
   }
   moneda(event) {
     this.precioTarget.value = event.currentTarget.dataset.precio;

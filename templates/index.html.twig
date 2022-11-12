@@ -30,30 +30,28 @@
 
 	<section class="relative pb-20 pt-14 flex content-center items-center justify-center" style="min-height: 75vh;">
 
-		<div class="container relative mx-auto flex items-center">
-			<div>
-				<div class="tracking-wider text-center font-medium mb-5 text-3xl lg:text-5xl empresa-nombre">{{'Nuestros Servicios' | trans}}</div>
-				<div class="flex flex-wrap justify-center">
-					{% for key, servicio in servicios %}
-						<div class="w-full md:w-4/12 lg:w-3/12 text-center p-4">
-							<a href="{{path('servicio', {'_fragment': servicio.slug})}}">
-								<div class="bg-white w-full px-4 py-8 shadow-lg rounded-lg max-h-[366px]">
-									<div class="grid gap-5">
-										<picture class="shadow-lg max-w-[200px] m-auto">
-											<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" type="image/webp">
-											<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" type="image/jpeg">
-											<img class="rounded-md" src="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" alt="{{servicio.imagen.nombre}}">
-										</picture>
-										<h6 class="text-lg font-semibold">{{servicio.nombre}}</h6>
-										<div class="text-ellipsis overflow-hidden h-36">
-											{{servicio.texto | raw}}
-										</div>
+		<div class="container relative mx-auto px-7 sm:px-10">
+			<div class="tracking-wider text-center font-medium mb-5 text-3xl lg:text-5xl empresa-nombre">{{'Nuestros Servicios' | trans}}</div>
+			<div class="flex flex-wrap justify-center">
+				{% for key, servicio in servicios %}
+					<div class="w-full md:w-4/12 lg:w-3/12 text-center p-4">
+						<a href="{{path('servicio', {'_fragment': servicio.slug})}}">
+							<div class="bg-white w-full px-4 py-8 shadow-lg rounded-lg max-h-[366px]">
+								<div class="grid gap-5">
+									<picture class="shadow-lg max-w-[200px] m-auto">
+										<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" type="image/webp">
+										<source srcset="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" type="image/jpeg">
+										<img class="rounded-md" src="{{ servicio.imagen.path | imagine_filter('imagen_servicio_inicio') }}" alt="{{servicio.imagen.nombre}}">
+									</picture>
+									<h6 class="text-lg font-semibold">{{servicio.nombre}}</h6>
+									<div class="text-ellipsis overflow-hidden h-36">
+										{{servicio.texto | raw}}
 									</div>
 								</div>
-							</a>
-						</div>
-					{% endfor %}
-				</div>
+							</div>
+						</a>
+					</div>
+				{% endfor %}
 			</div>
 		</div>
 

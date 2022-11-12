@@ -11,11 +11,6 @@ export default class extends Controller {
   };
 
   connect() {
-    // if (this.pasoValue != 0) {
-    //   this.blur();
-    //   this.dispatch("slider", { detail: { stop: true } });
-    // }
-
     document.addEventListener("turbo:before-fetch-response", (event) => {
       const fetchResponse = event.detail.fetchResponse;
 
@@ -54,7 +49,7 @@ export default class extends Controller {
 
     const paso = event.detail.paso;
 
-    if (this.hasAlertTarget && paso != 0) {
+    if (this.hasAlertTarget && paso != 0 && this.alertTarget) {
       this.alertTarget.classList.add("hidden");
     }
     if (paso != 0) {
@@ -64,17 +59,23 @@ export default class extends Controller {
       this.blur(false);
       this.dispatch("slider", { detail: { stop: false } });
     }
-    if (typeof this.pasosTarget.querySelector(".active") != "undefined") {
+    if (
+      this.pasosTarget.querySelector(".active") &&
+      typeof this.pasosTarget.querySelector(".active") != "undefined"
+    ) {
       this.pasosTarget.querySelector(".active").classList.remove("active");
     }
-    if (paso > 0) {
+    if (paso > 0 && this.pasosTarget.children[paso - 1]) {
       this.pasosTarget.children[paso - 1].classList.add("complete");
       if (paso == 4) {
         this.blur(false);
         this.dispatch("slider", { detail: { stop: false } });
       }
     }
-    if (typeof this.pasosTarget.children[paso] != "undefined") {
+    if (
+      typeof this.pasosTarget.children[paso] &&
+      typeof this.pasosTarget.children[paso] != "undefined"
+    ) {
       this.pasosTarget.children[paso].classList.remove("complete");
       this.pasosTarget.children[paso].classList.add("active");
     }
