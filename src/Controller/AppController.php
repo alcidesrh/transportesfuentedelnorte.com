@@ -10,6 +10,7 @@ use App\Repository\ReservacionRepository;
 use App\Repository\ServicioRepository;
 use App\Repository\SliderRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sonata\SeoBundle\Seo\SeoPageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AppController extends AbstractController
 {
+    public function __construct(private SeoPageInterface $seoPage)
+    {
+    }
+
     #[Route('/', name: 'inicio')]
     public function index(Request $request, ReservacionRepository $reservacionRepository, ServicioRepository $servicioRepository, SliderRepository $sliderRepository): Response
     {
@@ -36,6 +41,8 @@ class AppController extends AbstractController
     #[Route('/servicio/{slug?}', name: 'servicio')]
     public function servicio(ServicioRepository $servicioRepository): Response
     {
+        $this->seoPage->addMeta('name', 'description', '$post->getAbstract()'); //Title('Salida y destino');
+
         return $this->render('servicio.html.twig', [
             'servicios' => $servicioRepository->findBy([], ['prioridad' => 'ASC']) //$servicio ? [$servicio] : $servicioRepository->findBy([], ['prioridad' => 'desc']),
         ]);

@@ -8,9 +8,9 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["pdf_link"];
   connect() {
-    this.dispatch("reserva", { detail: { paso: 4 } });
+    window.scrollTo(0, 0);
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    this.dispatch("reserva", { detail: { paso: 4 } });
 
     this.pdf_linkTarget.click();
   }

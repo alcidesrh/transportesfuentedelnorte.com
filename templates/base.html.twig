@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8"/>
+
+		{% block seo %}
+			{{ sonata_seo_metadatas() }}
+		{% endblock %}
+
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<meta name="description" content="{{'Empresa de transporte Guatemala. Servicios de buses.' | trans}}">
 		<link rel="shortcut icon" href="./assets/img/favicon.ico"/>
 		<link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png"/>
 
@@ -15,11 +18,10 @@
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
 
-		<title>
-			{% block title %}
-				{{'Empresa de transporte Guatemala. Servicios de buses.' | trans}}
-			{% endblock %}
-		</title>
+		{% block title %}
+			{{ sonata_seo_title() }}
+		{% endblock %}
+
 
 	</head>
 	<body class="antialiased">

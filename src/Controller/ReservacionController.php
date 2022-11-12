@@ -548,7 +548,8 @@ class ReservacionController extends AbstractController
             }
         } catch (IOException $th) {
             return $this->renderForm('reservacion/confirmacion.html.twig', [
-                'error' => 'pdf'
+                'error' => 'pdf',
+                'reservacion' => $reservacion
             ]);
         }
 
@@ -570,7 +571,7 @@ class ReservacionController extends AbstractController
         $request->getSession()->set('_to_kepp_locale', true);
 
         return $this->renderForm('reservacion/confirmacion.html.twig', [
-            'reservacion' => $reservacion,
+            'reservacion' => $reservacion
         ]);
     }
 
