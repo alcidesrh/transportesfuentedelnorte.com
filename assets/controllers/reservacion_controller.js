@@ -15,6 +15,10 @@ export default class extends Controller {
     if (mensaje) {
       mensaje.classList.add("hidden");
     }
+    if (this.pasoValue) {
+      this.blur();
+      this.dispatch("slider", { detail: { stop: true } });
+    }
   }
 
   setPaso(event) {

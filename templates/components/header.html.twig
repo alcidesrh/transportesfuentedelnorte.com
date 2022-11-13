@@ -1,8 +1,8 @@
 <nav class="bg-indigo-800 top-0 fixed z-50 w-full h-[69px] flex flex-wrap items-center justify-between px-5 sm:px-7 md:px-5 lg:px-4 xl:px-20 py-3">
 	<div class="relative flex justify-between w-full md:w-auto lg:static md:block lg:justify-start">
 		<a class="text-xl inline-block md:hidden lg:inline-block lg:text-xl xl:text-2xl py-2 whitespace-nowrap empresa-nombre text-teal-50" href="{{path('inicio')}}">
-			<span {{ stimulus_controller('symfony/ux-typed', { strings: [ 'En Guatemala desde 1958...', 'abriendo caminos...', 'acortando distancias...', '<span class="gold">Transporte Fuente del Norte</span>', ],smartBackspace: true, startDelay: 100, backSpeed: 20, backDelay: 2000, showCursor: false } ) }}></span>
-
+			<span data-turbo-permanent {{ stimulus_controller({ typed: {} , 'symfony/ux-typed' : {strings: [ "En Guatemala desde 1958..." | trans , "abriendo caminos..." | trans , "acortando distancias..." | trans , "<span class='gold'>Transporte Fuente del Norte</span>" ]} }) }}></span>
+			<span class="gold hidden" id="typed-placeholder">Transporte Fuente del Norte</span>
 		</a>
 		<button class="cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block md:hidden outline-none focus:outline-none" type="button" onclick="toggleNavbar('example-collapse-navbar')">
 			<span class="material-symbols-outlined text-white text-3xl">
