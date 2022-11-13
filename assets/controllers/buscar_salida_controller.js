@@ -30,11 +30,10 @@ export default class extends Controller {
 
   connect() {
     if (!this.primerRenderValue) {
-      useDispatch(this);
-      this.dispatch("reservacion_paso", { paso: 1 });
-
       if (!(this.noScrollValue == 1)) {
         window.scrollTo({ top: 0, behavior: "smooth" });
+        useDispatch(this);
+        this.dispatch("reservacion_paso", { paso: 1 });
       }
     }
     if (this.hasListaTarget) {

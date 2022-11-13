@@ -9,16 +9,23 @@ export default class extends Controller {
   static values = {
     paso: Number,
   };
-
+  flag = null;
   connect() {
     const mensaje = document.getElementById("msg-pagando");
     if (mensaje) {
       mensaje.classList.add("hidden");
     }
     if (this.pasoValue) {
+      this.flag = 1;
       this.blur();
-      this.dispatch("slider", { detail: { stop: true } });
+      this.sliderStop(true);
     }
+  }
+
+  sliderStop(stop) {
+    window.onload = () => {
+      this.dispatch("slider", { detail: { stop: stop } });
+    };
   }
 
   setPaso(event) {
@@ -29,6 +36,12 @@ export default class extends Controller {
     if (this.hasAlertTarget && paso != 0 && this.alertTarget) {
       this.alertTarget.classList.add("hidden");
     }
+
+    if (this.flag == 1 && paso == this.pasoValue) {
+      this.flag = 2;
+      return;
+    }
+
     if (paso != 0) {
       this.blur();
       this.dispatch("slider", { detail: { stop: true } });
@@ -59,12 +72,14 @@ export default class extends Controller {
   }
 
   blur(add = true) {
-    const sections = document.getElementsByTagName("section");
-
-    Array.prototype.filter.call(sections, (section) =>
-      add
-        ? section.classList.add("section-blur")
-        : section.classList.remove("section-blur")
-    );
+    if (add) {
+      const sections = document
+        .querySelector("main")
+        .classList.add("reservando");
+    } else {
+      const sections = document
+        .querySelector("main")
+        .classList.remove("reservando");
+    }
   }
 }

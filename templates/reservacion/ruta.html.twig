@@ -7,7 +7,7 @@
 	{% endfor %}
 
 	{{ form_row(form._token) }}
-	<div class="grid gap-y-2 gap-x-4 w-fit m-auto sm:grid-cols-[repeat(2,minmax(250px,300px))] lg:grid-cols-[repeat(3,minmax(250px,300px))]">
+	<div class="grid gap-3 px-5 md:gap-x-5 max-w-sm sm:max-w-xl md:max-w-xl lg:max-w-4xl m-auto md:grid-cols-2 lg:grid-cols-3">
 		{{ form_row(form.estacion_salida)}}
 		{{ form_row(form.estacion_llegada)}}
 		{{ form_row(form.ida_vuelta, {attr: {class: 'flex gap-2 items-center'}}) }}

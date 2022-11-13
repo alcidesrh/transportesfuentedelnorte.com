@@ -18,13 +18,13 @@
 		<div class="flex sm:block justify-center">
 			<div class="flex justify-center">
 
-				<div class="{{reservacion.isIdaVuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
+				<div class="{{reservacion.isIdaVuelta ? 'md:grid md:grid-cols-2 md:gap-7 lg:gap-10' : ''}}">
 					<div>
 						<h1 class="mb-5 font-medium text-lg">{{'Salida' | trans}}</h1>
 						{{ render(controller('App\\Controller\\ReservacionController::getAsientos', {id: reservacion.salida.id})) }}
 					</div>
 					{% if reservacion.isIdaVuelta %}
-						<div class="md:pl-10 pt-10 md:pt-0">
+						<div class="md:psl-10 pt-10 md:pt-0">
 							<div class="border-t mb-10 mt-3 md:hidden"></div>
 							<h1 class="mb-5 font-medium text-lg">{{'Regreso' | trans}}</h1>
 							{{render(controller('App\\Controller\\ReservacionController::getAsientos',{id: reservacion.regreso.id, regreso: true}))}}

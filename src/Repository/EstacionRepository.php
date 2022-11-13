@@ -47,7 +47,7 @@ class EstacionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->select('e, d')
             ->leftJoin('e.departamento', 'd')
-            ->where('e.activa = :true')
+            ->where('e.activa = :true and d.activo = :true')
             ->orderBy('d.prioridad', 'desc')
             ->addOrderBy('e.prioridad', 'desc')
             ->setParameter('true', true);

@@ -83,13 +83,13 @@
 }
 
 .salida-selected {
-    @apply bg-gray-100 rounded;
+    @apply bg-sky-100 rounded;
 }
 
-.salida-selected button.elegir {
+.salida-selected .elegir {
     @apply hidden;
 }
-.salida-selected button.btn-descartar-salida {
+.salida-selected .btn-descartar-salida {
     @apply inline-block;
 }
 
@@ -115,11 +115,20 @@
     @apply text-indigo-500 font-medium;
 }
 
-.section-blur {
+.reservando > *:not(#turbo-loading) {
     @apply blur-lg;
+    &.banner {
+        @apply blur-none;
+        & > *:not(.reserva) {
+            @apply blur-lg;
+        }
+    }
+}
+.reservando > div:first-child {
+    @apply block;
 }
 
-@media only screen and (max-width: 1000px) {
+.reservando > @media only screen and (max-width: 1000px) {
     .reserva {
         @apply relative;
     }

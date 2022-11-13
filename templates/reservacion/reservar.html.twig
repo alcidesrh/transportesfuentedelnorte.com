@@ -1,9 +1,9 @@
-<div class="reserva absolute top-0 z-40 mx-auto mt-0 md:mt-10 lg:mt-16 bg-white sm:rounded-lg w-full max-w-full md:min-w-[700px] md:w-fit px-5 md:px-10 drop-shadow-lg">
+<div class="reserva absolute top-0 z-40 mx-auto mt-0 md:mt-10 lg:mt-14 xl:mt-[80px] bg-white sm:rounded-lg w-full max-w-full lg:max-w-4xl md:min-w-[750px] md:w-fit px-5 md:px-10 drop-shadow-lg">
 
 	<div class="w-full m-auto" data-controller="reservacion" data-reservacion-paso-value="{{reservacion_paso}}">
 
 		{% if reservacion_paso == 0 %}
-			<div class="text-center mt-5" data-reservacion-target="alert">
+			<div class="text-center pt-5" data-reservacion-target="alert">
 				{{ component('alert', {text: 'Haga su <strong>reserva</strong> completando la información requerida.' | trans, class: 'rounded-none mb-0'}) }}
 			</div>
 		{% endif %}

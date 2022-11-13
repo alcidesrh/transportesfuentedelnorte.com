@@ -21,7 +21,7 @@
 					<div class="relative w-[300px]">
 						{{ form_start(form) }}
 						{{ form_row(form.salida_fecha, {attr: {'data-buscar-salida-target': 'salida_fecha', 'data-action': 'buscar-salida#buscarSalida', readonly: true, class: 'flatpickr-input'}})}}
-						<span class=" material-symbols-outlined calendar-icon" data-action="click->buscar-salida#abrirFechaSalida">
+						<span class="material-symbols-outlined calendar-icon" data-action="click->buscar-salida#abrirFechaSalida">
 							calendar_month
 						</span>
 						{{ form_end(form) }}
@@ -63,11 +63,11 @@
 														<label class="capitalize text-sm">{{'Elegir' | trans}}</label>
 													</div>
 												</button>
-												<button class="btn sm hidden btn-descartar-salida btn-success">
-													<div class="flex justify-center">
-														<label class="capitalize text-sm">{{'Descartar' | trans}}</label>
-													</div>
-												</button>
+												<div class="w-[80px] text-center btn-descartar-salida h-[34px] hidden">
+													<span class="material-symbols-outlined text-4xl text-cyan-600 -mt-[3px]">
+														check_box
+													</span>
+												</div>
 											</div>
 										</div>
 									{% endfor %}

@@ -33,6 +33,9 @@ class Departamento
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $prioridad = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $activo = null;
+
     public function __construct()
     {
         $this->estaciones = new ArrayCollection();
@@ -113,6 +116,18 @@ class Departamento
     public function setPrioridad(?int $prioridad): self
     {
         $this->prioridad = $prioridad;
+
+        return $this;
+    }
+
+    public function isActivo(): ?bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(?bool $activo): self
+    {
+        $this->activo = $activo;
 
         return $this;
     }
