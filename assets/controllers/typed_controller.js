@@ -22,9 +22,7 @@ export default class extends Controller {
     bindInputFocusEvents: Boolean,
     contentType: { type: String, default: "html" },
   };
-
   typed = null;
-
   connect() {
     const options = {
       strings: this.stringsValue,
@@ -49,7 +47,7 @@ export default class extends Controller {
 
     options.backDelay = 2000;
     options.smartBackspace = true;
-    // options.startDelay = 10;
+    options.startDelay = 10;
     options.backSpeed = 20;
     options.showCursor = false;
 
@@ -60,13 +58,13 @@ export default class extends Controller {
       }
     };
 
-    window.addEventListener("load", () => {
-      this.typed = new Typed(this.element, options);
+    this.typed = new Typed(this.element, options);
 
-      const event = new CustomEvent("typed-stop", {
-        detail: { typed: this.typed },
-      });
-      document.dispatchEvent(event);
+    this.typed.start();
+
+    const event = new CustomEvent("typed-stop", {
+      detail: { typed: this.typed },
     });
+    document.dispatchEvent(event);
   }
 }

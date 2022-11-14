@@ -16,24 +16,20 @@ export default class extends Controller {
     if (!this.hasSliderTarget) {
       return;
     }
-    window.addEventListener("load", () => {
-      this.slider = gsap.timeline({ repeat: -1, yoyo: true }); //, delay: 15
-      for (let i = 0; i < this.sliderTarget.children.length; i++) {
-        this.slider.to(this.sliderTarget.children[i], {
-          x: "100%",
-          y: "-100%",
-          display: "none",
-          rotation: -27,
-          duration: 3,
-          delay: 10,
-        });
-      }
-      this.slider.play();
-    });
+    this.slider = gsap.timeline({ repeat: -1, yoyo: true, delay: 5 }); //, delay: 15
+    for (let i = 0; i < this.sliderTarget.children.length; i++) {
+      this.slider.to(this.sliderTarget.children[i], {
+        x: "100%",
+        y: "-100%",
+        display: "none",
+        rotation: -27,
+        duration: 3,
+        delay: 10,
+      });
+    }
+    this.slider.play();
   }
   control({ detail: { stop } }) {
-    window.addEventListener("load", (event) => {
-      this.slider.paused(stop);
-    });
+    this.slider.paused(stop);
   }
 }

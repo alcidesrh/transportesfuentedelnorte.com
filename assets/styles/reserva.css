@@ -124,11 +124,8 @@
         }
     }
 }
-.reservando > div:first-child {
-    @apply block;
-}
 
-.reservando > @media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1000px) {
     .reserva {
         @apply relative;
     }
@@ -138,7 +135,7 @@
     .slider-wrap {
         @apply bg-transparent;
     }
-    .section-blur.slider {
+    .reservando .slider {
         @apply hidden;
     }
 }

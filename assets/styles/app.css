@@ -56,14 +56,14 @@
         @apply px-4 py-1.5;
     }
     .btn.btn-success {
-        @apply bg-cyan-600 text-white hover:bg-cyan-500;
+        @apply bg-cyan-600 text-white;
     }
     .cancel {
         @apply btn bg-orange-500/80 hover:bg-orange-500;
     }
     .btn-outline,
     .btn.btn-outline.btn-success {
-        @apply w-fit bg-transparent text-cyan-600 border border-cyan-600 hover:bg-cyan-600 hover:text-white !outline-none;
+        @apply w-fit bg-transparent text-cyan-600 border border-cyan-600;
     }
 
     .btn .material-symbols-outlined {

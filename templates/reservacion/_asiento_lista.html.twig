@@ -18,12 +18,12 @@
 
 			{% if asientos_nivel_1 is not empty and asientos_nivel_2 is not empty %}
 				<div class="flex justify-end px-3 mb-5 gap-2">
-					<button class="btn sm flex justify-center text-sm btn-success" type="button" data-asiento-target="{{regreso ? 'btn_nivel1_regreso' : 'btn_nivel1'}}" data-action="asiento#cambiar_nivel" data-nivel="1" data-regreso="{{regreso}}">
+					<button class="btn sm flex justify-center text-sm btn-success border" type="button" data-asiento-target="{{regreso ? 'btn_nivel1_regreso' : 'btn_nivel1'}}" data-action="asiento#cambiar_nivel" data-nivel="1" data-regreso="{{regreso}}">
 						{{'Nivel' | trans}}
 						1
 					</button>
 
-					<button class="btn sm btn-outline flex justify-center text-sm btn-success" type="button" data-asiento-target="{{regreso ? 'btn_nivel2_regreso' : 'btn_nivel2'}}" data-action="asiento#cambiar_nivel" data-nivel="2" data-regreso="{{regreso}}">
+					<button class="btn sm btn-outline flex justify-center text-sm btn-success border" type="button" data-asiento-target="{{regreso ? 'btn_nivel2_regreso' : 'btn_nivel2'}}" data-action="asiento#cambiar_nivel" data-nivel="2" data-regreso="{{regreso}}">
 						<div class="">
 							{{'Nivel' | trans}}
 							2
