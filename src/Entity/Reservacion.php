@@ -81,6 +81,9 @@ class Reservacion
     #[ORM\Column(nullable: true)]
     private ?float $dolar_cambio_actual = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $precio_real = null;
+
     public function __construct()
     {
         $this->status = self::STATUS_INCOMPLETA;
@@ -285,9 +288,9 @@ class Reservacion
         return number_format($this->precio_dolar, 2);
     }
 
-    public function setPrecioDolar(?float $precio_dolar): self
+    public function setPrecioDolar(): self
     {
-        $this->precio_dolar = $precio_dolar / $this->dolar_cambio_actual;
+        $this->precio_dolar = $this->precio / $this->dolar_cambio_actual;
 
         return $this;
     }
@@ -312,6 +315,18 @@ class Reservacion
     public function setDolarCambioActual(?float $dolar_cambio_actual): self
     {
         $this->dolar_cambio_actual = $dolar_cambio_actual;
+
+        return $this;
+    }
+
+    public function getPrecioReal(): ?float
+    {
+        return $this->precio_real;
+    }
+
+    public function setPrecioReal(?float $precio_real): self
+    {
+        $this->precio_real = $precio_real;
 
         return $this;
     }

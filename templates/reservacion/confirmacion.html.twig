@@ -4,7 +4,6 @@
 		<div class="mb-5">
 			{{ component('alert', {class: 'info', icon: 'done', text: ('Su reserva ha sido creada con exito. Guarde el boleto y <span class="font-semibold">llévelo en el teléfono o impreso el día de su viaje</span>.' | trans) ~ (reservacion.cliente and reservacion.cliente.email ? (' ' ~ 'Se ha enviado un correo a' | trans ~ ' <span class="font-semibold">' ~reservacion.cliente.email ~ '</span> ' ~ 'con una copia del boleto.' | trans))}) }}
 		</div>
-
 		{% if error is defined %}
 			{{ component('alert', {class: 'error', icon: 'error', text: 'error_pdf' | trans({'BOLETO' :  reservacion.getBoletoTicketId})})}}
 		{% else %}

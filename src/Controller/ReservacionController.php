@@ -332,8 +332,7 @@ class ReservacionController extends AbstractController
                             $reservacion->setCompraPorcientoActual($confi->getCompraPorciento());
                             $reservacion->setDolarCambioActual($confi->getDolarCambio());
                         }
-                        $reservacion->setPrecio($precio->total);
-                        $reservacion->setPrecioDolar($precio->total);
+                        $reservacion->setPrecioReal($precio->total)->setPrecio($precio->total)->setPrecioDolar($precio->total);
                         $reservacion->setPasoCompletado(3);
                         $entityManagerInterface->flush();
                         return $this->redirectToRoute('pagar', ['reservacion' => $reservacion->getId()]);

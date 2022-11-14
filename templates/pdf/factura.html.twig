@@ -5282,7 +5282,7 @@
 			<div class="px-15">
 				<div class="row">
 					<div class="span2 text-right">{{'Precio' | trans}}:</div>
-					<div class="span5">{{ reservacion.precio |format_currency(reservacion.moneda) }}</div>
+					<div class="span5">{{ reservacion.getPrecioVisual|format_currency(reservacion.moneda, {rounding_mode: 'floor'}, reservacion.moneda == constant('App\\Entity\\Reservacion::MONEDA_GTQ')  ? 'es', 'en') }}</div>
 				</div>
 				<div class="row">
 					<div class="span2 text-right">{{'Reservacion número' | trans}}:</div>

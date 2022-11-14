@@ -52,8 +52,8 @@
 
 		<div class="flex justify-between m-auto mt-14 max-w-lg sm:max-w-[600px] md:max-w-2xl lg:max-w-5xl">
 			{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('asientos', {'reservacion': reservacion.id})}) }}
-			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel sm', link: path('cancelar'), attr: 'data-turbo=false'}) }}
-			{# {{ component('button', {text: 'Pagar' | trans, icon: {left: true, name: 'payments'}, attr: {'type': 'submit', 'data-action': 'pagar#mensaje'}}) }} #}
+			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
+			{{ component('button', {text: 'Pagar' | trans, icon: {left: true, name: 'payments'}, attr: {'type': 'submit', 'data-action': 'pagar#mensaje'}}) }}
 		</div>
 		{{ form_end(form) }}
 

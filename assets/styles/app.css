@@ -49,21 +49,21 @@
 @layer components {
     [type="submit"],
     .btn {
-        @apply whitespace-nowrap w-fit h-fit tracking-wider text-sm inline-flex items-center text-white bg-blue-500 hover:bg-blue-400 font-semibold rounded-lg px-3.5 py-2 sm:px-5 sm:py-2.5 text-center !outline-none;
+        @apply whitespace-nowrap w-fit h-fit tracking-wider text-sm inline-flex items-center text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 font-semibold rounded-lg px-3.5 py-2 sm:px-5 sm:py-2.5 text-center !outline-none;
         padding: 8px 17px;
     }
     .btn.sm {
         @apply px-4 py-1.5;
     }
     .btn.btn-success {
-        @apply bg-cyan-600 text-white;
+        @apply bg-cyan-600 text-white hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring focus:ring-cyan-400;
     }
     .cancel {
-        @apply btn bg-orange-500/80 hover:bg-orange-500;
+        @apply btn bg-orange-500/80 hover:bg-orange-600 active:bg-orange-700 focus:outline-none focus:ring focus:ring-orange-400;
     }
     .btn-outline,
     .btn.btn-outline.btn-success {
-        @apply w-fit bg-transparent text-cyan-600 border border-cyan-600;
+        @apply w-fit bg-transparent text-cyan-600 border border-cyan-600 hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring focus:ring-cyan-400 hover:text-white;
     }
 
     .btn .material-symbols-outlined {
