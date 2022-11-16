@@ -1,5 +1,5 @@
 <turbo-frame id="reservacion-form">
-	<div data-controller="asiento" data-asiento-primer-render-value="{{primer_render}}">
+	<div data-controller="asiento">
 		{% if errors is not empty %}
 			{% for error in errors %}
 				<div class="text-red-700 text-center mb-10">{{ error }}</div>

@@ -1,6 +1,6 @@
 <nav class="bg-indigo-800 top-0 fixed z-50 w-full h-[60px] flex items-center justify-between px-5 sm:px-7 md:px-5 lg:px-6 xl:px-20 py-3">
 	<div class="relative flex justify-between flex-wrap w-full min-w-full md:min-w-0 md:w-auto lg:static md:block lg:justify-start">
-		<a class="text-xl inline-block md:hidden lg:inline-block lg:text-xl xl:text-2xl py-2 whitespace-nowrap empresa-nombre text-teal-50" href="{{path('inicio')}}">
+		<a data-turbo-cache="false" class="text-xl inline-block md:hidden lg:inline-block lg:text-xl xl:text-2xl py-2 whitespace-nowrap empresa-nombre text-teal-50" href="{{path('inicio')}}">
 			<span data-turbo-permanent {{ stimulus_controller({ typed: {strings: [ "En Guatemala desde 1958..." | trans , "abriendo caminos..." | trans , "acortando distancias..." | trans , "<span class='gold'>Transporte Fuente del Norte</span>" ]} }) }}></span>
 			<span class="gold hidden" id="typed-placeholder">Transporte Fuente del Norte</span>
 		</a>
@@ -55,30 +55,30 @@
 				class="flex mt-3 mb-5 md:my-0">
 				{# {% if not is_granted('ROLE_USER') %} #}
 				<li class="flex items-center mr-1">
-					{{ component('button_link', {text: 'English', link: '/en', class: 'sm font-medium !px-2 !py-[3px] rounded'  ~ (app.request.locale == 'en' ? ' text-[13px] bg-teal-50 hover:bg-teal-50 text-slate-700' : ' text-[13px] btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50')}) }}
+					{{ component('button_link', {attr: 'data-turbo=false', text: 'English', link: '/en', class: 'sm font-medium !px-2 !py-[3px] rounded'  ~ (app.request.locale == 'en' ? ' text-[13px] bg-teal-50 hover:bg-teal-50 text-slate-700' : ' text-[13px] btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50')}) }}
 
 				</li>
 				<li class="flex items-center mr-1">
-					{{ component('button_link', {text: 'Español', link: '/', class: 'sm font-medium !px-2 !py-[3px] rounded-md' ~ (app.request.locale == 'es' ? ' text-[13px] bg-teal-50 hover:bg-teal-50 text-slate-700' : ' text-[13px] btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50')}) }}
+					{{ component('button_link', {attr: 'data-turbo=false', text: 'Español', link: '/', class: 'sm font-medium !px-2 !py-[3px] rounded-md' ~ (app.request.locale == 'es' ? ' text-[13px] bg-teal-50 hover:bg-teal-50 text-slate-700' : ' text-[13px] btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50')}) }}
 
 				</li>
 				{# {% else %}
-																																									<li class="flex items-center">
-																																										{{ component('button_link', {text: 'Administración', link: path('admin'), class: 'btn sm text-xs bg-teal-50 text-slate-900 hover:bg-teal-500'}) }}
-																																									</li>
-																																								{% endif %} #}
+																																																									<li class="flex items-center">
+																																																										{{ component('button_link', {text: 'Administración', link: path('admin'), class: 'btn sm text-xs bg-teal-50 text-slate-900 hover:bg-teal-500'}) }}
+																																																									</li>
+																																																								{% endif %} #}
 			</ul>
 			{# {% if app.request.locale == 'es'%}
-																												<ul class="flex my-3 md:my-0">
-																													<li class="flex items-center">
-																														{% if is_granted('ROLE_USER') %}
-																															{{ component('button_link', {text: 'Cerrar sesión', link: path('app_logout'), class: ' btn sm !px-2 !pr-0 text-xs btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50' }) }}
-																														{% else %}
-																															{{ component('button_link', {text: 'Iniciar sesión', link: path('app_login'), class: ' btn sm !px-2 !pr-0 text-xs btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50' }) }}
-																														{% endif %}
-																													</li>
-																												</ul>
-																											{% endif %} #}
+																																								<ul class="flex my-3 md:my-0">
+																																									<li class="flex items-center">
+																																										{% if is_granted('ROLE_USER') %}
+																																											{{ component('button_link', {text: 'Cerrar sesión', link: path('app_logout'), class: ' btn sm !px-2 !pr-0 text-xs btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50' }) }}
+																																										{% else %}
+																																											{{ component('button_link', {text: 'Iniciar sesión', link: path('app_login'), class: ' btn sm !px-2 !pr-0 text-xs btn-outline text-teal-50 border-cyan-400 hover:text-slate-900 hover:bg-teal-50' }) }}
+																																										{% endif %}
+																																									</li>
+																																								</ul>
+																																							{% endif %} #}
 		</div>
 	</div>
 

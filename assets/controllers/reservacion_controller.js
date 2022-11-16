@@ -31,8 +31,8 @@ export default class extends Controller {
   }
 
   setPaso(event) {
+    console.log(event.detail.paso);
     event.preventDefault();
-
     if (this.hasAlertTarget && event.detail.paso != 0 && this.alertTarget) {
       this.alertTarget.classList.add("hidden");
     }

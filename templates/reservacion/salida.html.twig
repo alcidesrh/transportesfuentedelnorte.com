@@ -1,6 +1,5 @@
 <turbo-frame id="reservacion-form">
 
-
 	{% if errors is not empty %}
 		<ul class="m-auto w-fit mb-10">
 			{% for error in errors %}
@@ -9,24 +8,25 @@
 		</ul>
 	{% endif %}
 
-	<div class="{{ida_vuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
+	<div id="salidas" class="{{ida_vuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
 		<div>
-			{{ render(controller('App\\Controller\\ReservacionController::salidaForm', {reservacion: reservacion_id, primer_render: primer_render})) }}
+			<turbo-frame id="salida-form" loading="lazy" data-action='buscar-salida:reservacion_paso->reservacion#setPaso' src="{{ path('salida_form') }}"></turbo-frame>
 		</div>
 		{% if ida_vuelta %}
 			<div class="md:pl-5 pt-10 md:pt-0">
 				<div class="border-t mb-10 mt-3 md:hidden"></div>
-				{{render(controller('App\\Controller\\ReservacionController::salidaForm',{reservacion:reservacion_id,ida_vuelta:true, primer_render: primer_render}))}}
+				<turbo-frame id="salida-form" src="{{ path('salida_form', {ida_vuelta:true, primer_render: primer_render}) }}"></turbo-frame>
 			</div>
 		{% endif %}
 	</div>
 
 	<div class="flex justify-between mt-14">
-		{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('ruta', {'reservacion': reservacion_id})}) }}
+		{{ component('button_link', {text: 'Atrás' | trans, icon: {left: true, name: 'arrow_back'}, link: path('ruta')}) }}
 		{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
-		<form action="{{path('salida', {reservacion: reservacion_id})}}">
+		<form action="{{path('salida', {'no-loading': 1})}}">
 			<input type="hidden" name="siguiente" value="1">
-			{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit', onclick: 'this.click()'}}) }}
+			<input type="hidden" name="noloading" value="1">
+			{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit', id: 'salida_submit', }}) }}
 		</form>
 	</div>
 

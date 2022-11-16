@@ -19,13 +19,18 @@ function _onStopTyped({ detail: { typed } }) {
 document.addEventListener("turbo:before-fetch-request", async (event) => {
   document.removeEventListener("typed-stop", _onStopTyped);
 
-  const loading = document.getElementById("turbo-loading");
-
-  if (loading) {
-    document.getElementById("turbo-loading").classList.add("!flex");
+  const frameId = event.detail.fetchOptions.headers["Turbo-Frame"];
+  if (
+    frameId &&
+    frameId != "salida-form" //&&
+    // !event.detail.url.searchParams.get("noloading")
+  ) {
+    const loading = document.getElementById("turbo-loading");
+    if (loading) {
+      document.getElementById("turbo-loading").classList.add("!flex");
+    }
+    event.detail.fetchOptions.headers["turbo-request"] = true;
   }
-
-  event.detail.fetchOptions.headers["turbo-request"] = true;
 });
 
 document.addEventListener("turbo:frame-load", (event) => {

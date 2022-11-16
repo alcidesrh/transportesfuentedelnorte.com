@@ -1,7 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/l10n/es.js";
-import { useDispatch } from "stimulus-use";
 /*
  * The following line makes this controller 'lazy': it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
@@ -16,33 +15,31 @@ export default class extends Controller {
     "bus_clase",
     "minutos",
     "salida_id",
-    "primer_render",
+    "is_ida_vuelta",
   ];
   static values = {
     idioma: String,
     idaVuelta: String,
-    primerRender: String,
-    noScroll: String,
+    formSubmitted: String,
   };
 
   salida_calendario = null;
   salida_id = null;
 
-  connect() {
-    if (!this.primerRenderValue) {
-      if (!(this.noScrollValue == 1)) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        useDispatch(this);
-        this.dispatch("reservacion_paso", { paso: 1 });
-      }
-    }
+  initialize() {
     if (this.hasListaTarget) {
       const el = this.listaTarget.querySelector(".salida-selected");
       if (el) {
         this.salida_id = el.dataset.id;
       }
     }
+
+    if (!(this.formSubmittedValue == 1)) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      this.dispatch("reservacion_paso", { detail: { paso: 1 } });
+    }
   }
+  connect() {}
   abrirFechaSalida() {
     this.salida_calendario.open();
   }
@@ -53,9 +50,8 @@ export default class extends Controller {
       disableMobile: "true",
       minDate: "today",
     });
-
-    if (!this.idaVueltaValue && this.salida_fechaTarget.value) {
-      this.dispatch("min_fecha", {
+    if (this.hasIs_ida_vueltaTarget && this.salida_fechaTarget.value) {
+      this.dispatch("min-fecha", {
         detail: { fecha: this.salida_fechaTarget.value },
       });
     }
@@ -78,7 +74,6 @@ export default class extends Controller {
       return;
     }
     this.salida_id = event.currentTarget.dataset.id;
-
     this.listaTarget
       .querySelector("#_" + event.currentTarget.dataset.id)
       .classList.add("salida-selected");
@@ -98,13 +93,11 @@ export default class extends Controller {
   }
 
   minFecha(event) {
-    if (this.idaVueltaValue) {
-      this.salida_calendario = flatpickr(this.salida_fechaTarget, {
-        locale: this.idiomaValue,
-        dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",
-        minDate: event.detail.fecha,
-        disableMobile: "true",
-      });
-    }
+    this.salida_calendario = flatpickr(this.salida_fechaTarget, {
+      locale: this.idiomaValue,
+      dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",
+      minDate: event.detail.fecha,
+      disableMobile: "true",
+    });
   }
 }

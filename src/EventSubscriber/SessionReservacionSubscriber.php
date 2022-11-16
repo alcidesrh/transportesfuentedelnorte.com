@@ -25,7 +25,6 @@ class SessionReservacionSubscriber implements EventSubscriberInterface
 
             if ($reservacion_id = $session->get('reservacion')) {
 
-
                 $now = new DateTime();
                 $date = date_timestamp_set(new DateTime(), $session->getMetadataBag()->getCreated());
 

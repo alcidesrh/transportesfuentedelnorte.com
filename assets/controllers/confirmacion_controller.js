@@ -13,7 +13,6 @@ export default class extends Controller {
 
   connect() {
     window.scrollTo(0, 0);
-    console.log(this.descargarValue, !!this.descargarValue);
     if (this.descargarValue) {
       const mensaje = document.getElementById("msg-pagando");
       if (mensaje) {

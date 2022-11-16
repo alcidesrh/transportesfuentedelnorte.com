@@ -60,8 +60,6 @@ export default class extends Controller {
 
     this.typed = new Typed(this.element, options);
 
-    this.typed.start();
-
     const event = new CustomEvent("typed-stop", {
       detail: { typed: this.typed },
     });

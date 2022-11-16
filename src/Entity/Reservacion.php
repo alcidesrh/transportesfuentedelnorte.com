@@ -84,11 +84,11 @@ class Reservacion
     #[ORM\Column(nullable: true)]
     private ?float $precio_real = null;
 
-    public function __construct()
+    public function __construct($locale = 'es')
     {
         $this->status = self::STATUS_INCOMPLETA;
         $this->anular_intentos = 0;
-        $this->moneda = self::MONEDA_GTQ;
+        $this->moneda = $locale == 'es' ? self::MONEDA_GTQ : self::MONEDA_USD;
     }
 
     public function getId(): ?int

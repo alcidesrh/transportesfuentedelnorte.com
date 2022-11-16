@@ -18,6 +18,7 @@ use App\Repository\AsientoRepository;
 use App\Repository\ReservacionRepository;
 use App\Services\CybersourceApi;
 use App\Services\RemoteDatabaseQueries;
+use App\Services\ReservacionProvider;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\CallbackTransformer;
@@ -29,13 +30,15 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
 class ReservacionController extends AbstractController
 {
-    #[Route('/ruta-form/{reservacion}', name: 'ruta')]
-    public function ruta(Request $request, EntityManagerInterface $entityManagerInterface,  Reservacion $reservacion = null, $primer_render = null): Response
+
+    #[Route('/ruta-form', name: 'ruta')]
+    public function ruta(Reservacion $reservacion = null, Request $request, EntityManagerInterface $entityManagerInterface, $primer_render = null): Response
     {
 
         if ($reservacion) {
@@ -85,8 +88,8 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/salida/{reservacion}', name: 'salida')]
-    public function salida(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    #[Route('/salida', name: 'salida')]
+    public function salida(Reservacion $reservacion = null, Request $request, EntityManagerInterface $entityManagerInterface, TranslatorInterface $translatorInterface, $primer_render = null): Response
     {
         $errors = [];
         if ($request->query->has('siguiente')) {
@@ -111,7 +114,7 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/salida-form/{reservacion}/{ida_vuelta}', name: 'salida_form')]
+    #[Route('/salida-form/{ida_vuelta}', name: 'salida_form')]
     public function salidaForm(Request $request, Reservacion $reservacion, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $sistema, TranslatorInterface $translatorInterface, $ida_vuelta = null, $primer_render = null)
     {
         if ($ida_vuelta) {
@@ -214,13 +217,13 @@ class ReservacionController extends AbstractController
                 'salidas' => $salidas ?? null,
                 'sistema_conexion_error' => $sistema_conexion_error ?? null,
                 'primer_render' => $primer_render,
-                'no_scroll' => $form->isSubmitted()
+                'form_submitted' => $form->isSubmitted()
             ],
             new Response('', 200, ['session_terminada' => true])
         );
     }
 
-    #[Route('/asientos/{reservacion}', name: 'asientos')]
+    #[Route('/asientos', name: 'asientos')]
     public function asientos(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, TranslatorInterface $translatorInterface, RemoteDatabaseQueries $remoteDatabaseQueries, $primer_render = null): Response
     {
         $errors = [];
@@ -387,7 +390,7 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/pagar/{reservacion}', name: 'pagar')]
+    #[Route('/pagar', name: 'pagar')]
     public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
     {
 
@@ -396,9 +399,15 @@ class ReservacionController extends AbstractController
         $param = $request->request->all();
         if (key_exists('cliente_reservacion', $param) && isset($param['cliente_reservacion']['tipo_moneda'])) {
             $reservacion->setMoneda($param['cliente_reservacion']['tipo_moneda']);
+        } else if ($moneda = $request->getLocale() == 'es' ? Reservacion::MONEDA_GTQ : Reservacion::MONEDA_USD) {
+            if ($moneda != $reservacion->getMoneda()) {
+                $reservacion->setMoneda($moneda);
+                $entityManagerInterface->flush();
+            }
         }
+
         $form = $this->createForm(ClienteReservacionType::class, $cliente, [
-            'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion?->getId()]),
+            'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion->getId()]),
             'reservacion' => $reservacion
         ]);
 
@@ -492,7 +501,7 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/confirmacion/{reservacion}', name: 'confirmacion')]
+    #[Route('/confirmacion', name: 'confirmacion')]
     public function confirmacion(Request $request, Reservacion $reservacion, TranslatorInterface $translatorInterface, MailerInterface $mailer, Filesystem $filesystem): Response
     {
 
@@ -539,7 +548,7 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/pdf/{reservacion}', name: 'pdf')]
+    #[Route('/pdf/{id}', name: 'pdf')]
     public function pdf(Reservacion $reservacion, TranslatorInterface $translatorInterface): Response
     {
         $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';

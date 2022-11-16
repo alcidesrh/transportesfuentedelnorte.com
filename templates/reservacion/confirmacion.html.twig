@@ -10,7 +10,7 @@
 			<div class="mb-5 block md:flex items-center gap-5">
 				{{ component('alert', {class: 'warning mb-5 md:mb-0', icon: 'notification_important', text: 'Si no se ha <span class="font-semibold">descargado el boleto</span> automáticamente pulse el boton para descargarlo.' | trans}) }}
 				<div class="flex justify-center md:justify-start">
-					{{ component('button_link', {text: 'Descargar boleto' | trans, icon: {right: true, name: 'file_download'}, link: path('pdf', {reservacion: reservacion.id}), attr: 'data-turbo=false  data-turbo-cache=false data-confirmacion-target=pdf_link'}) }}
+					{{ component('button_link', {text: 'Descargar boleto' | trans, icon: {right: true, name: 'file_download'}, link: path('pdf', {id: reservacion.id}), attr: 'data-turbo=false  data-turbo-cache=false data-confirmacion-target=pdf_link'}) }}
 				</div>
 			</div>
 		{% endif %}

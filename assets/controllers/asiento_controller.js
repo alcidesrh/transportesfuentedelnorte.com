@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-import { useDispatch } from "stimulus-use";
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
  * See https://github.com/symfony/stimulus-bridge#lazy-controllers
@@ -20,7 +19,6 @@ export default class extends Controller {
     "btn_nivel2_regreso",
   ];
   static values = {
-    primerRender: String,
     asientosNivel1: Number,
     asientosNivel2: Number,
     regreso: String,
@@ -29,11 +27,9 @@ export default class extends Controller {
   asientos_salida = [];
   asientos_regreso = [];
   connect() {
-    if (!this.primerRenderValue) {
-      useDispatch(this);
-      this.dispatch("reservacion_paso", { paso: 2 });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    this.dispatch("reservacion_paso", { detail: { paso: 2 } });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
     if (!this.hasNivel2Target) {
       this.nivel1Target.style.height =
         parseInt((this.nivel1Target.dataset.asientos / 4) * 60 + 350) + "px";

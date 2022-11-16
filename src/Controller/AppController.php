@@ -23,15 +23,12 @@ class AppController extends AbstractController
     }
 
     #[Route('/', name: 'inicio')]
-    public function index(Request $request, ReservacionRepository $reservacionRepository, ServicioRepository $servicioRepository, SliderRepository $sliderRepository): Response
+    public function index(Request $request, ?Reservacion $reservacion, ServicioRepository $servicioRepository, SliderRepository $sliderRepository): Response
     {
-        $paso = 0;
-        if ($reservacion_id = $request->getSession()->get('reservacion')) {
-            $paso = $reservacionRepository->find($reservacion_id)->getPasoCompletado();
-        }
+        $reservacion_paso = $reservacion ? $reservacion->getPasoCompletado() : 0;
         return $this->render('index.html.twig', [
-            'reservacion_paso' => $paso,
-            'reservacion_id' => $request->getSession()->get('reservacion'),
+            'reservacion_paso' => $reservacion_paso,
+            'reservacion_action' => ['ruta', 'salida', 'asientos', 'pagar', 'confirmacion'][$reservacion_paso], //$this->generateUrl(['ruta', 'salida', 'asientos', 'pagar', 'confirmacion'][$reservacion->getPasoCompletado()]),
             'servicios' => $servicioRepository->findBy(['inicio' => true], ['prioridad' => 'ASC']),
             'slider' => $sliderRepository->findOneBy([]),
             'cybersource_session_id' => $this->getParameter('cybersource_merchant_id') . $request->getSession()->getId()

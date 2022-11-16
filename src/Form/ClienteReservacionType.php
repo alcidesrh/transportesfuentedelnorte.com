@@ -69,16 +69,22 @@ class ClienteReservacionType extends AbstractType
             ])
             ->add('tipo_moneda', ChoiceType::class, [
                 'mapped' => false,
-                'choices'  => [
+                'choices'  => $this->translator->getLocale() == 'es' ? [
                     Reservacion::MONEDA_GTQ => Reservacion::MONEDA_GTQ,
                     Reservacion::MONEDA_USD => Reservacion::MONEDA_USD,
+                ] : [
+                    Reservacion::MONEDA_USD => Reservacion::MONEDA_USD,
+                    Reservacion::MONEDA_GTQ => Reservacion::MONEDA_GTQ,
                 ],
                 'expanded' => true,
                 'multiple' => false,
                 'data' => $options['reservacion']->getMoneda(),
-                'choice_attr' => [
+                'choice_attr' => $this->translator->getLocale() == 'es' ?  [
                     Reservacion::MONEDA_GTQ => ['data-action' => 'click->pagar#moneda', 'data-precio' => number_format($options['reservacion']->getPrecio(), 2, ".", ",")],
                     Reservacion::MONEDA_USD => ['data-action' => 'click->pagar#moneda', 'data-precio' => number_format($options['reservacion']->getPrecioDolar(), 2, ".", ",")],
+                ] : [
+                    Reservacion::MONEDA_USD => ['data-action' => 'click->pagar#moneda', 'data-precio' => number_format($options['reservacion']->getPrecioDolar(), 2, ".", ",")],
+                    Reservacion::MONEDA_GTQ => ['data-action' => 'click->pagar#moneda', 'data-precio' => number_format($options['reservacion']->getPrecio(), 2, ".", ",")],
                 ],
             ])
             ->add('numero', TextType::class, [
