@@ -47,7 +47,7 @@ export default class extends Controller {
 
     options.backDelay = 2000;
     options.smartBackspace = true;
-    options.startDelay = 10;
+    options.startDelay = 1000;
     options.backSpeed = 20;
     options.showCursor = false;
 
