@@ -24,57 +24,6 @@ class RemoteDatabaseQueries
 
     public function getSalidas($salida, $llegada, $fecha): array | null
     {
-        // return [
-        //     0 => [
-        //         "salida_id" => "250861",
-        //         "horario" => "2022-04-05 05:45:00.000000",
-        //         "bus_clase" => "Clase Oro / Maya de Oro",
-        //         "kilometros" => 480,
-        //         "minutos" => 600,
-        //     ],
-        //     1 => [
-        //         "salida_id" => "250862",
-        //         "horario" => "2022-04-05 10:00:00.000000",
-        //         "bus_clase" => "Clase Oro / Maya de Oro",
-        //         "kilometros" => 480,
-        //         "minutos" => 600,
-        //     ],
-        //     2 => [
-        //         "salida_id" => "251706",
-        //         "horario" => "2022-04-05 11:15:00.000000",
-        //         "bus_clase" => "Clase Oro / Maya de Oro",
-        //         "kilometros" => 480,
-        //         "minutos" => 600,
-        //     ],
-        //     3 => [
-        //         "salida_id" => "250863",
-        //         "horario" => "2022-04-05 14:00:00.000000",
-        //         "bus_clase" => "Clase Oro / Maya de Oro",
-        //         "kilometros" => 480,
-        //         "minutos" => 600,
-        //     ],
-        //     4 => [
-        //         "salida_id" => "250866",
-        //         "horario" => "2022-04-05 19:00:00.000000",
-        //         "bus_clase" => "Maya de Oro GL",
-        //         "kilometros" => 480,
-        //         "minutos" => 600,
-        //     ],
-        //     5 => [
-        //         "salida_id" => "250868",
-        //         "horario" => "2022-04-05 21:00:00.000000",
-        //         "bus_clase" => "Maya de Oro GL",
-        //         "kilometros" => 480,
-        //         "minutos" => 600,
-        //     ],
-        //     6 => [
-        //         "salida_id" => "250869",
-        //         "horario" => "2022-04-05 21:30:00.000000",
-        //         "bus_clase" => "Premier VIP",
-        //         "kilometros" => 480,
-        //         "minutos" => null,
-        //     ]
-        // ];
 
         $fecha->setTimeZone(new DateTimeZone('UTC'));
         $fecha->setTime(0, 0, 0);
@@ -115,7 +64,6 @@ class RemoteDatabaseQueries
                 left join bus_senal_tipo on bus_senal_tipo.id = bus_senal.tipo_id
                 where salida.id = ?";
 
-        // return [$this->asientos(), []];
         if ($asientos = $this->execute_query($sql_asientos, [$id_salida])) {
             $senales = $this->execute_query($sql_senales, [$id_salida]);
             return [$asientos, $senales];

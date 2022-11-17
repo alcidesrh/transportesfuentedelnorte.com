@@ -438,7 +438,7 @@ class ReservacionController extends AbstractController
                     $entityManagerInterface->flush();
                     return $this->redirectToRoute('asientos', ['reservacion' => $reservacion->getId()]);
                 }
-                $error_tarjeta = $result['error'];
+                $error_tarjeta = isset($result['texto']) ? $result['texto'] : $result['error'];
             } else if (isset($result['success'])) {
 
                 $data = json_decode($result['data']);
@@ -560,6 +560,7 @@ class ReservacionController extends AbstractController
             $pdf_nombre
         );
         $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Type', 'application/pdf');
         return $response;
     }
 

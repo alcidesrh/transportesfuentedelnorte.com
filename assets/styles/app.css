@@ -49,12 +49,12 @@
 @layer components {
     [type="submit"],
     .btn {
-        @apply whitespace-nowrap w-fit h-fit tracking-wider text-sm inline-flex items-center text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 font-semibold rounded-lg px-3.5 py-2 sm:px-5 sm:py-2.5 text-center !outline-none;
-        padding: 8px 17px;
+        @apply whitespace-nowrap w-fit h-fit tracking-wider text-sm inline-flex items-center text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 font-semibold rounded-lg px-3.5 py-1.5 sm:px-5 sm:py-2.5 text-center !outline-none;
+        /* padding: 8px 17px; */
     }
-    .btn.sm {
+    /* .btn.sm {
         @apply px-4 py-1.5;
-    }
+    } */
     .btn.btn-success {
         @apply bg-cyan-600 text-white hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring focus:ring-cyan-400;
     }
@@ -67,11 +67,11 @@
     }
 
     .btn .material-symbols-outlined {
-        @apply ml-[3px] text-[19px] sm:text-[21px];
+        @apply ml-[3px] text-[14px] sm:text-[21px];
     }
 
     .btn .material-symbols-outlined.left {
-        @apply mr-[3px] ml-0 sm:ml-0 text-[19px] sm:text-[21px];
+        @apply mr-[3px] ml-0 sm:ml-0 text-[14px] sm:text-[21px];
     }
 
     .menu-header {
