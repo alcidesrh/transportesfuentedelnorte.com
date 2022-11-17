@@ -90,4 +90,10 @@ class AppController extends AbstractController
             'guardado' => isset($guardado)
         ]);
     }
+
+    #[Route('/videos', name: 'videos')]
+    public function videos(): Response
+    {
+        return $this->render('_videos.html.twig');
+    }
 }

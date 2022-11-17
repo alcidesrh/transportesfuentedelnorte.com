@@ -1,4 +1,4 @@
-<div class="reserva absolute top-0 z-40 mx-auto mt-0 md:mt-10 lg:mt-14 xl:mt-[80px] bg-white sm:rounded-lg w-full max-w-full lg:max-w-4xl md:min-w-[750px] md:w-fit px-5 md:px-10 drop-shadow-lg">
+<div class="reserva absolute top-0 z-40 mx-auto mt-0 md:mt-10 lg:mt-14 xl:mt-[80px] bg-white sm:rounded-lg w-full max-w-full lg:max-w-6xl md:min-w-[750px] md:w-fit px-5 md:px-10 drop-shadow-lg">
 
 	<div class="w-full m-auto" data-controller="reservacion" data-reservacion-paso-value="{{reservacion_paso}}" data-action='ruta-form:reservacion_paso->reservacion#setPaso'>
 
@@ -18,7 +18,9 @@
 
 			<div class="relative" data-action="confirmacion:reserva->reservacion#setPaso">
 				<turbo-frame id="reservacion-form" src="{{ path(reservacion_action, {primer_render: true}) }}">
-					Loading...
+					<div class="flex justify-center items-center w-full h-52">
+						{% include '_svg_loading.html.twig' %}
+					</div>
 				</turbo-frame>
 			</div>
 		</div>
