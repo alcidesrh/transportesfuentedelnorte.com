@@ -24,11 +24,11 @@ yarn-error.log
 /public/media/cache/
 ###< liip/imagine-bundle ###
 
-# /public/images/*
-# !/public/images/.gitkeep
-# /public/facturas/*
-# !/public/facturas/.gitkeep
-# /public/media/*
-# !/public/facturas/.gitkeep
-# /docker/db/data*
+/public/images/*
+!/public/images/.gitkeep
+/public/facturas/*
+!/public/facturas/.gitkeep
+/public/media/*
+!/public/media/.gitkeep
+/docker/db
 
