@@ -144,13 +144,9 @@ RUN set -eux; \
 		composer clear-cache; \
     fi
 
- RUN mkdir -p public/images \
-     mkdir -p public/media/cache \
- 	 mkdir -p public/facturas	
-
 # copy sources
 COPY . .
-#RUN rm -Rf docker/
+RUN rm -Rf docker/
 
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
@@ -159,7 +155,11 @@ RUN set -eux; \
 		composer dump-env prod; \
 		composer run-script --no-dev post-install-cmd; \
 		chmod +x bin/console; sync; \
-    fi	
+    fi
+
+ RUN mkdir -p public/images \
+     mkdir -p public/media \
+ 	 mkdir -p public/facturas	
 
 # Dev image
 FROM app_php AS app_php_dev
