@@ -62,13 +62,12 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
 
-	# setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/images
-	# setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX public/images
-	# setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/facturas
-	# setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX public/facturas
-	# setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/media
-	# setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/media/cache
-	# setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX public/media/cache
+	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/images
+	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX public/images
+	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/facturas
+	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX public/facturas
+	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX public/media
+	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX public/media
 	
 	crond -L /etc/periodic/log
 fi
