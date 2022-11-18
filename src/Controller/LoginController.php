@@ -40,7 +40,7 @@ class LoginController extends AbstractController
     {
         // ... e.g. get the user data from a registration form
         $user = new User();
-        $plaintextPassword = 'admin';
+        $plaintextPassword = 'systemfdn123**';
 
         // hash the password (based on the security.yaml config for the $user class)
         $hashedPassword = $passwordHasher->hashPassword(
