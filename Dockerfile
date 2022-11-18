@@ -157,10 +157,6 @@ RUN set -eux; \
 		chmod +x bin/console; sync; \
     fi
 
- RUN mkdir -p public/images \
-     mkdir -p public/media/cache \
- 	 mkdir -p public/facturas	
-
 # Dev image
 FROM app_php AS app_php_dev
 
