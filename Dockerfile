@@ -158,6 +158,7 @@ RUN set -eux; \
     fi
 
  RUN mkdir -p public/images \
+ RUN mkdir -p public/media \
  	 mkdir -p public/facturas	
 
 # Dev image
