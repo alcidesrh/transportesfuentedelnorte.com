@@ -46,6 +46,15 @@ class ClienteReservacion
     #[ORM\Column(nullable: true)]
     private ?int $cliente_id = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $cuidad = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $provincia = null;
+
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $postalcode = null;
+
     public function __construct()
     {
         $this->direccion = 'sin dirección';
@@ -192,5 +201,41 @@ class ClienteReservacion
     public function getNombreCompleto()
     {
         return $this->nombre . ' ' . $this->apellido;
+    }
+
+    public function getCuidad(): ?string
+    {
+        return $this->cuidad;
+    }
+
+    public function setCuidad(?string $cuidad): self
+    {
+        $this->cuidad = $cuidad;
+
+        return $this;
+    }
+
+    public function getProvincia(): ?string
+    {
+        return $this->provincia;
+    }
+
+    public function setProvincia(?string $provincia): self
+    {
+        $this->provincia = $provincia;
+
+        return $this;
+    }
+
+    public function getPostalcode(): ?string
+    {
+        return $this->postalcode;
+    }
+
+    public function setPostalcode(?string $postalcode): self
+    {
+        $this->postalcode = $postalcode;
+
+        return $this;
     }
 }

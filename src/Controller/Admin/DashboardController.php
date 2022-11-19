@@ -69,6 +69,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Configuración', 'fas fa-list', Configuracion::class);
     }
 
+    public function configureCrud(): Crud
+    {
+        return Crud::new()->setDefaultSort(['id' => 'desc']);
+    }
+
     // public function configureUserMenu(UserInterface $user): UserMenu
     // {
     //     return parent::configureUserMenu($user)->addMenuItems([
