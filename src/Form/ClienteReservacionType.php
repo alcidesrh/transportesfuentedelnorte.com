@@ -4,6 +4,9 @@ namespace App\Form;
 
 use App\Entity\ClienteReservacion;
 use App\Entity\Reservacion;
+use App\Entity\Tarjeta;
+use App\Repository\TarjetaRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,7 +19,7 @@ use Twig\Environment;
 
 class ClienteReservacionType extends AbstractType
 {
-    public function __construct(private TranslatorInterface $translator, private Environment $twig)
+    public function __construct(private TarjetaRepository $tarjetaRepository, private TranslatorInterface $translator, private Environment $twig)
     {
     }
 
@@ -41,10 +44,10 @@ class ClienteReservacionType extends AbstractType
                 ],
                 'help' => '* obligatorio',
             ])
-            ->add('telefono', TextType::class, [
-                'label' => 'Teléfono',
-                'required' => false,
-            ])
+            // ->add('telefono', TextType::class, [
+            //     'label' => 'Teléfono',
+            //     'required' => false,
+            // ])
             ->add('email', TextType::class, [
                 'label' => 'Email',
                 'required' => false,
@@ -56,6 +59,20 @@ class ClienteReservacionType extends AbstractType
                 'required' => false,
                 'help_attr' => ['class' => 'help-info']
             ])
+            ->add('direccion', TextType::class, [
+                'label' => $this->translator->trans('Dirección'),
+                'constraints' => [
+                    new NotBlank(['message' => $this->translator->trans('Este campo es requerido')])
+                ],
+                'help' => '* obligatorio',
+            ])
+            ->add('codigo_postal', TextType::class, [
+                'label' => $this->translator->trans('Código postal'),
+                'constraints' => [
+                    new NotBlank(['message' => $this->translator->trans('Este campo es requerido')])
+                ],
+                'help' => '* obligatorio',
+            ])
             //Datos de la tarjeta
             ->add('precio', TextType::class, [
                 'label' => $this->translator->trans('Cantidad a pagar'),
@@ -66,6 +83,15 @@ class ClienteReservacionType extends AbstractType
                     new NotBlank(['message' => $this->translator->trans('Este campo es requerido')])
                 ],
                 'attr' => ['data-pagar-target' => 'precio']
+            ])
+            ->add('tarjetas', ChoiceType::class, [
+                'mapped' => false,
+                'choices' => $this->tarjetaRepository->createQueryBuilder("t")->where('t.activo = :true')->orderBy('t.prioridad', 'desc')->setParameter('true', true)->getQuery()->getResult(),
+                // 'choice_value' => 'id',
+                'expanded' => true,
+                'multiple' => false,
+                // 'data' => $options['reservacion']->getMoneda(),
+                'choice_label' => 'nombre',
             ])
             ->add('tipo_moneda', ChoiceType::class, [
                 'mapped' => false,

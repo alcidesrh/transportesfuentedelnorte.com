@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ArchivoRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: ArchivoRepository::class)]
 class Archivo
@@ -30,6 +31,13 @@ class Archivo
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $tipo = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $no_editar = null;
+
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    #[Gedmo\Slug(fields: ['nombre'])]
+    private ?string $slug = null;
 
     public function __construct()
     {
@@ -109,5 +117,29 @@ class Archivo
     public function __toString()
     {
         return $this->path ?? '';
+    }
+
+    public function isNoEditar(): ?bool
+    {
+        return $this->no_editar;
+    }
+
+    public function setNoEditar(?bool $no_editar): self
+    {
+        $this->no_editar = $no_editar;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
     }
 }

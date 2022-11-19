@@ -5,7 +5,7 @@
 				{{error_tarjeta}}
 			</div>
 		{% endif %}
-
+		{% form_theme form.tarjetas 'form/theme/_tarjeta_label.html.twig' %}
 		{{ form_start(form)}}
 		<div class="m-auto w-fit">
 			<h1 class="mb-5 font-medium text-lg">{{'Información personal' | trans}}</h1>
@@ -14,8 +14,10 @@
 				{{ form_row(form.nombre)}}
 				{{ form_row(form.apellido)}}
 				{{ form_row(form.nit)}}
-				{{ form_row(form.telefono, {row_attr:{class: 'mb-0'}})}}
+				{# {{ form_row(form.telefono, {row_attr:{class: 'mb-0'}})}} #}
 				{{ form_row(form.email, {row_attr:{class: 'mb-0'}})}}
+				{{ form_row(form.direccion, {row_attr:{class: 'mb-0'}})}}
+				{{ form_row(form.codigo_postal, {row_attr:{class: 'mb-0'}})}}
 
 			</div>
 		</div>
@@ -28,6 +30,8 @@
 			<div class="mb-10">
 				{{ component('alert', {text: 'No guardamos ningún dato de la tarjeta. Solo se usará para pagar la compra.' | trans}) }}
 			</div>
+
+			{{ form_row(form.tarjetas, {attr: {class: 'flex flex-wrap gap-3'}})}}
 
 			<div class="flex mb-5 gap-5">
 				{{ form_row(form.precio, {attr: {class: 'max-w-[130px]'}})}}

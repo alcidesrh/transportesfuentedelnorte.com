@@ -84,6 +84,9 @@ class Reservacion
     #[ORM\Column(nullable: true)]
     private ?float $precio_real = null;
 
+    #[ORM\ManyToOne]
+    private ?Tarjeta $tarjeta = null;
+
     public function __construct($locale = 'es')
     {
         $this->status = self::STATUS_INCOMPLETA;
@@ -327,6 +330,18 @@ class Reservacion
     public function setPrecioReal(?float $precio_real): self
     {
         $this->precio_real = $precio_real;
+
+        return $this;
+    }
+
+    public function getTarjeta(): ?Tarjeta
+    {
+        return $this->tarjeta;
+    }
+
+    public function setTarjeta(?Tarjeta $tarjeta): self
+    {
+        $this->tarjeta = $tarjeta;
 
         return $this;
     }

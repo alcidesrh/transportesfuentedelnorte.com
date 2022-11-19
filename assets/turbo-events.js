@@ -22,7 +22,8 @@ document.addEventListener("turbo:before-fetch-request", async (event) => {
   const frameId = event.detail.fetchOptions.headers["Turbo-Frame"];
   if (
     frameId &&
-    frameId != "salida-form" //&&
+    frameId != "salida-form" &&
+    frameId != "videos" //&&
     // !event.detail.url.searchParams.get("noloading")
   ) {
     const loading = document.getElementById("turbo-loading");

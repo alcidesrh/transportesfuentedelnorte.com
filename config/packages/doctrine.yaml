@@ -5,6 +5,7 @@ doctrine:
             default:
                 # configure these for your database server
                 url: "%env(resolve:DATABASE_URL)%"
+                schema_filter: ~^(?!(states|countries|cities))~
             systemfdn:
                 # configure these for your database server
                 # url: 'sqlsrv://custom_user_terminal_bus:custom_user_terminal_bus123@186.151.195.29:1433/TerminalOmnibus'

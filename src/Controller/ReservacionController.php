@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Asiento;
 use App\Entity\ClienteReservacion;
 use App\Entity\Configuracion;
+use App\Entity\Countries;
 use App\Entity\Reservacion;
 use App\Entity\RutaReservacion;
 use App\Entity\SalidaReservacion;
@@ -26,6 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Dompdf\Dompdf;
+use Masterminds\HTML5\Parser\UTF8Utils;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -40,7 +42,6 @@ class ReservacionController extends AbstractController
     #[Route('/ruta-form', name: 'ruta')]
     public function ruta(Reservacion $reservacion = null, Request $request, EntityManagerInterface $entityManagerInterface, $primer_render = null): Response
     {
-
         if ($reservacion) {
             $ruta = $reservacion->getRuta();
         } else {

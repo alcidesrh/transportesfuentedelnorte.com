@@ -55,12 +55,6 @@ class ClienteReservacion
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $postalcode = null;
 
-    public function __construct()
-    {
-        $this->direccion = 'sin dirección';
-        $this->nit = 'CF';
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -97,7 +91,7 @@ class ClienteReservacion
 
     public function setEmail(?string $email): self
     {
-        $this->email = $email ?? 'unkow';
+        $this->email = $email;
 
         return $this;
     }
@@ -109,7 +103,7 @@ class ClienteReservacion
 
     public function setTelefono(?string $telefono): self
     {
-        $this->telefono = $telefono ?? 'unkow';
+        $this->telefono = $telefono;
 
         return $this;
     }
@@ -128,7 +122,7 @@ class ClienteReservacion
 
     public function getDireccion(): ?string
     {
-        return $this->direccion ?? 'unkow';
+        return $this->direccion;
     }
 
     public function setDireccion(string $direccion): self
@@ -140,7 +134,7 @@ class ClienteReservacion
 
     public function getLocalidad(): ?string
     {
-        return $this->localidad ?? 'unkow';
+        return $this->localidad;
     }
 
     public function setLocalidad(?string $localidad): self
@@ -176,7 +170,7 @@ class ClienteReservacion
 
     public function getCodigoPostal(): ?string
     {
-        return $this->codigo_postal ?? 'unkow';
+        return $this->codigo_postal;
     }
 
     public function setCodigoPostal(?string $codigo_postal): self
