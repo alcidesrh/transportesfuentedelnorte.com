@@ -19,23 +19,6 @@ export default class extends Controller {
     if (mensaje) {
       mensaje.classList.add("hidden");
     }
-
-    const headers = new Headers();
-    headers.append(
-      "X-CSCAPI-KEY",
-      "bUlhOE80NXJOeEJNMkppZ0FZY240a3oyRkgyQUMwamVyd1hJWmZhWg=="
-    );
-
-    const requestOptions = {
-      method: "GET",
-      headers: headers,
-      redirect: "follow",
-    };
-    alert("sdsd");
-    fetch("https://api.countrystatecity.in/v1/countries", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result, 1111))
-      .catch((error) => console.log("error", error));
   }
   moneda(event) {
     this.precioTarget.value = event.currentTarget.dataset.precio;

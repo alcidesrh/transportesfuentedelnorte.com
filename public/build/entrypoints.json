@@ -2,28 +2,28 @@
   "entrypoints": {
     "app": {
       "js": [
-        "/build/runtime.js",
-        "/build/vendors-node_modules_hotwired_turbo_dist_turbo_es2017-esm_js-node_modules_symfony_stimulus-br-4324c1.js",
-        "/build/app.js"
+        "/build/runtime.6c65abf2.js",
+        "/build/533.1008c2e4.js",
+        "/build/app.9b1384b1.js"
       ],
       "css": [
-        "/build/app.css"
+        "/build/app.ab59705f.css"
       ]
     },
     "reserva": {
       "js": [
-        "/build/runtime.js"
+        "/build/runtime.6c65abf2.js"
       ],
       "css": [
-        "/build/reserva.css"
+        "/build/reserva.1fa39ee6.css"
       ]
     },
     "pdf": {
       "js": [
-        "/build/runtime.js"
+        "/build/runtime.6c65abf2.js"
       ],
       "css": [
-        "/build/pdf.css"
+        "/build/pdf.675e5e39.css"
       ]
     }
   }
