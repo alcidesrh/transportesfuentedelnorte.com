@@ -18,7 +18,12 @@ use App\Entity\Countries;
 use App\Entity\States;
 use App\Form\SalidaReservacionType;
 use App\Form\ClienteReservacionType;
+use App\Form\Type\AutocompleteType;
+use App\Form\Type\CiudadAutocompleteType;
+use App\Form\Type\PaisAutocompleteType;
+use App\Form\Type\ProvinciaAutocompleteType;
 use App\Repository\AsientoRepository;
+use App\Repository\CitiesRepository;
 use App\Repository\StatesRepository;
 use App\Services\RemoteDatabaseQueries;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +42,8 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ReservacionController extends AbstractController
@@ -59,6 +66,7 @@ class ReservacionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             if (!$ruta->getId()) {
                 $entityManagerInterface->persist($ruta);
             }
@@ -395,20 +403,10 @@ class ReservacionController extends AbstractController
     }
 
     #[Route('/pagar', name: 'pagar')]
-    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
+    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
     {
 
         $cliente = $reservacion->getCliente() ?? new ClienteReservacion();
-
-        $param = $request->request->all();
-        if (key_exists('cliente_reservacion', $param) && isset($param['cliente_reservacion']['tipo_moneda'])) {
-            $reservacion->setMoneda($param['cliente_reservacion']['tipo_moneda']);
-        } else if ($moneda = $request->getLocale() == 'es' ? Reservacion::MONEDA_GTQ : Reservacion::MONEDA_USD) {
-            if ($moneda != $reservacion->getMoneda()) {
-                $reservacion->setMoneda($moneda);
-                $entityManagerInterface->flush();
-            }
-        }
 
         $form = $this->createForm(ClienteReservacionType::class, $cliente, [
             'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion->getId()]),
@@ -419,100 +417,101 @@ class ReservacionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $reservacion->setCliente($cliente);
+            // $result = $remoteDatabaseQueries->crearBoleto($reservacion);
 
-            $result = $remoteDatabaseQueries->crearBoleto($reservacion);
+            // if (is_array($result) && isset($result['error'])) {
+            //     if ($result['error'] == 1) {
+            //         $error = $translatorInterface->trans('Los asientos siguientes acaban de ser ocupados') . ': ';
+            //         foreach ($result['asientos'] as $index => $value) {
+            //             $asiento = $asientoRepository->findOneBy(['asiento_id' => $value]);
+            //             $error .= $asiento->getNumero();
+            //             if ($index < count($result['asientos']) - 1) {
+            //                 $error .= ', ';
+            //             }
+            //             $entityManagerInterface->remove($asiento);
+            //         }
+            //         $this->addFlash(
+            //             'error_asientos_ocupados',
+            //             $error
+            //         );
+            //         $reservacion->setPasoCompletado(2);
+            //         $entityManagerInterface->flush();
+            //         return $this->redirectToRoute('asientos', ['reservacion' => $reservacion->getId()]);
+            //     }
+            //     $error_tarjeta = isset($result['texto']) ? $result['texto'] : $result['error'];
+            // } else 
+            if (true || isset($result['success'])) {
 
-            if (is_array($result) && isset($result['error'])) {
-                if ($result['error'] == 1) {
-                    $error = $translatorInterface->trans('Los asientos siguientes acaban de ser ocupados') . ': ';
-                    foreach ($result['asientos'] as $index => $value) {
-                        $asiento = $asientoRepository->findOneBy(['asiento_id' => $value]);
-                        $error .= $asiento->getNumero();
-                        if ($index < count($result['asientos']) - 1) {
-                            $error .= ', ';
-                        }
-                        $entityManagerInterface->remove($asiento);
-                    }
-                    $this->addFlash(
-                        'error_asientos_ocupados',
-                        $error
-                    );
-                    $reservacion->setPasoCompletado(2);
-                    $entityManagerInterface->flush();
-                    return $this->redirectToRoute('asientos', ['reservacion' => $reservacion->getId()]);
-                }
-                $error_tarjeta = isset($result['texto']) ? $result['texto'] : $result['error'];
-            } else if (isset($result['success'])) {
+                // $data = json_decode($result['data']);
 
-                $data = json_decode($result['data']);
+                // $reservacion->setFacturaId($data->factura_id)->setFacturaDte($data->dte)->setBoletoTicketId($data->boletos_ticket);
 
-                $reservacion->setFacturaId($data->factura_id)->setFacturaDte($data->dte)->setBoletoTicketId($data->boletos_ticket);
+                // $salida = $reservacion->getSalida();
+                // foreach ($salida->getAsientos() as $index => $asiento) {
+                //     $asiento->setBoletoId($data->boletos_salida[$index]);
+                // }
 
-                $salida = $reservacion->getSalida();
-                foreach ($salida->getAsientos() as $index => $asiento) {
-                    $asiento->setBoletoId($data->boletos_salida[$index]);
-                }
+                // if ($reservacion->isIdaVuelta()) {
+                //     $regreso = $reservacion->getRegreso();
+                //     foreach ($regreso->getAsientos() as $index => $asiento) {
+                //         $asiento->setBoletoId($data->boletos_regreso[$index]);
+                //     }
+                // }
+                // if (!$cliente->getClienteId()) {
+                //     $cliente->setClienteId($data->cliente_id);
+                // }
+                // $entityManagerInterface->flush();
 
-                if ($reservacion->isIdaVuelta()) {
-                    $regreso = $reservacion->getRegreso();
-                    foreach ($regreso->getAsientos() as $index => $asiento) {
-                        $asiento->setBoletoId($data->boletos_regreso[$index]);
-                    }
-                }
-                if (!$cliente->getClienteId()) {
-                    $cliente->setClienteId($data->cliente_id);
-                }
-                $entityManagerInterface->flush();
-
-                $resultado = null; //$cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData(), $request->getSession()->getId());
+                // $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData(), $request->getSession()->getId());
 
                 $entityManagerInterface->persist($cliente);
                 $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
                 $reservacion->setTransaccionId(125747945354 ?? null);
                 $reservacion->setPasoCompletado(4);
                 $entityManagerInterface->flush();
-                return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
+                return $this->redirectToRoute('3d-secure-iframe-device');
+                // return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
 
 
-                if (false) {
-                    if (is_array($resultado)) {
-                        if (isset($resultado['status']) && $resultado['status'] == 'AUTHORIZED') {
-                            $entityManagerInterface->persist($cliente);
-                            $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
-                            $reservacion->setTransaccionId($resultado['id'] ?? null);
-                            $reservacion->setPasoCompletado(4);
-                            $entityManagerInterface->flush();
-                            return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
-                        } else {
+                // if (false) {
+                //     if (is_array($resultado)) {
+                //         if (isset($resultado['status']) && $resultado['status'] == 'AUTHORIZED') {
+                //             $entityManagerInterface->persist($cliente);
+                //             $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
+                //             $reservacion->setTransaccionId($resultado['id'] ?? null);
+                //             $reservacion->setPasoCompletado(4);
+                //             $entityManagerInterface->flush();
+                //             return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
+                //         } else {
 
-                            $remoteDatabaseQueries->anularReservacion($reservacion);
+                //             $remoteDatabaseQueries->anularReservacion($reservacion);
 
-                            if (isset($resultado["errorInformation"]) && !empty($resultado["errorInformation"])) {
+                //             if (isset($resultado["errorInformation"]) && !empty($resultado["errorInformation"])) {
 
-                                $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
-                                if (isset($resultado["errorInformation"]["message"])) {
-                                    $error_tarjeta .= ' ' . $resultado["errorInformation"]["message"];
-                                }
-                            }
-                        }
-                    } else if ($resultado == 400) {
-                        $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
-                    } else if ($resultado == 502) {
-                        $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
-                    }
-                }
+                //                 $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
+                //                 if (isset($resultado["errorInformation"]["message"])) {
+                //                     $error_tarjeta .= ' ' . $resultado["errorInformation"]["message"];
+                //                 }
+                //             }
+                //         }
+                //     } else if ($resultado == 400) {
+                //         $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
+                //     } else if ($resultado == 502) {
+                //         $error_tarjeta = $translatorInterface->trans('No se pudo realizar el pago. Los datos de la tarjeta no son correctos.');
+                //     }
+                // }
             }
 
             $entityManagerInterface->flush();
         }
+        $data = $request->request->all();
 
         return $this->renderForm('reservacion/pagar.html.twig', [
             'form' => $form,
             'primer_render' => $primer_render,
             'reservacion' => $reservacion,
             'error_tarjeta' => $error_tarjeta ?? null,
-            'd_secure' => $entityManagerInterface->getRepository(Archivo::class)->findOneBy(['slug' => '3d-secure-2'])
+            'd_secure' => $entityManagerInterface->getRepository(Archivo::class)->findOneBy(['slug' => '3d-secure-2']),
         ]);
     }
 
@@ -597,31 +596,118 @@ class ReservacionController extends AbstractController
         return new RedirectResponse($this->generateUrl('inicio'));
     }
 
-    #[Route('/provincias/{country}', name: 'provincias')]
-    public function states(Request $request, TranslatorInterface $translatorInterface, StatesRepository $statesRepository, ?Countries $country = null): Response
+    #[Route('/pais', name: 'pais')]
+    public function pais(FormFactoryInterface $formFactoryInterface, Reservacion $reservacion): Response
     {
-        $form = $this->createFormBuilder()->add('provincia', EntityType::class, [
-            'mapped' => false,
-            'class' => States::class,
-            'query_builder' => $statesRepository->createQueryBuilder('e')->where('e.country = :country')->setParameter('country', $country),
-            'label' => $translatorInterface->trans('Departamento/Provincia'),
-            'choice_value' => 'id',
-            'choice_label' => 'name',
-            'placeholder' => $translatorInterface->trans('Seleccione departamento'),
-            'autocomplete' => true,
-            'constraints' => [
-                new NotBlank(['message' => $translatorInterface->trans('Este campo es requerido')])
-            ],
-            'attr' => [
-                'data-action' => 'pagar#departamento',
-            ],
-            ...$country ? ['query_builder' => $statesRepository->createQueryBuilder('e')->where('e.country = :country')->setParameter('country', $country)]
-                : ['choices' => [], 'disabled' => true]
-        ]);
+        return $this->renderForm('reservacion/_pais.html.twig', ['form' => $formFactoryInterface->createNamed('cliente_reservacion', PaisAutocompleteType::class, $reservacion->getCliente()?->getPais())]);
+    }
 
+    #[Route('/provincias/{country}', name: 'provincias')]
+    public function states(FormFactoryInterface $formFactoryInterface, Reservacion $reservacion, ?Countries $country = null): Response
+    {
 
-        return $this->renderForm('reservacion/_provincias.html.twig', [
-            'form' => $form->getForm(),
-        ]);
+        return $this->renderForm('reservacion/_provincias.html.twig', ['form' => $formFactoryInterface->createNamed(
+            'cliente_reservacion',
+            ProvinciaAutocompleteType::class,
+            $reservacion->getCliente()?->getProvincia(),
+            ['pais' => $country]
+        )]);
+    }
+
+    #[Route('/ciudad/{provincia}', name: 'ciudad')]
+    public function municipios(Request $request, FormFactoryInterface $formFactoryInterface, Reservacion $reservacion, ?States $provincia = null): Response
+    {
+        return $this->renderForm('reservacion/_municipios.html.twig', ['form' => $formFactoryInterface->createNamed(
+            'cliente_reservacion',
+            CiudadAutocompleteType::class,
+            $reservacion->getCliente()?->getCiudad(),
+            ['provincia' => $provincia ?? ($request->get('reset') ? false : null)]
+        )]);
+    }
+
+    #[Route('/iframe', name: '3d-secure-iframe-device')]
+    public function iframe(Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion): Response
+    {
+
+        if ($a = $request->request->all()) {
+
+            $data = array(
+                'clientReferenceInformation' =>
+                array(
+                    'code' => 'cybs_test',
+                ),
+                'orderInformation' =>
+                array(
+                    'amountDetails' =>
+                    array(
+                        'currency' => 'USD',
+                        'totalAmount' => '10.99',
+                    ),
+                    'billTo' =>
+                    array(
+                        'address1' => '1 Market St',
+                        'address2' => 'Address 2',
+                        'administrativeArea' => 'CA',
+                        'country' => 'US',
+                        'locality' => 'san francisco',
+                        'firstName' => 'John',
+                        'lastName' => 'Doe',
+                        'phoneNumber' => '4158880000',
+                        'email' => 'test@cybs.com',
+                        'postalCode' => '94105',
+                    ),
+                ),
+                'paymentInformation' =>
+                array(
+                    'card' =>
+                    array(
+                        'type' => '001',
+                        'expirationMonth' => '12',
+                        'expirationYear' => '2025',
+                        'number' => '4000000000000101',
+                    ),
+                ),
+                'buyerInformation' =>
+                array(
+                    'mobilePhone' => '1245789632',
+                ),
+                'consumerAuthenticationInformation' =>
+                array(
+                    'transactionMode' => 'MOTO',
+                ),
+            );
+
+            // $result = $cybersourceApi->request('authentication_2___check_enrollment', $data);
+
+            return new JsonResponse($data);
+        }
+
+        // $result = $cybersourceApi->request('authentication_1__setup_service', [
+        //     'paymentInformation' => [
+        //         'card' => [
+        //             'type' => 001,
+        //             'expirationMonth' => 12, //$numero,
+        //             'expirationYear' => 2025, //$codigo_seguridad,
+        //             'number' => 4000000000000101, //$expira_mes,
+        //         ],
+        //     ],
+        //     // 'clientReferenceInformation' => [
+        //     //     'code' => 'cybs_test',
+        //     //     'partner' => [
+        //     //         'developerId' => 7891234,
+        //     //         'solutionId' => 89012345
+        //     //     ]
+        //     // ]
+        // ]);
+
+        if (true || isset($result["consumerAuthenticationInformation"]) && isset($result["consumerAuthenticationInformation"]['accessToken'])) {
+            // $referenceId = $result["consumerAuthenticationInformation"]["referenceId"];
+            return $this->render('reservacion/_3d_secure_iframe.html.twig', [
+                'deviceDataCollectionUrl' => 'https://centinelapistag.cardinalcommerce.com/V1/Cruise/Collect', //$result["consumerAuthenticationInformation"]['deviceDataCollectionUrl'],
+                'accessToken' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmZmRjZmMwYi1jNzE2LTRiYWEtYmZjMS1mYzhlODFjZjg5MjAiLCJpYXQiOjE2NjkzOTI1NTgsImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTY2OTM5NjE1OCwiT3JnVW5pdElkIjoiNjM2YTZjNWY2OGJjZTQyMGE0NzFlMDkwIiwiUmVmZXJlbmNlSWQiOiJmOTNkYTQ0Mi01NDBlLTQyZWUtOWI3MC0yNjA5YmQwMGQ2NTkifQ.5qBCxeqIGYoXhTF8WU6POCPkSRNqjI04ECT--lmo12o' //$result["consumerAuthenticationInformation"]['accessToken']
+            ]);
+        }
+
+        die('error');
     }
 }

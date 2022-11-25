@@ -32,18 +32,16 @@ Debe escoger al menos un asiento en la salida: You must choose at least one seat
 Debe escoger al menos un asiento en el regreso: You must choose at least one seat at the return.
 Apellido: Last name
 Nombre: First name
-"* obligatorio": "* required"
 Número de la tarjeta: Car number
 Mes que expira: Expiring month
 Año que expira: Expiring year
 Este campo es requerido: This field is required
-Información personal: Personal information
-Datos de la tarjeta: Credit card information
+Propietario de la tarjeta de crédito: Credit card owner
 No guardamos ningún dato de la tarjeta. Solo se usará para pagar la compra.: We do not store any card data. It will only be used to pay for the purchase.
 No se pudo realizar el pago. Los datos de la tarjeta no son correctos.: The payment could not be made. The card details are not correct.
 Nit (solo Guatemala): Nit (only Guatemala)
 El boleto se descargará cuando efectue el pago pero si inserta un email también se le enviará.: The ticket will be downloaded when you make the payment but if you insert an email it will also be sent to you.
-Cantidad a pagar: Amount to pay
+Total a pagar: Amount to pay
 Datos de la reserva: Reservation data
 Estación salida: Departure station
 Dirección: Address
@@ -121,3 +119,13 @@ En Guatemala desde 1958...: In Guatemala since 1958...
 abriendo caminos...: opening roads...
 acortando distancias...: shortening distances...
 Código postal: Postal code
+País: Country
+Seleccione país: Select country
+Departamento/Provincia: State/District
+Cuidad/Municipio: City/Location
+Seleccione localidad: Select location
+Seleccione departamento: Select district
+ver más: see more
+Usamos: We use
+uno de los dos protocolos más seguro para el pago con una amplia variedad de tarjetas.: one of the two most secure protocols for payment with a wide variety of cards.
+Comprar boleto: Buy tickets

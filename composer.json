@@ -35,6 +35,7 @@
         "symfony/security-csrf": "6.1.*",
         "symfony/translation": "6.1.*",
         "symfony/twig-bundle": "6.1.*",
+        "symfony/ux-autocomplete": "^2.5",
         "symfony/ux-turbo": "^2.4",
         "symfony/ux-twig-component": "^2.4",
         "symfony/ux-typed": "^2.5",

@@ -34,9 +34,10 @@ class ArchivoCrudController extends AbstractCrudController
 
             ImageField::new('path')
                 ->setUploadDir('public/images')
-                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]'), //->setTemplatePath('admin/image.index.html.twig'),
+                ->setUploadedFileNamePattern('[slug].[extension]'),
             IdField::new('id')->hideOnForm(),
             $pageName == Crud::PAGE_EDIT && $this->getContext()->getEntity()->getInstance()->isNoEditar() ? TextField::new('nombre')->hideWhenUpdating() : TextField::new('nombre'),
+            TextField::new('slug')->onlyOnIndex(),
             TextField::new('extencion', 'Extención')->onlyOnIndex(),
             BooleanField::new('webP', 'Crear versión webp')->onlyWhenCreating(),
             BooleanField::new('no_editar', 'No editar')->hideWhenUpdating(),

@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-  static targets = ["precio"];
+  static targets = ["precio", "municipio"];
   static values = {
     precio: Number,
     precioDolar: Number,
@@ -29,4 +29,5 @@ export default class extends Controller {
       mensaje.classList.remove("hidden");
     }
   }
+  
 }

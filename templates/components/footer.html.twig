@@ -12,6 +12,17 @@
 					<h5 class="text-lg mt-6 mb-2 text-gray-700 italic">
 						{{'Desde 1958 abriendo caminos cerrando distancias.' | trans}}
 					</h5>
+
+					<div class="flex flex-wrap gap-3 mt-5">
+						{% if not is_granted('ROLE_USER') %}
+							{{ component('button_link', {text: 'Iniciar sesión', link: path('app_login') }) }}
+						{% else %}
+							{{ component('button_link', {text: 'Administración', link: path('admin')}) }}
+
+							{{ component('button_link', {text: 'Cerrar sesión', link: path('app_logout')}) }}
+						{% endif %}
+					</div>
+
 				</div>
 				<div class="w-full lg:w-6/12 px-4">
 					<div class="flex flex-wrap items-top mb-6">

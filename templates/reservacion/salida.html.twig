@@ -10,12 +10,12 @@
 
 	<div id="salidas" class="{{ida_vuelta ? 'md:grid md:grid-cols-2 md:gap-5 md:divide-x-2' : ''}}">
 		<div>
-			<turbo-frame id="salida-form" data-action='buscar-salida:reservacion_paso->reservacion#setPaso' src="{{ path('salida_form') }}"></turbo-frame>
+			<turbo-frame id="salida-form" data-action='buscar-salida:reservacion_paso->reservacion#setPaso' src="{{ path('salida_form') }}" data-noloading="true"></turbo-frame>
 		</div>
 		{% if ida_vuelta %}
 			<div class="md:pl-5 pt-10 md:pt-0">
 				<div class="border-t mb-10 mt-3 md:hidden"></div>
-				<turbo-frame id="salida-form" src="{{ path('salida_form', {ida_vuelta:true, primer_render: primer_render}) }}"></turbo-frame>
+				<turbo-frame id="salida-form" src="{{ path('salida_form', {ida_vuelta:true, primer_render: primer_render}) }}" data-noloading="true"></turbo-frame>
 			</div>
 		{% endif %}
 	</div>

@@ -31,29 +31,20 @@ class ClienteReservacion
     #[ORM\Column(length: 255)]
     private ?string $direccion = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $localidad = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $area_administrativa = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $pais = null;
-
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $codigo_postal = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $cliente_id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $cuidad = null;
+    #[ORM\ManyToOne]
+    private ?Countries $pais = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $provincia = null;
+    #[ORM\ManyToOne]
+    private ?States $provincia = null;
 
-    #[ORM\Column(length: 10, nullable: true)]
-    private ?string $postalcode = null;
+    #[ORM\ManyToOne]
+    private ?Cities $ciudad = null;
 
     public function getId(): ?int
     {
@@ -132,42 +123,6 @@ class ClienteReservacion
         return $this;
     }
 
-    public function getLocalidad(): ?string
-    {
-        return $this->localidad;
-    }
-
-    public function setLocalidad(?string $localidad): self
-    {
-        $this->localidad = $localidad;
-
-        return $this;
-    }
-
-    public function getAreaAdministrativa(): ?string
-    {
-        return $this->area_administrativa ?? 'GT';
-    }
-
-    public function setAreaAdministrativa(?string $area_administrativa): self
-    {
-        $this->area_administrativa = $area_administrativa;
-
-        return $this;
-    }
-
-    public function getPais(): ?string
-    {
-        return $this->pais;
-    }
-
-    public function setPais(?string $pais): self
-    {
-        $this->pais = $pais;
-
-        return $this;
-    }
-
     public function getCodigoPostal(): ?string
     {
         return $this->codigo_postal;
@@ -197,38 +152,38 @@ class ClienteReservacion
         return $this->nombre . ' ' . $this->apellido;
     }
 
-    public function getCuidad(): ?string
+    public function getPais(): ?Countries
     {
-        return $this->cuidad;
+        return $this->pais;
     }
 
-    public function setCuidad(?string $cuidad): self
+    public function setPais(?Countries $pais): self
     {
-        $this->cuidad = $cuidad;
+        $this->pais = $pais;
 
         return $this;
     }
 
-    public function getProvincia(): ?string
+    public function getProvincia(): ?States
     {
         return $this->provincia;
     }
 
-    public function setProvincia(?string $provincia): self
+    public function setProvincia(?States $provincia): self
     {
         $this->provincia = $provincia;
 
         return $this;
     }
 
-    public function getPostalcode(): ?string
+    public function getCiudad(): ?Cities
     {
-        return $this->postalcode;
+        return $this->ciudad;
     }
 
-    public function setPostalcode(?string $postalcode): self
+    public function setCiudad(?Cities $ciudad): self
     {
-        $this->postalcode = $postalcode;
+        $this->ciudad = $ciudad;
 
         return $this;
     }

@@ -139,3 +139,41 @@
         @apply hidden;
     }
 }
+
+/* tom-select desing*********************************** */
+.ts-wrapper.single .ts-control,
+.ts-dropdown.single {
+    @apply whitespace-nowrap bg-white mt-1 block w-full rounded-md border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder:italic placeholder:text-slate-400;
+}
+
+.ts-wrapper.single .ts-control {
+    @apply shadow-none bg-white bg-none bg-no-repeat;
+}
+
+.ts-control > input {
+    @apply w-full;
+}
+.ts-control > div {
+    @apply text-ellipsis overflow-hidden max-w-full;
+}
+
+.ts-control input {
+    @apply min-w-0 placeholder:text-base;
+}
+
+.ts-control{
+    @apply !flex;
+}
+
+.ts-dropdown [data-selectable] {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    --tw-shadow: 0 0 #0000;
+    font-weight: 500;
+}
+
+/* End tom-select desing*********************************** */
+
+label.asteric {
+    @apply after:content-['*'] after:ml-0.5 after:text-orange-600 after:text-lg after:font-medium after:absolute;
+}

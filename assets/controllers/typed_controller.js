@@ -58,6 +58,14 @@ export default class extends Controller {
       }
     };
 
+    options.onComplete = (t) => {
+      const type_placeholder = document.getElementById("typed-placeholder");
+      if (type_placeholder) {
+        type_placeholder.classList.remove("hidden");
+        this.typed.destroy();
+      }
+    };
+
     this.typed = new Typed(this.element, options);
 
     const event = new CustomEvent("typed-stop", {

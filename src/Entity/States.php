@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StatesRepository::class)]
+#[ORM\Cache(usage: "READ_ONLY")]
 class States
 {
     #[ORM\Id]
@@ -24,9 +25,6 @@ class States
 
     #[ORM\OneToMany(mappedBy: 'state', targetEntity: Cities::class)]
     private Collection $cities;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $translations = null;
 
     public function __construct()
     {
@@ -88,18 +86,6 @@ class States
                 $city->setState(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getTranslations(): ?string
-    {
-        return json_decode(stripslashes($this->translations), true);
-    }
-
-    public function setTranslations(string $translations): self
-    {
-        $this->translations = $translations;
 
         return $this;
     }

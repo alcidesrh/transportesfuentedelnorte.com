@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\CitiesRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CitiesRepository::class)]
+#[ORM\Cache(usage: "READ_ONLY")]
 class Cities
 {
     #[ORM\Id]
@@ -23,9 +23,6 @@ class Cities
     #[ORM\ManyToOne(inversedBy: 'cities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Countries $country = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $translations = null;
 
     public function getId(): ?int
     {
@@ -64,18 +61,6 @@ class Cities
     public function setCountry(?Countries $country): self
     {
         $this->country = $country;
-
-        return $this;
-    }
-
-    public function getTranslations(): ?string
-    {
-        return json_decode(stripslashes($this->translations), true);
-    }
-
-    public function setTranslations(string $translations): self
-    {
-        $this->translations = $translations;
 
         return $this;
     }

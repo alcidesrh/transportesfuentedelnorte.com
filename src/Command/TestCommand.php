@@ -22,10 +22,10 @@ use Symfony\Component\Console\Event\ConsoleErrorEvent;
 )]
 class TestCommand extends Command
 {
-    public function __construct(private CybersourceApi $cybersourceApi)
-    {
-        parent::__construct();
-    }
+    // public function __construct(private CybersourceApi $cybersourceApi, private $cybersource_authentication_setup)
+    // {
+    //     parent::__construct();
+    // }
 
     protected function configure(): void
     {
@@ -37,7 +37,26 @@ class TestCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $this->cybersourceApi->procesarPago();
+        // card_accountNumber
+        // encryptedPayment_data
+
+        $result = $this->cybersourceApi->request($this->cybersource_authentication_setup, [
+            'paymentInformation' => [
+                'card' => [
+                    'type' => 001,
+                    'expirationMonth' => 12, //$numero,
+                    'expirationYear' => 2025, //$codigo_seguridad,
+                    'number' => 4000000000000101, //$expira_mes,
+                ],
+            ],
+            'clientReferenceInformation' => [
+                'code' => 'cybs_test',
+                'partner' => [
+                    'developerId' => 7891234,
+                    'solutionId' => 89012345
+                ]
+            ]
+        ]);
 
 
 

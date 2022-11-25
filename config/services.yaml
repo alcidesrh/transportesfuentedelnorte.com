@@ -26,6 +26,7 @@ services:
             - "../src/DependencyInjection/"
             - "../src/Entity/"
             - "../src/Kernel.php"
+            - "../src/Services/{CybersourceApi.php}"
 
     App\Services\RemoteDatabaseQueries:
         arguments:
@@ -35,13 +36,18 @@ services:
             $system_fdn_entitymanager: "@doctrine.orm.systemfdn_entity_manager"
             $FDN_HOST: "%env(FDN_HOST)%"
 
-    App\Services\CybersourceApi:
-        arguments:
-            $cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
-            $cybersource_merchant_key_id: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"
-            $cybersource_merchant_secret_key: "%env(CYBERSOURCE_MERCHANT_SECRET_KEY)%"
-            $CYBERSOURCE_HOST: "%env(CYBERSOURCE_HOST)%"
-            $CYBERSOURCE_PAYMENTS: "%env(CYBERSOURCE_PAYMENTS)%"
+    # App\Services\CybersourceApi:
+    #     arguments:
+    #         $cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
+    #         $cybersource_merchant_key_id: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"
+    #         $cybersource_merchant_secret_key: "%env(CYBERSOURCE_MERCHANT_SECRET_KEY)%"
+    #         $CYBERSOURCE_HOST: "%cybersource.host%"
+    #         $CYBERSOURCE_PAYMENTS: "%cybersource.endpoints.payment%"
+    #         $cybersource_endpoints: "%cybersource.endpoints%"
+
+    # App\Command\TestCommand:
+    #     arguments:
+    #         $cybersource_authentication_setup: "%env(cybersource_authentication_setup)%"
 
     App\EventSubscriber\LocaleRedirectSubscriber:
         arguments:

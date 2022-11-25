@@ -1,0 +1,19 @@
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true
+        bind:
+            $host: "apitest.cybersource.com"
+            $endpoints:
+                authentication_1__setup_service: /risk/v1/authentication-setups
+                authentication_2___check_enrollment: /risk/v1/authentications
+                payment: /pts/v2/payments/
+
+    App\Services\CybersourceApi:
+        arguments:
+            $cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
+            $cybersource_merchant_key_id: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"
+            $cybersource_merchant_secret_key: "%env(CYBERSOURCE_MERCHANT_SECRET_KEY)%"
+            # $CYBERSOURCE_HOST: "%cybersource.host%"
+            # $CYBERSOURCE_PAYMENTS: "%cybersource.endpoints.payment%"
+            # $cybersource_endpoints: "%cybersource.endpoints%"

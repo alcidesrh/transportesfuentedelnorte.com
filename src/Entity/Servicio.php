@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Translatable\Translatable;
 
 #[ORM\Entity(repositoryClass: ServicioRepository::class)]
+#[ORM\Cache(usage: "NONSTRICT_READ_WRITE")]
 class Servicio implements Translatable
 {
     #[ORM\Id]

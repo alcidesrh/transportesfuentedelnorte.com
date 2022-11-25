@@ -48,7 +48,7 @@ export default class extends Controller {
       locale: this.idiomaValue,
       dateFormat: this.idiomaValue == "es" ? "d/m/Y" : "Y-m-d",
       disableMobile: "true",
-      minDate: "today",
+      // minDate: "today",
     });
     if (this.hasIs_ida_vueltaTarget && this.salida_fechaTarget.value) {
       this.dispatch("min-fecha", {

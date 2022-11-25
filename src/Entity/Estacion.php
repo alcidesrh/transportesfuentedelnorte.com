@@ -9,7 +9,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 #[ORM\Entity(repositoryClass: EstacionRepository::class)]
+#[ORM\Cache(usage: "NONSTRICT_READ_WRITE")]
 class Estacion
 {
 

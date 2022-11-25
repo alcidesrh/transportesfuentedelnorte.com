@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Entity\Reservacion;
 use App\Repository\ReservacionRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ParameterConverter implements ParamConverterInterface
 {

@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ReservacionRepository::class)]
+#[ORM\Cache(usage: "NONSTRICT_READ_WRITE")]
+
 class Reservacion
 {
     const STATUS_INCOMPLETA = "incompleta";

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CountriesRepository::class)]
+#[ORM\Cache(usage: "READ_ONLY")]
 class Countries
 {
     #[ORM\Id]
@@ -26,6 +27,12 @@ class Countries
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $translations = null;
+
+    #[ORM\Column(length: 3)]
+    private ?string $iso3 = null;
+
+    #[ORM\Column(length: 191)]
+    private ?string $emoji = null;
 
     public function __construct()
     {
@@ -48,6 +55,23 @@ class Countries
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getIso3(): ?string
+    {
+        return $this->iso3;
+    }
+
+    public function setIso3(string $iso3): self
+    {
+        $this->iso3 = $iso3;
+
+        return $this;
+    }
+
+    public function getEmoji(): ?string
+    {
+        return $this->emoji;
     }
 
     /**
@@ -110,9 +134,9 @@ class Countries
         return $this;
     }
 
-    public function getTranslations(): ?string
+    public function getTranslations(): ?array
     {
-        return $this->translations;
+        return json_decode(stripslashes($this->translations), true);
     }
 
     public function setTranslations(string $translations): self

@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: DepartamentoRepository::class)]
+#[ORM\Cache(usage: "NONSTRICT_READ_WRITE")]
 class Departamento
 {
     use TimestampableEntity;

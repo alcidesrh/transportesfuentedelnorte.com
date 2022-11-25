@@ -19,7 +19,7 @@ class RutaReservacion
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rutaReservacions')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
     private ?Estacion $estacion_salida = null;

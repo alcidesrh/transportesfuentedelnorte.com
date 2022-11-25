@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	{# <turbo-frame id="reservacion-form"> #}
+	<div data-controller="procesar-pago" data-procesar-pago-check-enrollment-path-value="{{path('3d-secure-iframe-device')}}" class="max-w-3xl m-auto">
+		<iframe name="”ddc-iframe”" height="10" width="10" style="display: none;"></iframe>
+		<form id="ddc-form" target="”ddc-iframe”" method="POST" action="{{deviceDataCollectionUrl}}">
+			<input type="hidden" name="JWT" value="{{accessToken}}"/>
+		</form>
+	</div>
+	{# </turbo-frame> #}
+{% endblock %}

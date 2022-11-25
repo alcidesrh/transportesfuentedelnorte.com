@@ -20,12 +20,7 @@ document.addEventListener("turbo:before-fetch-request", async (event) => {
   document.removeEventListener("typed-stop", _onStopTyped);
 
   const frameId = event.detail.fetchOptions.headers["Turbo-Frame"];
-  if (
-    frameId &&
-    frameId != "salida-form" &&
-    frameId != "videos" //&&
-    // !event.detail.url.searchParams.get("noloading")
-  ) {
+  if (frameId && !document.getElementById(frameId).dataset.noloading) {
     const loading = document.getElementById("turbo-loading");
     if (loading) {
       document.getElementById("turbo-loading").classList.add("!flex");

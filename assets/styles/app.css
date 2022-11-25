@@ -22,7 +22,8 @@
     [type="week"],
     [multiple],
     textarea,
-    select {
+    select,
+    .ts-control {
         -webkit-appearance: none;
         appearance: none;
         background-color: #fff;
@@ -41,29 +42,36 @@
         @apply font-medium;
     }
 
-    .input {
-        @apply mt-1 block w-full rounded-md border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder:italic placeholder:text-slate-400;
+    .form-row {
+        @apply mb-3;
+    }
+    .form-label {
+        @apply block font-medium text-slate-600;
+    }
+
+    *.input {
+        @apply mt-[6px] block w-full rounded-md border-gray-300 placeholder:italic placeholder:text-slate-400 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
     }
 }
 
 @layer components {
     [type="submit"],
     .btn {
-        @apply whitespace-nowrap w-fit h-fit tracking-wider text-sm inline-flex items-center text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 font-semibold rounded-lg px-3.5 py-1.5 sm:px-5 sm:py-2.5 text-center !outline-none;
+        @apply inline-flex h-fit w-fit items-center whitespace-nowrap rounded-lg bg-blue-500 px-3.5 py-1.5 text-center text-sm font-semibold tracking-wider text-white !outline-none hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 active:bg-blue-700 sm:px-[14px] sm:py-[6px];
         /* padding: 8px 17px; */
     }
     /* .btn.sm {
         @apply px-4 py-1.5;
     } */
     .btn.btn-success {
-        @apply bg-cyan-600 text-white hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring focus:ring-cyan-400;
+        @apply bg-cyan-600 text-white hover:bg-cyan-700 focus:outline-none focus:ring focus:ring-cyan-400 active:bg-cyan-800;
     }
     .cancel {
-        @apply btn bg-orange-500/80 hover:bg-orange-600 active:bg-orange-700 focus:outline-none focus:ring focus:ring-orange-400;
+        @apply btn bg-orange-500/80 hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-400 active:bg-orange-700;
     }
     .btn-outline,
     .btn.btn-outline.btn-success {
-        @apply w-fit bg-transparent text-cyan-600 border border-cyan-600 hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring focus:ring-cyan-400 hover:text-white;
+        @apply w-fit border border-cyan-600 bg-transparent text-cyan-600 hover:bg-cyan-700 hover:text-white focus:outline-none focus:ring focus:ring-cyan-400 active:bg-cyan-800;
     }
 
     .btn .material-symbols-outlined {
@@ -71,30 +79,32 @@
     }
 
     .btn .material-symbols-outlined.left {
-        @apply mr-[3px] ml-0 sm:ml-0 text-[14px] sm:text-[21px];
+        @apply mr-[3px] ml-0 text-[14px] sm:ml-0 sm:text-[21px];
     }
 
     .menu-header {
-        /* @apply tracking-wider lg:tracking-widest text-[15px] text-white hover:text-cyan-400 py-3 md:px-2 flex items-center font-medium brightness-150 hover:brightness-0 contrast-125 hover:contrast-0 sepia hover:sepia-0; */
-        @apply tracking-wider lg:tracking-widest text-[15px] text-teal-50 hover:text-slate-400 py-3 md:px-2 flex items-center font-medium;
+        @apply flex items-center whitespace-nowrap py-3 text-[15px] font-medium tracking-wider text-teal-50 opacity-80 hover:text-slate-400 md:px-2 lg:tracking-widest;
     }
     .submenu-header {
-        @apply tracking-wider text-[14px] whitespace-nowrap text-white hover:text-slate-400 py-2 md:px-5 flex items-center font-medium;
+        @apply flex items-center whitespace-nowrap py-2 text-[14px] font-medium tracking-wider text-white opacity-80 hover:text-slate-400 md:px-5;
     }
 
     .alert {
-        @apply inline-block p-5 pr-10 mb-4 text-sm text-cyan-800 bg-sky-100 rounded-lg font-medium text-left;
+        @apply inline-block rounded-lg bg-sky-100 p-5 pr-10 text-left text-sm font-medium text-cyan-800;
+        & svg {
+            @apply text-cyan-500;
+        }
     }
 
     .alert.info {
         @apply text-[15px];
     }
     .alert.warning {
-        @apply text-[15px] bg-orange-100 text-orange-700;
+        @apply bg-orange-100 text-[15px] text-orange-700;
     }
 
     .alert.error {
-        @apply text-[15px] bg-red-100 text-red-800;
+        @apply bg-red-100 text-[15px] text-red-800;
     }
 }
 
@@ -110,7 +120,7 @@ html {
 body {
     font-family: "Montserrat", sans-serif;
     transition: opacity 1000ms;
-    @apply text-slate-700 bg-slate-200;
+    @apply bg-slate-200 text-slate-700;
 }
 
 *:focus {
@@ -142,7 +152,7 @@ button * {
 }
 
 .text-red-700 {
-    @apply max-w-lg break-words ml-auto mr-auto;
+    @apply ml-auto mr-auto max-w-lg break-words;
 }
 
 .gold {
@@ -150,7 +160,7 @@ button * {
 }
 
 .turbo-progress-bar {
-    @apply bg-cyan-900 z-50;
+    @apply z-50 bg-cyan-900;
 }
 
 /*************************Tailwind breakpoint***************************/
