@@ -18,17 +18,17 @@ class LocaleRedirectSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if ($event->isMainRequest() && !$request->hasPreviousSession() && ($preferredLanguage = $request->getPreferredLanguage($this->enabled_locales)) != $request->attributes->get('_locale')) {
+        // if ($event->isMainRequest() && !$request->hasPreviousSession() && ($preferredLanguage = $request->getPreferredLanguage($this->enabled_locales)) != $request->attributes->get('_locale')) {
 
 
-            $request->setLocale($preferredLanguage);
-            $request->attributes->set('_vary_by_language', true);
-            $this->router->getContext()->setParameter('_locale', $request->getLocale());
+        //     $request->setLocale($preferredLanguage);
+        //     $request->attributes->set('_vary_by_language', true);
+        //     $this->router->getContext()->setParameter('_locale', $request->getLocale());
 
-            $response = new RedirectResponse($this->router->generate('inicio'));
+        //     $response = new RedirectResponse($this->router->generate('inicio'));
 
-            $event->setResponse($response);
-        }
+        //     $event->setResponse($response);
+        // }
     }
 
     public static function getSubscribedEvents(): array

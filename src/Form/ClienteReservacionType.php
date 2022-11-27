@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\ClienteReservacion;
 use App\Entity\Reservacion;
+use App\Entity\Tarjeta;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -89,14 +90,14 @@ class ClienteReservacionType extends AbstractType
                 ],
                 'attr' => ['data-pagar-target' => 'precio']
             ])
-            // ->add('tarjetas', ChoiceType::class, [
-            //     'mapped' => false,
-            //     'choices' => $this->entityManagerInterface->getRepository(Tarjeta::class)->createQueryBuilder("t")->where('t.activo = :true')->orderBy('t.prioridad', 'desc')->setParameter('true', true)->getQuery()->getResult(),
-            //     'expanded' => true,
-            //     'multiple' => false,
-            //     'label' => $this->translator->trans('Tipo de tarjeta'),
-            //     'choice_label' => 'nombre',
-            // ])
+            ->add('tarjetas', ChoiceType::class, [
+                'mapped' => false,
+                'choices' => $this->entityManagerInterface->getRepository(Tarjeta::class)->createQueryBuilder("t")->where('t.activo = :true')->orderBy('t.prioridad', 'desc')->setParameter('true', true)->getQuery()->getResult(),
+                'expanded' => true,
+                'multiple' => false,
+                'label' => $this->translator->trans('Tipo de tarjeta'),
+                'choice_label' => 'nombre',
+            ])
             ->add('tipo_moneda', ChoiceType::class, [
                 'mapped' => false,
                 'choices'  => $this->translator->getLocale() == 'es' ? [

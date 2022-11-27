@@ -7,15 +7,22 @@ import { postData } from "../fetch-wrap";
 export default class extends Controller {
   static values = {
     checkEnrollmentPath: String,
+    mercure: String,
   };
 
   connect() {
-    const data = new FormData();
-    data.append("check_enrollment", true);
-    postData(this.checkEnrollmentPathValue, data).then((res) =>
-      console.log(res)
-    );
-    return;
+    console.log(this.mercureValue);
+    const eventSource = new EventSource(this.mercureValue);
+    eventSource.onmessage = (event) => {
+      // Will be called every time an update is published by the server
+      console.log(JSON.parse(event.data));
+    };
+    // const data = new FormData();
+    // data.append("check_enrollment", true);
+    // postData(this.checkEnrollmentPathValue, data).then((res) =>
+    //   console.log(res)
+    // );
+    // return;
     var ddcForm = document.querySelector("#ddc-form");
     if (ddcForm) {
       // ddc form exists
@@ -25,10 +32,10 @@ export default class extends Controller {
       "message",
       (event) => {
         //{MessageType: "profile.completed", Session Id: "0_57f063fd-659a-4779-b45b-9e456fdb7935", Status: true}
-        console.log(event);
+        // console.log(event);
         if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
           let data = JSON.parse(event.data);
-          console.log("Merchant received a message:", data);
+          console.log(data);
           // if (data.Status) {
           //   postData.
           // }

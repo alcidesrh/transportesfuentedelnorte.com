@@ -26,6 +26,9 @@ class States
     #[ORM\OneToMany(mappedBy: 'state', targetEntity: Cities::class)]
     private Collection $cities;
 
+    #[ORM\Column(length: 3)]
+    private ?string $iso2 = null;
+
     public function __construct()
     {
         $this->cities = new ArrayCollection();
@@ -86,6 +89,18 @@ class States
                 $city->setState(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIso2(): ?string
+    {
+        return $this->iso2;
+    }
+
+    public function setIso2(string $iso2): self
+    {
+        $this->iso2 = $iso2;
 
         return $this;
     }

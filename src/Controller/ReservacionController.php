@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Archivo;
 use Dompdf\Dompdf;
 use App\Entity\Asiento;
-use App\Entity\Cities;
 use App\Entity\Reservacion;
 use App\Entity\Configuracion;
 use App\Entity\RutaReservacion;
@@ -18,17 +17,14 @@ use App\Entity\Countries;
 use App\Entity\States;
 use App\Form\SalidaReservacionType;
 use App\Form\ClienteReservacionType;
-use App\Form\Type\AutocompleteType;
 use App\Form\Type\CiudadAutocompleteType;
 use App\Form\Type\PaisAutocompleteType;
 use App\Form\Type\ProvinciaAutocompleteType;
 use App\Repository\AsientoRepository;
-use App\Repository\CitiesRepository;
-use App\Repository\StatesRepository;
 use App\Services\RemoteDatabaseQueries;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -41,10 +37,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 class ReservacionController extends AbstractController
 {
@@ -74,6 +70,9 @@ class ReservacionController extends AbstractController
                 $entityManagerInterface->remove($reservacion);
             }
             $reservacion = new Reservacion();
+            $ip = $request->getClientIp();
+            $reservacion->setTransaccionId($request->getClientIp()); //quitar
+
             $entityManagerInterface->persist($reservacion);
 
             $reservacion->setRuta($ruta)->setIdaVuelta($form->get('ida_vuelta')->getData())->setPasoCompletado(1);
@@ -465,6 +464,7 @@ class ReservacionController extends AbstractController
                 // $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData(), $request->getSession()->getId());
 
                 $entityManagerInterface->persist($cliente);
+                $reservacion->setCliente($cliente);
                 $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
                 $reservacion->setTransaccionId(125747945354 ?? null);
                 $reservacion->setPasoCompletado(4);
@@ -626,88 +626,155 @@ class ReservacionController extends AbstractController
     }
 
     #[Route('/iframe', name: '3d-secure-iframe-device')]
-    public function iframe(Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion): Response
+    public function iframe(HubInterface $hub, EntityManagerInterface $entityManagerInterface, Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion = null): Response
     {
 
-        if ($a = $request->request->all()) {
+        $update = new Update(
+            'cybersource_enroll_callback',
+            json_encode(['status' => 'OutOfStock'])
+        );
+        $eee = $hub->getUrl();
+        $hub->publish($update);
 
-            $data = array(
-                'clientReferenceInformation' =>
-                array(
-                    'code' => 'cybs_test',
-                ),
-                'orderInformation' =>
-                array(
-                    'amountDetails' =>
-                    array(
-                        'currency' => 'USD',
-                        'totalAmount' => '10.99',
-                    ),
-                    'billTo' =>
-                    array(
-                        'address1' => '1 Market St',
-                        'address2' => 'Address 2',
-                        'administrativeArea' => 'CA',
-                        'country' => 'US',
-                        'locality' => 'san francisco',
-                        'firstName' => 'John',
-                        'lastName' => 'Doe',
-                        'phoneNumber' => '4158880000',
-                        'email' => 'test@cybs.com',
-                        'postalCode' => '94105',
-                    ),
-                ),
-                'paymentInformation' =>
-                array(
-                    'card' =>
-                    array(
-                        'type' => '001',
-                        'expirationMonth' => '12',
-                        'expirationYear' => '2025',
-                        'number' => '4000000000000101',
-                    ),
-                ),
-                'buyerInformation' =>
-                array(
-                    'mobilePhone' => '1245789632',
-                ),
-                'consumerAuthenticationInformation' =>
-                array(
-                    'transactionMode' => 'MOTO',
-                ),
-            );
+        $reservacion = $entityManagerInterface->getRepository(Reservacion::class)->find(957);
 
-            // $result = $cybersourceApi->request('authentication_2___check_enrollment', $data);
+        if (true || $a = $request->request->all()) {
+
+            // $result = $cybersourceApi->request('authentication_1__setup_service', [
+            //     'paymentInformation' => [
+            //         'card' => [
+            //             'type' => 001,
+            //             'expirationMonth' => '01', //$numero,
+            //             'expirationYear' => 2025, //$codigo_seguridad,
+            //             'number' => 4456530000001096, //$expira_mes,
+            //         ],
+            //     ]
+            // ]);
+
+
+            return $this->render('reservacion/_3d_secure_iframe.html.twig', [
+                // 'deviceDataCollectionUrl' => $result["consumerAuthenticationInformation"]["deviceDataCollectionUrl"],
+                // 'accessToken' => $result["consumerAuthenticationInformation"]["accessToken"]
+            ]);
+
+            // $result["clientReferenceInformation"]["code"]
+            // $result["consumerAuthenticationInformation"]["accessToken"]
+            // $result["consumerAuthenticationInformation"]["deviceDataCollectionUrl"]
+            // $result["consumerAuthenticationInformation"]["referenceId"]//"ed412990-b5e7-4588-b5d8-474aecb11882"
+            // return $this->render('reservacion/_3d_secure_iframe.html.twig', [
+            //     'stepUpUrl' => 'https://centinelapistag.cardinalcommerce.com/V2/Cruise/StepUp',
+            //     'accessToken' => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlNmQxM2I0Yy1kYzdmLTRjMGYtOGFmMy05MDEyZmM1YTM2MTMiLCJpYXQiOjE2Njk0ODMwNDksImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTY2OTQ4NjY0OSwiT3JnVW5pdElkIjoiNjM2YTZjNWY2OGJjZTQyMGE0NzFlMDkwIiwiUmVmZXJlbmNlSWQiOiJhNzczZGUwOC0yM2E4LTRlODItOGQ0ZC1jNGM3ODFjZWFmZWYifQ.tVpLaJz9rRmVhBRffy9zRCcmbnhPUVR147PmXtoAoF8"
+            // ]);
+            $cliente = $reservacion->getCliente();
+            $data = [
+                'clientReferenceInformation' => [
+                    'code' => '1669437077298',
+                ],
+                'orderInformation' => [
+                    'amountDetails' => [
+                        'currency' => $reservacion->getMoneda(),
+                        'totalAmount' => $reservacion->getPrecioVisual()
+                    ],
+                    'billTo' => [
+                        'address1' => $cliente->getDireccion(),
+                        'locality' => $cliente->getCiudad()->getName(), // USA, Canada y Mainland China.
+                        'country' => $cliente->getPais()->getIso2(),
+                        'firstName' => $cliente->getNombre(),
+                        'lastName' => $cliente->getApellido(),
+                        'email' => $cliente->getEmail(),
+                    ],
+                ],
+                'paymentInformation' => [
+                    'card' => [
+                        "type" => "001",
+                        "expirationMonth" => "01",
+                        "expirationYear" => "2025",
+                        "number" => "4456530000001096",
+                    ],
+                ],
+                'consumerAuthenticationInformation' => [
+                    'returnUrl' => 'https://transportesfuentedelnorte.com/iframe',
+                    'referenceId' => '538dbbf5-4c7d-4df0-a616-ce9ee473125b'
+                ],
+            ];
+            $result = $cybersourceApi->request('authentication_2___check_enrollment', $data);
+
+
+            if ($result['status'] == CybersourceApi::PENDING_AUTHENTICATION) {
+                $url = $result['consumerAuthenticationInformation']['stepUpUrl']; //https://0merchantacsstag.cardinalcommerce.com/MerchantACSWeb/creq.jsp
+                $accessToken = $result['consumerAuthenticationInformation']['accessToken']; //eyJtZXNzYWdlVHlwZSI6IkNSZXEiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMi4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiI3ZTM1YTQxNy0xYzM1LTQxNTctYjI4Yy1jYjg2MWNiNDdjNTUiLCJhY3NUcmFuc0lEIjoiNDhiODlmYTUtZmVkMy00YjNmLWEzN2YtYTFjYmJjYjFjODkwIiwiY2hhbGxlbmdlV2luZG93U2l6ZSI6IjAyIn0
+
+                $window = json_decode(base64_decode($result["consumerAuthenticationInformation"]["pareq"]));
+                list($height, $width) = match ($window->challengeWindowSize) {
+                    '01' => [250, 400],
+                    '02' => [390, 400],
+                    '03' => [500, 400],
+                    '04' => [600, 400],
+                    default => ['100%', '100%'],
+                };
+
+                return $this->render('reservacion/_3d_secure_iframe.html.twig', [
+                    'height' => $height,
+                    'width' => $width,
+                    'stepUpUrl' => $url,
+                    'accessToken' => $accessToken
+                ]);
+            } else if ($result['status'] == CybersourceApi::AUTHENTICATION_FAILED) {
+                $message = $result['consumerAuthenticationInformation']['cardholderMessage'];
+            }
 
             return new JsonResponse($data);
-        }
+            // }
 
-        // $result = $cybersourceApi->request('authentication_1__setup_service', [
-        //     'paymentInformation' => [
-        //         'card' => [
-        //             'type' => 001,
-        //             'expirationMonth' => 12, //$numero,
-        //             'expirationYear' => 2025, //$codigo_seguridad,
-        //             'number' => 4000000000000101, //$expira_mes,
-        //         ],
-        //     ],
-        //     // 'clientReferenceInformation' => [
-        //     //     'code' => 'cybs_test',
-        //     //     'partner' => [
-        //     //         'developerId' => 7891234,
-        //     //         'solutionId' => 89012345
-        //     //     ]
-        //     // ]
-        // ]);
 
-        if (true || isset($result["consumerAuthenticationInformation"]) && isset($result["consumerAuthenticationInformation"]['accessToken'])) {
-            // $referenceId = $result["consumerAuthenticationInformation"]["referenceId"];
-            return $this->render('reservacion/_3d_secure_iframe.html.twig', [
-                'deviceDataCollectionUrl' => 'https://centinelapistag.cardinalcommerce.com/V1/Cruise/Collect', //$result["consumerAuthenticationInformation"]['deviceDataCollectionUrl'],
-                'accessToken' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmZmRjZmMwYi1jNzE2LTRiYWEtYmZjMS1mYzhlODFjZjg5MjAiLCJpYXQiOjE2NjkzOTI1NTgsImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTY2OTM5NjE1OCwiT3JnVW5pdElkIjoiNjM2YTZjNWY2OGJjZTQyMGE0NzFlMDkwIiwiUmVmZXJlbmNlSWQiOiJmOTNkYTQ0Mi01NDBlLTQyZWUtOWI3MC0yNjA5YmQwMGQ2NTkifQ.5qBCxeqIGYoXhTF8WU6POCPkSRNqjI04ECT--lmo12o' //$result["consumerAuthenticationInformation"]['accessToken']
-            ]);
+
+            if (true || isset($result["consumerAuthenticationInformation"]) && isset($result["consumerAuthenticationInformation"]['accessToken'])) {
+                // $referenceId = $result["consumerAuthenticationInformation"]["referenceId"];
+                return $this->render('reservacion/_3d_secure_iframe.html.twig', [
+                    'deviceDataCollectionUrl' => "https://centinelapistag.cardinalcommerce.com/V1/Cruise/Collect", //$result["consumerAuthenticationInformation"]['deviceDataCollectionUrl'],
+                    'accessToken' => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NDRlNDhhNy0zZWM2LTQ0MWItYTdlNi00NDRlOTM0MWI4MTAiLCJpYXQiOjE2Njk0MzA5MDQsImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTY2OTQzNDUwNCwiT3JnVW5pdElkIjoiNjM2YTZjNWY2OGJjZTQyMGE0NzFlMDkwIiwiUmVmZXJlbmNlSWQiOiIzMmQ5NGNlYS02MTIyLTQ4MWItYmU3Ni1jNDkwMTRhNGEwNjcifQ.WVe7lZdwOSR2AEGC0ACs4tVnJXk_sd2yqmCiMK8ilVw" //$result["consumerAuthenticationInformation"]['accessToken']
+                ]);
+            }
         }
 
         die('error');
+
+        [
+            "clientReferenceInformation" => [
+                "code" => "cybs_test"
+            ],
+            "orderInformation" => [
+                "amountDetails" => [
+                    "currency" => "USD",
+                    "totalAmount" => "10.99"
+                ],
+                "billTo" => [
+                    "address1" => "1 Market St",
+                    "address2" => "Address 2",
+                    "administrativeArea" => "CA",
+                    "country" => "US",
+                    "locality" => "san francisco",
+                    "firstName" => "John",
+                    "lastName" => "Doe",
+                    "phoneNumber" => "4158880000",
+                    "email" => "test@cybs.com",
+                    "postalCode" => "94105"
+                ]
+            ],
+            "paymentInformation" => [
+                "card" => [
+                    "type" => "001",
+                    "expirationMonth" => "12",
+                    "expirationYear" => "2025",
+                    "number" => "4000000000000101"
+                ]
+            ],
+            "buyerInformation" => [
+                "mobilePhone" => "1245789632"
+            ],
+            "consumerAuthenticationInformation" => [
+                "transactionMode" => "MOTO"
+            ]
+        ];
     }
 }

@@ -31,6 +31,9 @@ class Countries
     #[ORM\Column(length: 3)]
     private ?string $iso3 = null;
 
+    #[ORM\Column(length: 2)]
+    private ?string $iso2 = null;
+
     #[ORM\Column(length: 191)]
     private ?string $emoji = null;
 
@@ -65,6 +68,18 @@ class Countries
     public function setIso3(string $iso3): self
     {
         $this->iso3 = $iso3;
+
+        return $this;
+    }
+
+    public function getIso2(): ?string
+    {
+        return $this->iso2;
+    }
+
+    public function setIso2(string $iso2): self
+    {
+        $this->iso2 = $iso2;
 
         return $this;
     }

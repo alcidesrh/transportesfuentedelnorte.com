@@ -6,7 +6,7 @@
 		{{ component('alert', {class: 'info', text: message | trans({'RESERVACION_MINUTOS' :  app.flashes('RESERVACION_MINUTOS')[0]})})}}
 	{% endfor %}
 
-	<div class="flex justify-center my-3">
+	<div class="flex justify-center my-3 bg-yel">
 		{{ component('alert', {class: 'bg-red-600 text-white  !text-base', icon: 'warning', text: 'Este sitio está en construcción. Las reservas no son válidas.'})}}
 	</div>
 

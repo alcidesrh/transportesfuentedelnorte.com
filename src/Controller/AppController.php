@@ -6,7 +6,6 @@ use App\Entity\Contacto;
 use App\Entity\Reservacion;
 use App\Form\ContactoType;
 use App\Repository\DepartamentoRepository;
-use App\Repository\ReservacionRepository;
 use App\Repository\ServicioRepository;
 use App\Repository\SliderRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +24,7 @@ class AppController extends AbstractController
     #[Route('/', name: 'inicio')]
     public function index(Request $request, ServicioRepository $servicioRepository, SliderRepository $sliderRepository, Reservacion $reservacion = null): Response
     {
+
         $reservacion_paso = $reservacion ? $reservacion->getPasoCompletado() : 0;
         return $this->render('index.html.twig', [
             'reservacion_paso' => $reservacion_paso,

@@ -8,6 +8,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class CybersourceApi
 {
 
+    const AUTHENTICATION_FAILED = "AUTHENTICATION_FAILED";
+    const AUTHENTICATION_SUCCESSFUL = "AUTHENTICATION_SUCCESSFUL";
+    const PENDING_AUTHENTICATION = "PENDING_AUTHENTICATION";
+
     public function __construct(private HttpClientInterface $client, private $host, private $endpoints, private $cybersource_merchant_id, private $cybersource_merchant_key_id, private $cybersource_merchant_secret_key)
     {
     }

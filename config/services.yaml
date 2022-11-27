@@ -11,6 +11,7 @@ parameters:
     reservacion_minutos: 150
 
     cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
+    MERCURE_PUBLIC_URL: "%env(MERCURE_PUBLIC_URL)%"
 
 services:
     # default configuration for services in *this* file
