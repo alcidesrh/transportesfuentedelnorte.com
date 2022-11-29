@@ -1,0 +1,12 @@
+<turbo-stream action="replace" target="authentication_check_enrollment">
+	<template>
+		<div class="top-0 z-50 absolute w-full h-full flex justify-center items-center" data-controller='authentication-check-enrollment' data-authentication-check-enrollment-challenge-response-value="{{mercure('authentication_check_enrollment_challenge_response_' ~ app.session.id)}}" data-authentication-check-enrollment-authentication-validation-route-value="{{path('payer_authentication_validation')}}">
+			<div id="authentication_check_enrollment" class="rounded-lg m-auto bg-white p-1 md:p-8">
+				<iframe class="m-auto" name="step-up-iframe" height="{{height}}" width="{{width}}"></iframe>
+				<form data-turbo="false" id="step-up-form" target="step-up-iframe" method="post" action="{{stepUpUrl}}">
+					<input type="hidden" name="JWT" value="{{accessToken}}"/>
+				</form>
+			</div>
+		</div>
+	</template>
+</turbo-stream>

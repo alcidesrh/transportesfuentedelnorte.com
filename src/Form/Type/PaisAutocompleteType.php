@@ -58,7 +58,11 @@ class PaisAutocompleteType extends AbstractType
             ],
             'getter' => function (?Countries $pais, $t) {
                 return $pais;
-            }
+            },
+            'required' => false,
+            'constraints' => [
+                new NotBlank(['message' => $this->translator->trans('Este campo es requerido')])
+            ],
         ]);
     }
 }

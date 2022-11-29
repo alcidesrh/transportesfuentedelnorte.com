@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Entity\ClienteReservacion;
 use App\Entity\Reservacion;
+use App\Entity\Tarjeta;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CybersourceApi
@@ -12,7 +15,14 @@ class CybersourceApi
     const AUTHENTICATION_SUCCESSFUL = "AUTHENTICATION_SUCCESSFUL";
     const PENDING_AUTHENTICATION = "PENDING_AUTHENTICATION";
 
-    public function __construct(private HttpClientInterface $client, private $host, private $endpoints, private $cybersource_merchant_id, private $cybersource_merchant_key_id, private $cybersource_merchant_secret_key)
+    private ?ClienteReservacion $cliente = null;
+    private Reservacion $reservacion;
+
+    private $paymentInformation;
+    private $clientReferenceInformation;
+    private $orderInformation;
+
+    public function __construct(private HttpClientInterface $client, private EntityManagerInterface $entityManagerInterface, private $host, private $endpoints, private $cybersource_merchant_id, private $cybersource_merchant_key_id, private $cybersource_merchant_secret_key)
     {
     }
 
@@ -236,5 +246,125 @@ class CybersourceApi
                 'fingerprintSessionId' => $fingerprintSessionId
             ]
         ];
+    }
+
+    public function setData(Reservacion $reservacion, $pago_datos)
+    {
+        $this->reservacion = $reservacion;
+        $this->cliente = $reservacion->getCliente();
+
+        $this->paymentInformation = [
+            'paymentInformation' => [
+                'card' => [
+                    'type' => $this->entityManagerInterface->getRepository(Tarjeta::class)->find($pago_datos["tarjeta"])->getCodigo(),
+                    'expirationMonth' => $pago_datos["expira_mes"],
+                    'expirationYear' => $pago_datos["expira_year"],
+                    'number' => $pago_datos["numero"]
+                ]
+            ]
+        ];
+        $this->clientReferenceInformation = [
+            'clientReferenceInformation' => [
+                'code' => $reservacion->getId(),
+            ]
+        ];
+
+        if ($this->cliente) {
+            $this->orderInformation = [
+                'orderInformation' => [
+                    'amountDetails' => [
+                        'currency' => $this->reservacion->getMoneda(),
+                        'totalAmount' => $this->reservacion->getPrecioVisual()
+                    ],
+                    'billTo' => [
+                        'address1' => $this->cliente->getDireccion(),
+                        'locality' => $this->cliente->getCiudad()->getName(),
+                        'country' => $this->cliente->getPais()->getIso2(),
+                        'firstName' => $this->cliente->getNombre(),
+                        'lastName' => $this->cliente->getApellido(),
+                        'email' => $this->cliente->getEmail(),
+                    ],
+                ]
+            ];
+        }
+    }
+    public function payerAuthenticationSetupService()
+    {
+        $response = $this->request('authentication_1__setup_service', [
+            ...$this->clientReferenceInformation,
+            ...$this->paymentInformation
+        ]);
+
+        if (is_array($response) && isset($response["consumerAuthenticationInformation"])) {
+            if (isset($response["consumerAuthenticationInformation"]["accessToken"])) {
+                return array_filter($response["consumerAuthenticationInformation"], fn ($key) => in_array($key, ['accessToken', 'deviceDataCollectionUrl', 'referenceId']), ARRAY_FILTER_USE_KEY);
+            }
+        }
+
+        return false;
+    }
+
+    public function payerAuthenticationCheckEnrollmentService($referenceId, $returnUrl)
+    {
+        $response = $this->request('authentication_2___check_enrollment', [
+            ...$this->clientReferenceInformation,
+            ...$this->orderInformation,
+            ...$this->paymentInformation,
+            ...[
+                'consumerAuthenticationInformation' => [
+                    'returnUrl' => $returnUrl,
+                    'referenceId' => $referenceId
+                ]
+            ]
+        ]);
+
+        if (is_array($response)) {
+
+            if ($response['status'] == CybersourceApi::PENDING_AUTHENTICATION) {
+
+                $window = json_decode(base64_decode($response["consumerAuthenticationInformation"]["pareq"]));
+                list($height, $width) = match ($window->challengeWindowSize) {
+                    '01' => [250, 400],
+                    '02' => [390, 400],
+                    '03' => [500, 400],
+                    '04' => [600, 400],
+                    default => ['100%', '100%'],
+                };
+
+                return [
+                    'status' => CybersourceApi::PENDING_AUTHENTICATION,
+                    'height' => $height,
+                    'width' => $width,
+                    'stepUpUrl' => $response['consumerAuthenticationInformation']['stepUpUrl'],
+                    'accessToken' => $response['consumerAuthenticationInformation']['accessToken'],
+                    'authenticationTransactionId' => $response["consumerAuthenticationInformation"]["authenticationTransactionId"]
+                ];
+            } else if ($response['status'] == CybersourceApi::AUTHENTICATION_FAILED) {
+                return ['status' => CybersourceApi::AUTHENTICATION_FAILED, 'message' => $response['consumerAuthenticationInformation']['cardholderMessage']];
+            }
+        }
+
+
+
+        return false;
+    }
+
+    public function payerAuthenticationValidationService($authenticationTransactionId)
+    {
+        $response = $this->request('authentication_3___result', [
+            ...$this->clientReferenceInformation,
+            ...$this->orderInformation,
+            ...$this->paymentInformation,
+            ...[
+                'consumerAuthenticationInformation' => [
+                    'authenticationTransactionId' => $authenticationTransactionId,
+                ]
+            ]
+        ]);
+
+        if (is_array($response)) {
+            return $response;
+        }
+        return false;
     }
 }

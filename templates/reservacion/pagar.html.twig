@@ -6,61 +6,14 @@
 			</div>
 		{% endif %}
 
-		{% form_theme form.tarjetas 'form/theme/_tarjeta_label.html.twig' %}
 
-		{{ form_start(form)}}
+		{{ form_start(form, {attr:{id: 'form-pagar'}})}}
 
 		<div class="min-w-fit lg:min-w-[750px]">
 			<div class="w-fit m-auto max-w-lg sm:max-w-[600px] md:max-w-2xl">
 
-				<div class="alert relative" role="alert">
-					<div class="flex relative items-center">
-						<span class="grid ml-7">
-							<span class="relative">
-								<svg aria-hidden="true" class="absolute top-0 -ml-7 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-									<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-								</svg>
-								{{(('Usamos' | trans) ~ (' <a href="https://3dsecure2.com/" target="_blank" class="inline text-sky-600 font-semibold cursor-pointer mr-5">3dSecure2<span class="material-symbols-outlined absolute text-[20px]">lock</span></a>' ) ~ ('uno de los dos protocolos más seguro para el pago con una amplia variedad de tarjetas.' | trans)) | raw}}
-							</span>
-
-							<span class="relative mt-3">
-								<svg aria-hidden="true" class="absolute top-0 -ml-7 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-									<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-								</svg>
-								{{'No guardamos ningún dato de la tarjeta. Solo se usará para pagar la compra.' | trans}}
-							</span>
-						</span>
-					</div>
-				</div>
-
-				{{ form_row(form.tarjetas, {row_attr: {class: 'mb-0'}, label_attr: {class: 'text-lg'}, attr: {class: 'grid grid-cols-2 sm:grid-cols-3 gap-5 lg:max-w-2xl mt-5'}})}}
-
-				<div class="flex justify-end gap-2 text-sm italic font-medium items-center mt-8 mb-2">
-					<span class="text-orange-600 text-lg font-medium">*</span>
-					<span class="decoration-dashed">{{'dato requerido' | trans}}</span>
-				</div>
-
-				<div class="grid gap-y-6">
-					<div class="flex">
-						{{ form_row(form.precio, {attr: {class: 'max-w-[130px]'}})}}
-						{{ form_row(form.tipo_moneda, { attr: {class: 'flex gap-5'}, row_attr:{class: 'ml-8'}})}}
-					</div>
-
-					<div class="flex flex-wrap gap-y-6">
-						<div class="basis-full sm:flex">
-							{{ form_row(form.numero, {row_attr: {class: 'basis-full md:basis-3/4 xl:bassis-3/5'}})}}
-						</div>
-						<div class="basis-1/2 sm:basis-1/3 md:basis-1/4 xl:bsasis-1/5 pr-2 md:pr-3">
-							{{ form_row(form.expira_mes)}}
-						</div>
-						<div class="basis-1/2 sm:basis-1/3 md:basis-1/4 xl:bsasis-1/5 pl-2 sm:px-2 md:px-3">
-							{{ form_row(form.expira_year)}}
-						</div>
-						<div class="basis-1/2 sm:basis-1/3 md:basis-1/4 xls:basis-1/5 pl-0 sm:pl-2 md:pl-3">
-							{{ form_row(form.codigo_seguridad)}}
-						</div>
-					</div>
-				</div>
+				{% form_theme form.pago_datos 'reservacion/_pago_datos.html.twig' %}
+				{{ form_widget(form.pago_datos)}}
 
 				<div class="border-t border-slate-300 max-w-sm md:max-w-lg lg:max-w-1xl m-auto my-8 sm:my-14"></div>
 
@@ -95,9 +48,9 @@
 			{{ component('button_link', {text: 'Cancelar' | trans, icon: {left: true, name: 'block'}, class: 'cancel', link: path('cancelar'), attr: 'data-turbo=false'}) }}
 			{{ component('button', {text: 'Pagar' | trans, icon: {left: true, name: 'payments'}, attr: {'type': 'submit', 'data-action': 'pagar#mensaje'}}) }}
 		</div>
-		{# <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"> #}
-		{# {{ form_end(form, {'render_rest': false}) }} #}
 		{{ form_end(form) }}
+
+		<div id="data-collection" {{ turbo_stream_listen('data_collection_iframe_' ~ app.session.id) }}></div>
 
 
 	</div>

@@ -14,11 +14,6 @@ export default class extends Controller {
   connect() {
     window.scrollTo(0, 0);
     if (this.descargarValue) {
-      const mensaje = document.getElementById("msg-pagando");
-      if (mensaje) {
-        mensaje.classList.add("hidden");
-      }
-
       this.dispatch("reserva", { detail: { paso: 4 } });
 
       if (this.hasPdf_linkTarget) {

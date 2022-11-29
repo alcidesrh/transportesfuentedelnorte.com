@@ -15,6 +15,7 @@ use Symfony\Component\Mime\Email;
 use App\Entity\ClienteReservacion;
 use App\Entity\Countries;
 use App\Entity\States;
+use App\Entity\Tarjeta;
 use App\Form\SalidaReservacionType;
 use App\Form\ClienteReservacionType;
 use App\Form\Type\CiudadAutocompleteType;
@@ -24,7 +25,6 @@ use App\Repository\AsientoRepository;
 use App\Services\RemoteDatabaseQueries;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManager;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -38,9 +38,9 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ReservacionController extends AbstractController
 {
@@ -70,7 +70,7 @@ class ReservacionController extends AbstractController
                 $entityManagerInterface->remove($reservacion);
             }
             $reservacion = new Reservacion();
-            $ip = $request->getClientIp();
+
             $reservacion->setTransaccionId($request->getClientIp()); //quitar
 
             $entityManagerInterface->persist($reservacion);
@@ -402,16 +402,14 @@ class ReservacionController extends AbstractController
     }
 
     #[Route('/pagar', name: 'pagar')]
-    public function pagar(Reservacion $reservacion, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, $primer_render = null): Response
+    public function pagar(Reservacion $reservacion, HubInterface $hub, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
     {
-
         $cliente = $reservacion->getCliente() ?? new ClienteReservacion();
 
         $form = $this->createForm(ClienteReservacionType::class, $cliente, [
             'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion->getId()]),
             'reservacion' => $reservacion
         ]);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -459,17 +457,31 @@ class ReservacionController extends AbstractController
                 // if (!$cliente->getClienteId()) {
                 //     $cliente->setClienteId($data->cliente_id);
                 // }
-                // $entityManagerInterface->flush();
-
-                // $resultado = $cybersourceApi->procesarPago($reservacion, $form->get('numero')->getData(), $form->get('expira_mes')->getData(), $form->get('expira_year')->getData(), $form->get('codigo_seguridad')->getData(), $request->getSession()->getId());
-
+                // 
+                $pago_datos = $request->request->all()["cliente_reservacion"]["pago_datos"];
                 $entityManagerInterface->persist($cliente);
-                $reservacion->setCliente($cliente);
-                $reservacion->setStatus(Reservacion::STATUS_COMPLETADA);
-                $reservacion->setTransaccionId(125747945354 ?? null);
-                $reservacion->setPasoCompletado(4);
+                $reservacion->setCliente($cliente)->setTarjeta($entityManagerInterface->getRepository(Tarjeta::class)->find($pago_datos['tarjeta']));
                 $entityManagerInterface->flush();
-                return $this->redirectToRoute('3d-secure-iframe-device');
+
+
+                $cybersourceApi->setData($reservacion, $pago_datos);
+
+                if ($result = $cybersourceApi->payerAuthenticationSetupService()) {
+
+                    $request->getSession()->set('referenceId', $result['referenceId']);
+                    $request->getSession()->set('pago_datos', $request->request->all()["cliente_reservacion"]["pago_datos"]);
+                    $hub->publish(new Update(
+                        'data_collection_iframe_' . $request->getSession()->getId(),
+                        $this->renderView('reservacion/_iframe_device_data_collection.stream.html.twig', $result)
+                    ));
+                }
+
+                return new Response(null, 100, [
+                    'procesando-pago' => true,
+                ]);
+
+
+                // return $this->forward('procesar-pago');
                 // return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
 
 
@@ -501,18 +513,66 @@ class ReservacionController extends AbstractController
                 //     }
                 // }
             }
-
-            $entityManagerInterface->flush();
         }
-        $data = $request->request->all();
 
         return $this->renderForm('reservacion/pagar.html.twig', [
             'form' => $form,
             'primer_render' => $primer_render,
             'reservacion' => $reservacion,
             'error_tarjeta' => $error_tarjeta ?? null,
-            'd_secure' => $entityManagerInterface->getRepository(Archivo::class)->findOneBy(['slug' => '3d-secure-2']),
+            'procesand' => $entityManagerInterface->getRepository(Archivo::class)->findOneBy(['slug' => '3d-secure-2']),
         ]);
+    }
+
+    #[Route('/payer-authentication-check-enrollment/{session_id_challenge_response}', name: 'payer_authentication_check_enrollment')]
+    public function payerAuthenticationCheckEnrollmentService(HubInterface $hub, Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion = null, $session_id_challenge_response = null)
+    {
+
+        if (!$session_id_challenge_response) {
+            $cybersourceApi->setData($reservacion, $request->getSession()->get('pago_datos'));
+
+            if ($response = $cybersourceApi->payerAuthenticationCheckEnrollmentService(
+                $request->getSession()->get('referenceId'),
+                $this->generateUrl('payer_authentication_check_enrollment', ['session_id_challenge_response' => $request->getSession()->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+            )) {
+
+                if ($response['status'] == CybersourceApi::PENDING_AUTHENTICATION) {
+
+                    $request->getSession()->set('authenticationTransactionId', $response['authenticationTransactionId']);
+                    $hub->publish(new Update(
+                        'authentication_check_enrollment_' . $request->getSession()->getId(),
+                        $this->renderView('reservacion/_iframe_authentication_check_enrollment.stream.html.twig', $response)
+                    ));
+
+                    return new Response(null, 100, [
+                        'procesando-pago' => true,
+                    ]);
+                }
+            }
+        } else {
+            $hub->publish(new Update(
+                'authentication_check_enrollment_challenge_response_' . $session_id_challenge_response,
+                json_encode($request->request->all())
+            ));
+            return (new Response())->setStatusCode(Response::HTTP_ACCEPTED);
+        }
+    }
+    #[Route('/payer-authentication-validation', name: 'payer_authentication_validation')]
+    public function payerAuthenticationValidationService(Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion): Response
+    {
+
+        if (isset($request->toArray()['TransactionId'])) {
+
+            $cybersourceApi->setData($reservacion, $request->getSession()->get('pago_datos'));
+
+            if ($response = $cybersourceApi->payerAuthenticationValidationService($request->getSession()->get('authenticationTransactionId'))) {
+            }
+        }
+        $authenticationTransactionId = $request->getSession()->get('authenticationTransactionId');
+        if ($request->request->has('TransactionId')) {
+        }
+
+        return new Response();
     }
 
     #[Route('/confirmacion', name: 'confirmacion')]
@@ -623,158 +683,5 @@ class ReservacionController extends AbstractController
             $reservacion->getCliente()?->getCiudad(),
             ['provincia' => $provincia ?? ($request->get('reset') ? false : null)]
         )]);
-    }
-
-    #[Route('/iframe', name: '3d-secure-iframe-device')]
-    public function iframe(HubInterface $hub, EntityManagerInterface $entityManagerInterface, Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion = null): Response
-    {
-
-        $update = new Update(
-            'cybersource_enroll_callback',
-            json_encode(['status' => 'OutOfStock'])
-        );
-        $eee = $hub->getUrl();
-        $hub->publish($update);
-
-        $reservacion = $entityManagerInterface->getRepository(Reservacion::class)->find(957);
-
-        if (true || $a = $request->request->all()) {
-
-            // $result = $cybersourceApi->request('authentication_1__setup_service', [
-            //     'paymentInformation' => [
-            //         'card' => [
-            //             'type' => 001,
-            //             'expirationMonth' => '01', //$numero,
-            //             'expirationYear' => 2025, //$codigo_seguridad,
-            //             'number' => 4456530000001096, //$expira_mes,
-            //         ],
-            //     ]
-            // ]);
-
-
-            return $this->render('reservacion/_3d_secure_iframe.html.twig', [
-                // 'deviceDataCollectionUrl' => $result["consumerAuthenticationInformation"]["deviceDataCollectionUrl"],
-                // 'accessToken' => $result["consumerAuthenticationInformation"]["accessToken"]
-            ]);
-
-            // $result["clientReferenceInformation"]["code"]
-            // $result["consumerAuthenticationInformation"]["accessToken"]
-            // $result["consumerAuthenticationInformation"]["deviceDataCollectionUrl"]
-            // $result["consumerAuthenticationInformation"]["referenceId"]//"ed412990-b5e7-4588-b5d8-474aecb11882"
-            // return $this->render('reservacion/_3d_secure_iframe.html.twig', [
-            //     'stepUpUrl' => 'https://centinelapistag.cardinalcommerce.com/V2/Cruise/StepUp',
-            //     'accessToken' => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlNmQxM2I0Yy1kYzdmLTRjMGYtOGFmMy05MDEyZmM1YTM2MTMiLCJpYXQiOjE2Njk0ODMwNDksImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTY2OTQ4NjY0OSwiT3JnVW5pdElkIjoiNjM2YTZjNWY2OGJjZTQyMGE0NzFlMDkwIiwiUmVmZXJlbmNlSWQiOiJhNzczZGUwOC0yM2E4LTRlODItOGQ0ZC1jNGM3ODFjZWFmZWYifQ.tVpLaJz9rRmVhBRffy9zRCcmbnhPUVR147PmXtoAoF8"
-            // ]);
-            $cliente = $reservacion->getCliente();
-            $data = [
-                'clientReferenceInformation' => [
-                    'code' => '1669437077298',
-                ],
-                'orderInformation' => [
-                    'amountDetails' => [
-                        'currency' => $reservacion->getMoneda(),
-                        'totalAmount' => $reservacion->getPrecioVisual()
-                    ],
-                    'billTo' => [
-                        'address1' => $cliente->getDireccion(),
-                        'locality' => $cliente->getCiudad()->getName(), // USA, Canada y Mainland China.
-                        'country' => $cliente->getPais()->getIso2(),
-                        'firstName' => $cliente->getNombre(),
-                        'lastName' => $cliente->getApellido(),
-                        'email' => $cliente->getEmail(),
-                    ],
-                ],
-                'paymentInformation' => [
-                    'card' => [
-                        "type" => "001",
-                        "expirationMonth" => "01",
-                        "expirationYear" => "2025",
-                        "number" => "4456530000001096",
-                    ],
-                ],
-                'consumerAuthenticationInformation' => [
-                    'returnUrl' => 'https://transportesfuentedelnorte.com/iframe',
-                    'referenceId' => '538dbbf5-4c7d-4df0-a616-ce9ee473125b'
-                ],
-            ];
-            $result = $cybersourceApi->request('authentication_2___check_enrollment', $data);
-
-
-            if ($result['status'] == CybersourceApi::PENDING_AUTHENTICATION) {
-                $url = $result['consumerAuthenticationInformation']['stepUpUrl']; //https://0merchantacsstag.cardinalcommerce.com/MerchantACSWeb/creq.jsp
-                $accessToken = $result['consumerAuthenticationInformation']['accessToken']; //eyJtZXNzYWdlVHlwZSI6IkNSZXEiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMi4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiI3ZTM1YTQxNy0xYzM1LTQxNTctYjI4Yy1jYjg2MWNiNDdjNTUiLCJhY3NUcmFuc0lEIjoiNDhiODlmYTUtZmVkMy00YjNmLWEzN2YtYTFjYmJjYjFjODkwIiwiY2hhbGxlbmdlV2luZG93U2l6ZSI6IjAyIn0
-
-                $window = json_decode(base64_decode($result["consumerAuthenticationInformation"]["pareq"]));
-                list($height, $width) = match ($window->challengeWindowSize) {
-                    '01' => [250, 400],
-                    '02' => [390, 400],
-                    '03' => [500, 400],
-                    '04' => [600, 400],
-                    default => ['100%', '100%'],
-                };
-
-                return $this->render('reservacion/_3d_secure_iframe.html.twig', [
-                    'height' => $height,
-                    'width' => $width,
-                    'stepUpUrl' => $url,
-                    'accessToken' => $accessToken
-                ]);
-            } else if ($result['status'] == CybersourceApi::AUTHENTICATION_FAILED) {
-                $message = $result['consumerAuthenticationInformation']['cardholderMessage'];
-            }
-
-            return new JsonResponse($data);
-            // }
-
-
-
-            if (true || isset($result["consumerAuthenticationInformation"]) && isset($result["consumerAuthenticationInformation"]['accessToken'])) {
-                // $referenceId = $result["consumerAuthenticationInformation"]["referenceId"];
-                return $this->render('reservacion/_3d_secure_iframe.html.twig', [
-                    'deviceDataCollectionUrl' => "https://centinelapistag.cardinalcommerce.com/V1/Cruise/Collect", //$result["consumerAuthenticationInformation"]['deviceDataCollectionUrl'],
-                    'accessToken' => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NDRlNDhhNy0zZWM2LTQ0MWItYTdlNi00NDRlOTM0MWI4MTAiLCJpYXQiOjE2Njk0MzA5MDQsImlzcyI6IjVkZDgzYmYwMGU0MjNkMTQ5OGRjYmFjYSIsImV4cCI6MTY2OTQzNDUwNCwiT3JnVW5pdElkIjoiNjM2YTZjNWY2OGJjZTQyMGE0NzFlMDkwIiwiUmVmZXJlbmNlSWQiOiIzMmQ5NGNlYS02MTIyLTQ4MWItYmU3Ni1jNDkwMTRhNGEwNjcifQ.WVe7lZdwOSR2AEGC0ACs4tVnJXk_sd2yqmCiMK8ilVw" //$result["consumerAuthenticationInformation"]['accessToken']
-                ]);
-            }
-        }
-
-        die('error');
-
-        [
-            "clientReferenceInformation" => [
-                "code" => "cybs_test"
-            ],
-            "orderInformation" => [
-                "amountDetails" => [
-                    "currency" => "USD",
-                    "totalAmount" => "10.99"
-                ],
-                "billTo" => [
-                    "address1" => "1 Market St",
-                    "address2" => "Address 2",
-                    "administrativeArea" => "CA",
-                    "country" => "US",
-                    "locality" => "san francisco",
-                    "firstName" => "John",
-                    "lastName" => "Doe",
-                    "phoneNumber" => "4158880000",
-                    "email" => "test@cybs.com",
-                    "postalCode" => "94105"
-                ]
-            ],
-            "paymentInformation" => [
-                "card" => [
-                    "type" => "001",
-                    "expirationMonth" => "12",
-                    "expirationYear" => "2025",
-                    "number" => "4000000000000101"
-                ]
-            ],
-            "buyerInformation" => [
-                "mobilePhone" => "1245789632"
-            ],
-            "consumerAuthenticationInformation" => [
-                "transactionMode" => "MOTO"
-            ]
-        ];
     }
 }

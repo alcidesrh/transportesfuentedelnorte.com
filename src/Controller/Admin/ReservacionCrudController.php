@@ -7,6 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
 class ReservacionCrudController extends AbstractCrudController
 {
@@ -18,7 +19,7 @@ class ReservacionCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            'id',
+            IdField::new('id')->hideOnForm(),
             DateTimeField::new('createdAt', 'Creada'),
             'status',
             TextField::new('rutaForAdmin', 'Ruta'),
@@ -26,6 +27,7 @@ class ReservacionCrudController extends AbstractCrudController
             'transaccion_id',
             'factura_dte',
             'moneda',
+            'paso_completado',
             'ida_vuelta'
 
         ];

@@ -1,7 +1,5 @@
 <turbo-frame id="reservacion-form">
 
-	{{ form_start(form, {attr: {class: 'm-auto', 'data-controller': 'ruta-form'}}) }}
-
 	{% for message in app.flashes('session_terminada') %}
 		{{ component('alert', {class: 'info', text: message | trans({'RESERVACION_MINUTOS' :  app.flashes('RESERVACION_MINUTOS')[0]})})}}
 	{% endfor %}
@@ -10,14 +8,16 @@
 		{{ component('alert', {class: 'bg-red-600 text-white  !text-base', icon: 'warning', text: 'Este sitio está en construcción. Las reservas no son válidas.'})}}
 	</div>
 
-	{{ form_row(form._token) }}
-	<div class="grid gap-3 px-5 md:gap-x-5 lg:gap-x-7 max-w-sm sm:max-w-xl md:max-w-xl lg:max-w-4xl m-auto md:grid-cols-2 lg:grid-cols-3 mt-8">
-		{{ form_row(form.estacion_salida)}}
-		{{ form_row(form.estacion_llegada)}}
-		{{ form_row(form.ida_vuelta, {row_attr: {class: 'flex items-center'}, attr: {class: 'flex gap-2 items-center'}}) }}
-		<div class="flex justify-end row-start-4 sm:row-start-3 sm:col-start-2 lg:col-start-3">
-			{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit'}}) }}
-		</div>
-	</div>
-	{{ form_end(form) }}
+	{# {{ form_start(form, {attr: {class: 'm-auto', 'data-controller': 'ruta-form'}}) }}
+		
+			{{ form_row(form._token) }}
+			<div class="grid gap-3 px-5 md:gap-x-5 lg:gap-x-7 max-w-sm sm:max-w-xl md:max-w-xl lg:max-w-4xl m-auto md:grid-cols-2 lg:grid-cols-3 mt-8">
+				{{ form_row(form.estacion_salida)}}
+				{{ form_row(form.estacion_llegada)}}
+				{{ form_row(form.ida_vuelta, {row_attr: {class: 'flex items-center'}, attr: {class: 'flex gap-2 items-center'}}) }}
+				<div class="flex justify-end row-start-4 sm:row-start-3 sm:col-start-2 lg:col-start-3">
+					{{ component('button', {text: 'Siguiente' | trans, icon: {right: true, name: 'arrow_forward'}, attr: {type: 'submit'}}) }}
+				</div>
+			</div>
+			{{ form_end(form) }} #}
 </turbo-frame>

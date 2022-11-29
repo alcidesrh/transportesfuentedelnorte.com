@@ -11,10 +11,6 @@ export default class extends Controller {
   };
   paso = null;
   connect() {
-    const mensaje = document.getElementById("msg-pagando");
-    if (mensaje) {
-      mensaje.classList.add("hidden");
-    }
     if (this.pasoValue) {
       this.blur();
       this.sliderStop(true);

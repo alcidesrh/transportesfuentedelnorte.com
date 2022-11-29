@@ -37,5 +37,8 @@ document.getElementById(collapseID).classList.toggle("hidden");
 document.getElementById(collapseID).classList.toggle("block");
 }
 		</script>
+
+		<div id="authentication_check_enrollment" {{ turbo_stream_listen('authentication_check_enrollment_' ~ app.session.id) }}></div>
+
 	</body>
 </html>

@@ -8,8 +8,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class TarjetaCrudController extends AbstractCrudController
@@ -23,7 +21,6 @@ class TarjetaCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            FormField::addPanel(),
             AvatarField::new('imagen')->formatValue(static function ($value, ?Tarjeta $item) {
                 return $item?->getImagen()?->getPath();
             })->hideOnForm(),

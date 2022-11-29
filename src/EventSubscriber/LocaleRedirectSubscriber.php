@@ -17,18 +17,16 @@ class LocaleRedirectSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
+        if ($event->isMainRequest() && !$request->hasPreviousSession() && ($preferredLanguage = $request->getPreferredLanguage($this->enabled_locales)) != $request->attributes->get('_locale') && $request->attributes->get('_route') != "payer_authentication_check_enrollment") {
 
-        // if ($event->isMainRequest() && !$request->hasPreviousSession() && ($preferredLanguage = $request->getPreferredLanguage($this->enabled_locales)) != $request->attributes->get('_locale')) {
+            $request->setLocale($preferredLanguage);
+            $request->attributes->set('_vary_by_language', true);
+            $this->router->getContext()->setParameter('_locale', $request->getLocale());
 
+            $response = new RedirectResponse($this->router->generate('inicio'));
 
-        //     $request->setLocale($preferredLanguage);
-        //     $request->attributes->set('_vary_by_language', true);
-        //     $this->router->getContext()->setParameter('_locale', $request->getLocale());
-
-        //     $response = new RedirectResponse($this->router->generate('inicio'));
-
-        //     $event->setResponse($response);
-        // }
+            $event->setResponse($response);
+        }
     }
 
     public static function getSubscribedEvents(): array

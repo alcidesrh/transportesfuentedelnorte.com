@@ -1,0 +1,10 @@
+<turbo-stream action="replace" target="data-collection">
+	<template>
+		<div data-controller='data-collection-iframe' data-data-collection-iframe-procesar-pago-url-value="{{path('payer_authentication_check_enrollment')}}">
+			<iframe name="ddc-iframe" height="10" width="10" style="display: none;"></iframe>
+			<form data-data-collection-iframe-target='form' data-turbo="false" id="ddc-form" target="ddc-iframe" method="POST" action="{{deviceDataCollectionUrl}}">
+				<input type="hidden" name="JWT" value="{{accessToken}}"/>
+			</form>
+		</div>
+	</template>
+</turbo-stream>

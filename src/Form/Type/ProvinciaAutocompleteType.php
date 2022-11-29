@@ -2,7 +2,6 @@
 // src/Form/Type/ShippingType.php
 namespace App\Form\Type;
 
-use App\Entity\Countries;
 use App\Entity\States;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

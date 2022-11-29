@@ -7,6 +7,7 @@ services:
             $endpoints:
                 authentication_1__setup_service: /risk/v1/authentication-setups
                 authentication_2___check_enrollment: /risk/v1/authentications
+                authentication_3___result: /risk/v1/authentication-results
                 payment: /pts/v2/payments/
 
     App\Services\CybersourceApi:
