@@ -24,17 +24,16 @@ document.addEventListener("turbo:before-fetch-response", (event) => {
     Turbo.visit(fetchResponse.response.headers.get("Turbo-Location"));
   } else if (fetchResponse.response.headers.get("procesando-pago")) {
     event.preventDefault();
+  } else if (fetchResponse.response.headers.get("error-pago")) {
+    event.preventDefault();
+    const loading = document.getElementById("turbo-loading");
+    if (loading) {
+      document.getElementById("turbo-loading").classList.remove("!flex");
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  console.log(event);
 });
-
-// document.addEventListener("turbo:before-render", (event) => {
-//   if (event.detail.fetchResponse.response.headers.get("procesando-pago")) {
-//     event.preventDefault();
-
-//     alert("sirvio");
-//   }
-// });
 
 function _onStopTyped({ detail: { typed } }) {
   typed.stop();

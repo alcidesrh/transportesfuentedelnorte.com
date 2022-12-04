@@ -44,11 +44,8 @@ export default class extends Controller {
   }
 
   provincia(event = null) {
-    if (!this.primera_accion) {
-      this.ciudad();
-    } else {
-      this.primera_accion = false;
-    }
+    this.ciudad();
+
     const frame = document.getElementById("provincia-frame");
     frame.src = frame.dataset.provinciasRuta + "/" + event.currentTarget.value;
   }

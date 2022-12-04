@@ -36,7 +36,7 @@ Número de la tarjeta: Car number
 Mes que expira: Expiring month
 Año que expira: Expiring year
 Este campo es requerido: This field is required
-Propietario de la tarjeta de crédito: Credit card owner
+Propietario de la tarjeta: Credit card owner
 No guardamos ningún dato de la tarjeta. Solo se usará para pagar la compra.: We do not store any card data. It will only be used to pay for the purchase.
 No se pudo realizar el pago. Los datos de la tarjeta no son correctos.: The payment could not be made. The card details are not correct.
 Nit (solo Guatemala): Nit (only Guatemala)
@@ -129,3 +129,8 @@ ver más: see more
 Usamos: We use
 uno de los dos protocolos más seguro para el pago con una amplia variedad de tarjetas.: one of the two most secure protocols for payment with a wide variety of cards.
 Comprar boleto: Buy tickets
+Tipo de tarjeta: Card type
+dato requerido: required data
+Tipo moneda: Currency type
+Ha habido un error inesperado. Por favor inténtelo de nuevo.: There has been an unexpected error. Please try again.
+Respuesta de la institucion bancaria: Response from the banking institution

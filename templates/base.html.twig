@@ -22,6 +22,13 @@
 			{{ sonata_seo_title() }}
 		{% endblock %}
 
+		<script>
+			function toggleNavbar(collapseID) {
+document.getElementById(collapseID).classList.toggle("hidden");
+document.getElementById(collapseID).classList.toggle("block");
+}
+		</script>
+
 	</head>
 	<body class="antialiased">
 
@@ -31,14 +38,10 @@
 		</main>
 		{{component('footer')}}
 
-		<script>
-			function toggleNavbar(collapseID) {
-document.getElementById(collapseID).classList.toggle("hidden");
-document.getElementById(collapseID).classList.toggle("block");
-}
-		</script>
 
 		<div id="authentication_check_enrollment" {{ turbo_stream_listen('authentication_check_enrollment_' ~ app.session.id) }}></div>
-
+		<noscript data-turbo="false">
+			<iframe style="width: 100px; height: 100px; border: 0; position:absolute; top: -5000px;" src="https://h.online-metrix.net/fp/tags?org_id=1snn5n9w&session_id={{cybersource_session_id}}"></iframe>
+		</noscript>
 	</body>
 </html>

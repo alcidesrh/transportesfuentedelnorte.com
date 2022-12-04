@@ -4,13 +4,12 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    default_locale: es
+    default_locale: "es"
     set_locale_from_accept_language: false
     set_content_language_from_locale: false
     enabled_locales: ["es", "en"]
     reservacion_minutos: 15000000
 
-    cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +27,14 @@ services:
             - "../src/Kernel.php"
             - "../src/Services/{CybersourceApi.php}"
 
+    App\Services\ServerSentEvent:
+        public: true
+        tags: ["controller.service_arguments"]
+
+    App\Services\ReservacionFactory: ~
+    App\Entity\Reservacion:
+        factory: '@App\Services\ReservacionFactory'
+
     App\Services\RemoteDatabaseQueries:
         arguments:
             # the '@' symbol is important: that's what tells the container
@@ -37,6 +44,11 @@ services:
             $FDN_HOST: "%env(FDN_HOST)%"
 
     # App\Services\CybersourceApi:
+    # tags: ["controller.service_arguments"]
+    # - {
+    #       name: "container.preload",
+    #       class: 'App\Services\CustomValueResolver',
+    #   }
     #     arguments:
     #         $cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
     #         $cybersource_merchant_key_id: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"

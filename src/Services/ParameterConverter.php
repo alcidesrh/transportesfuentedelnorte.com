@@ -9,15 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ParameterConverter implements ParamConverterInterface
 {
-
     public function __construct(private ReservacionRepository $reservacionRepository)
     {
     }
 
 
-    function apply(Request $request, ParamConverter $configuration)
+    public function apply(Request $request, ParamConverter $configuration)
     {
-
         if ($id = $request->getSession()->get('reservacion')) {
             $request->attributes->set($configuration->getName(), $this->reservacionRepository->find($id));
         } else {
@@ -25,7 +23,7 @@ class ParameterConverter implements ParamConverterInterface
         }
     }
 
-    function supports(ParamConverter $configuration)
+    public function supports(ParamConverter $configuration)
     {
         return $configuration->getName() == 'reservacion';
     }

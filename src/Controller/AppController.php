@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 class AppController extends AbstractController
 {
@@ -24,24 +25,28 @@ class AppController extends AbstractController
     #[Route('/', name: 'inicio')]
     public function index(Request $request, ServicioRepository $servicioRepository, SliderRepository $sliderRepository, Reservacion $reservacion = null): Response
     {
-
         $reservacion_paso = $reservacion ? $reservacion->getPasoCompletado() : 0;
+
+        // if (!$uuid = $request->getSession()->get('uuid')) {
+        $request->getSession()->set('uuid', $uuid = (string) Uuid::v1());
+        // }
+
         return $this->render('index.html.twig', [
             'reservacion_paso' => $reservacion_paso,
             'reservacion_action' => ['ruta', 'salida', 'asientos', 'pagar', 'confirmacion'][$reservacion_paso],
             'servicios' => $servicioRepository->findBy(['inicio' => true], ['prioridad' => 'ASC']),
             'slider' => $sliderRepository->findOneBy([]),
-            'cybersource_session_id' => $this->getParameter('cybersource_merchant_id') . $request->getSession()->getId()
+            'cybersource_session_id' => $this->getParameter('cybersource_merchant_id').$uuid,
         ]);
     }
 
     #[Route('/servicio/{slug?}', name: 'servicio')]
     public function servicio(ServicioRepository $servicioRepository): Response
     {
-        $this->seoPage->addMeta('name', 'description', '$post->getAbstract()'); //Title('Salida y destino');
+        $this->seoPage->addMeta('name', 'description', '$post->getAbstract()'); // Title('Salida y destino');
 
         return $this->render('servicio.html.twig', [
-            'servicios' => $servicioRepository->findBy([], ['prioridad' => 'ASC']) //$servicio ? [$servicio] : $servicioRepository->findBy([], ['prioridad' => 'desc']),
+            'servicios' => $servicioRepository->findBy([], ['prioridad' => 'ASC']), // $servicio ? [$servicio] : $servicioRepository->findBy([], ['prioridad' => 'desc']),
         ]);
     }
 
@@ -49,7 +54,7 @@ class AppController extends AbstractController
     public function estacion(DepartamentoRepository $departamentoRepository): Response
     {
         return $this->render('estacion.html.twig', [
-            'departamentos' => $departamentoRepository->getEstacionesDepartamento()
+            'departamentos' => $departamentoRepository->getEstacionesDepartamento(),
         ]);
     }
 
@@ -68,7 +73,6 @@ class AppController extends AbstractController
     #[Route('/contacto-form', name: 'contacto-form')]
     public function contactoForm(Request $request, EntityManagerInterface $entityManagerInterface): Response
     {
-
         $contacto = new Contacto();
         $form = $this->createForm(ContactoType::class, $contacto, [
             'action' => $this->generateUrl('contacto'),
@@ -87,7 +91,7 @@ class AppController extends AbstractController
 
         return $this->renderForm('_contacto_form.html.twig', [
             'form' => $form,
-            'guardado' => isset($guardado)
+            'guardado' => isset($guardado),
         ]);
     }
 

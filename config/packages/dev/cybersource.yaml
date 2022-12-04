@@ -1,5 +1,7 @@
+parameters:
+    cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
+
 services:
-    # default configuration for services in *this* file
     _defaults:
         autowire: true
         bind:
@@ -11,6 +13,7 @@ services:
                 payment: /pts/v2/payments/
 
     App\Services\CybersourceApi:
+        lazy: true
         arguments:
             $cybersource_merchant_id: "%env(CYBERSOURCE_MERCHANT_ID)%"
             $cybersource_merchant_key_id: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"

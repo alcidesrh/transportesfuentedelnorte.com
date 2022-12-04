@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block javascripts %}
-	<script type="text/javascript" src="https://h.online-metrix.net/fp/tags.js?org_id=1snn5n9w&session_id={{cybersource_session_id}}"></script>
+	<script data-turbo="false" type="text/javascript" src="https://h.online-metrix.net/fp/tags.js?org_id=1snn5n9w&session_id={{cybersource_session_id}}"></script>
 	{{ parent() }}
 {% endblock %}
 
@@ -15,10 +15,6 @@
 {% endblock %}
 
 {% block body %}
-
-	<noscript>
-		<iframe style="width: 100px; height: 100px; border: 0; position:absolute; top: -5000px;" src="https://h.online-metrix.net/fp/tags?org_id=1snn5n9w&session_id={{cybersource_session_id}}"></iframe>
-	</noscript>
 
 
 	<div class="relative flex justify-center items-center banner z-40">
@@ -87,7 +83,7 @@
 	</section>
 
 	<div id="turbo-loading">
-		{{ component('alert', {attr: 'id=msg-pagando', class: 'hidden info max-w-xs sm:max-w-md md:max-w-lg -mb-5 bg-cyan-700 text-white !text-base',  text: 'Este proceso puede tardar varios segundos. Por favor mantegase en la página.' | trans}) }}
+		{{ component('alert', {attr: 'id=msg-pagando', icon_class: 'fill-slate-100', class: 'hidden info max-w-xs sm:max-w-md md:max-w-lg -mb-5 bg-cyan-700 text-white !text-base border-l-0',  text: 'Este proceso puede tardar varios segundos. Por favor mantegase en la página.' | trans}) }}
 
 		<svg class="w-24" version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
 			<circle fill="#3D92B2" stroke="none" cx="6" cy="50" r="6">

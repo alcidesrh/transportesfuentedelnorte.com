@@ -78,7 +78,11 @@
         @apply ml-[3px] text-[14px] sm:text-[21px];
     }
 
-    .btn .material-symbols-outlined.left {
+    .material-symbols-outlined {
+        @apply text-[22px];
+    }
+
+     .btn .material-symbols-outlined.left {
         @apply mr-[3px] ml-0 text-[14px] sm:ml-0 sm:text-[21px];
     }
 
@@ -90,7 +94,7 @@
     }
 
     .alert {
-        @apply inline-block rounded-lg bg-sky-100 p-5 pr-10 text-left text-sm font-medium text-cyan-800;
+        @apply inline-block rounded-lg border-l-4 border-orange-500 bg-sky-100 p-5 pr-10 text-left text-sm font-medium text-cyan-800;
         & svg {
             @apply text-cyan-500;
         }
@@ -100,7 +104,7 @@
         @apply text-[15px];
     }
     .alert.warning {
-        @apply bg-orange-100 text-[15px] text-orange-700;
+        @apply bg-orange-50 text-[15px] text-orange-600;
     }
 
     .alert.error {

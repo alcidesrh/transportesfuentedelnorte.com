@@ -4,9 +4,9 @@
         "@hotwired/turbo": "^7.0.1",
         "@symfony/stimulus-bridge": "^3.2.0",
         "@symfony/ux-autocomplete": "file:vendor/symfony/ux-autocomplete/assets",
-        "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/Resources/assets",
-        "@symfony/ux-turbo-mercure": "file:vendor/symfony/ux-turbo-mercure/Resources/assets",
-        "@symfony/ux-typed": "file:vendor/symfony/ux-typed/Resources/assets",
+        "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
+        "@symfony/ux-turbo-mercure": "file:vendor/symfony/ux-turbo-mercure/assets",
+        "@symfony/ux-typed": "file:vendor/symfony/ux-typed/assets",
         "@symfony/webpack-encore": "^3.0.0",
         "@tailwindcss/aspect-ratio": "^0.4.2",
         "@tailwindcss/forms": "^0.5.2",
@@ -19,7 +19,7 @@
         "prettier-plugin-tailwindcss": "^0.1.13",
         "regenerator-runtime": "^0.13.9",
         "tailwindcss": "^3.1.7",
-        "tom-select": "^2.0.1",
+        "tom-select": "^2.2.2",
         "typed.js": "^2.0",
         "webpack-notifier": "^1.15.0"
     },
@@ -34,6 +34,7 @@
     "dependencies": {
         "flatpickr": "^4.6.13",
         "gsap": "file:gsap-bonus.tgz",
+        "imask": "^6.4.3",
         "material-symbols": "^0.2.9",
         "micromodal": "^0.4.10",
         "stimulus-use": "^0.50.0"

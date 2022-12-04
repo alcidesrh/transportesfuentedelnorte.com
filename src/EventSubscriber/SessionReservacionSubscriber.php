@@ -4,7 +4,6 @@ namespace App\EventSubscriber;
 
 use App\Entity\Reservacion;
 use App\Services\RemoteDatabaseQueries;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -22,11 +21,9 @@ class SessionReservacionSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         if ($event->isMainRequest() && $session = $event->getRequest()->getSession()) {
-
             if ($reservacion_id = $session->get('reservacion')) {
-
-                $now = new DateTime();
-                $date = date_timestamp_set(new DateTime(), $session->getMetadataBag()->getCreated());
+                $now = new \DateTime();
+                $date = date_timestamp_set(new \DateTime(), $session->getMetadataBag()->getCreated());
 
                 $difference = date_diff($now, $date);
 
@@ -35,17 +32,14 @@ class SessionReservacionSubscriber implements EventSubscriberInterface
                 $minutes += $difference->i;
 
                 if ($minutes > $this->reservacion_minutos) {
-
                     $reservacion = $this->entityManagerInterface->find(Reservacion::class, $reservacion_id);
 
-                    if ($reservacion->getStatus() != Reservacion::STATUS_COMPLETADA) {
-
+                    if (Reservacion::STATUS_COMPLETADA != $reservacion->getStatus()) {
                         if ($reservacion->getBoletoTicketId()) {
                             $this->remoteDatabaseQueries->anularReservacion($reservacion);
                             $this->entityManagerInterface->flush();
                         }
                     }
-
 
                     $session->getFlashBag()->add(
                         'session_terminada',

@@ -26,28 +26,38 @@ export default class extends Controller {
     }
 
     const eventSource = new EventSource(this.challengeResponseValue);
-    eventSource.onmessage = (event) => {
-      console.log(event.data, JSON.parse(event.data));
 
+    eventSource.onmessage = (event) => {
       document.getElementById("reserva-wrap").classList.add("reserva");
 
       const loading = document.getElementById("turbo-loading");
       if (loading) {
         document.getElementById("turbo-loading").classList.add("!flex");
       }
+      document.querySelector("#authentication_check_enrollment>*")?.remove();
 
-      document.getElementById("authentication_check_enrollment").remove();
+      const form = document.createElement("form");
+      form.action = this.authenticationValidationRouteValue;
+      form.method = "POST";
+      form.id = "payer-authentication-validation-form";
 
-      fetch(this.authenticationValidationRouteValue, {
-        method: "POST", // or 'PUT'
-        body: event.data, // data can be `string` or {object}!
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .catch((error) => console.error("Error:", error))
-        .then((response) => console.log("Success:", response));
+      const response = JSON.parse(event.data);
+      for (var key in response) {
+        const element = document.createElement("input");
+        element.value = response[key];
+        element.name = key;
+        element.type = "hidden";
+        form.append(element);
+      }
+      const form_viejo = document.getElementById(
+        "payer-authentication-validation-form"
+      );
+      if (form_viejo) {
+        form_viejo.remove();
+      }
+
+      document.getElementById("reservacion-form").appendChild(form);
+      form.requestSubmit();
     };
   }
 }

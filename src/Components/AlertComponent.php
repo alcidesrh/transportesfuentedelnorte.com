@@ -15,5 +15,7 @@ class AlertComponent
 
     public string|null $icon = null;
 
+    public string|null $icon_class = 'fill-cyan-500';
+
     public string|null $attr = null;
 }

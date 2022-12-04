@@ -3,51 +3,51 @@
 namespace App\Controller;
 
 use App\Entity\Archivo;
-use Dompdf\Dompdf;
 use App\Entity\Asiento;
-use App\Entity\Reservacion;
-use App\Entity\Configuracion;
-use App\Entity\RutaReservacion;
-use App\Services\CybersourceApi;
-use App\Entity\SalidaReservacion;
-use App\Form\RutaReservacionType;
-use Symfony\Component\Mime\Email;
 use App\Entity\ClienteReservacion;
+use App\Entity\Configuracion;
 use App\Entity\Countries;
+use App\Entity\Reservacion;
+use App\Entity\RutaReservacion;
+use App\Entity\SalidaReservacion;
 use App\Entity\States;
 use App\Entity\Tarjeta;
-use App\Form\SalidaReservacionType;
 use App\Form\ClienteReservacionType;
+use App\Form\RutaReservacionType;
+use App\Form\SalidaReservacionType;
 use App\Form\Type\CiudadAutocompleteType;
 use App\Form\Type\PaisAutocompleteType;
 use App\Form\Type\ProvinciaAutocompleteType;
 use App\Repository\AsientoRepository;
+use App\Services\CybersourceApi;
 use App\Services\RemoteDatabaseQueries;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Services\ServerSentEvent;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ReservacionController extends AbstractController
 {
-
     #[Route('/ruta-form', name: 'ruta')]
     public function ruta(Reservacion $reservacion = null, Request $request, EntityManagerInterface $entityManagerInterface, $primer_render = null): Response
     {
+        $request->getSession()->set('reservacion', 1032);
         if ($reservacion) {
             $ruta = $reservacion->getRuta();
         } else {
@@ -56,13 +56,12 @@ class ReservacionController extends AbstractController
 
         $form = $this->createForm(RutaReservacionType::class, $ruta, [
             'action' => $this->generateUrl('ruta', ['reservacion' => $reservacion?->getId()]),
-            'reservacion' => $reservacion
+            'reservacion' => $reservacion,
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             if (!$ruta->getId()) {
                 $entityManagerInterface->persist($ruta);
             }
@@ -71,7 +70,7 @@ class ReservacionController extends AbstractController
             }
             $reservacion = new Reservacion();
 
-            $reservacion->setTransaccionId($request->getClientIp()); //quitar
+            $reservacion->setTransaccionId($request->getClientIp()); // quitar
 
             $entityManagerInterface->persist($reservacion);
 
@@ -95,7 +94,7 @@ class ReservacionController extends AbstractController
 
         return $this->renderForm('reservacion/ruta.html.twig', [
             'form' => $form,
-            'primer_render' => $primer_render
+            'primer_render' => $primer_render,
         ]);
     }
 
@@ -114,14 +113,16 @@ class ReservacionController extends AbstractController
                 $reservacion->setPasoCompletado(2);
                 $entityManagerInterface->persist($reservacion);
                 $entityManagerInterface->flush();
+
                 return $this->redirectToRoute('asientos', ['reservacion' => $reservacion->getId()]);
             }
         }
+
         return $this->render('reservacion/salida.html.twig', [
             'ida_vuelta' => $reservacion->isIdaVuelta(),
             'reservacion_id' => $reservacion->getId(),
             'errors' => $errors,
-            'primer_render' => $primer_render
+            'primer_render' => $primer_render,
         ]);
     }
 
@@ -147,12 +148,10 @@ class ReservacionController extends AbstractController
 
         $session = $request->getSession();
 
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid() && $salida_reservacion->getSalidaId()) {
-
                 if (!$salida_reservacion->getId()) {
                     $entityManagerInterface->persist($salida_reservacion);
 
@@ -160,13 +159,12 @@ class ReservacionController extends AbstractController
                         'action' => $this->generateUrl('salida_form', ['reservacion' => $reservacion->getId(), 'ida_vuelta' => $ida_vuelta]),
                         'ida_vuelta' => $ida_vuelta,
                     ]);
-                } else if ($salida_id != $salida_reservacion->getSalidaId()) {
-
+                } elseif ($salida_id != $salida_reservacion->getSalidaId()) {
                     foreach ($salida_reservacion->getAsientos() as $value) {
                         $entityManagerInterface->remove($value);
                     }
                 }
-            } else if ($salida_reservacion) {
+            } elseif ($salida_reservacion) {
                 $fecha = $salida_reservacion->getSalidaFecha();
                 $entityManagerInterface->remove($salida_reservacion);
                 $salida_reservacion = (new SalidaReservacion())->setSalidaFecha($fecha);
@@ -213,7 +211,7 @@ class ReservacionController extends AbstractController
             }
             if (is_null($salidas)) {
                 $sistema_conexion_error = $translatorInterface->trans('No se pudo establecer la conexión con el sistema de reserva. Por favor inténtelo más tarde');
-            } else if (isset($salidas['error'])) {
+            } elseif (isset($salidas['error'])) {
                 $sistema_conexion_error = $salidas['error'];
                 $salidas = [];
             }
@@ -228,7 +226,7 @@ class ReservacionController extends AbstractController
                 'salidas' => $salidas ?? null,
                 'sistema_conexion_error' => $sistema_conexion_error ?? null,
                 'primer_render' => $primer_render,
-                'form_submitted' => $form->isSubmitted()
+                'form_submitted' => $form->isSubmitted(),
             ],
             new Response('', 200, ['session_terminada' => true])
         );
@@ -243,39 +241,44 @@ class ReservacionController extends AbstractController
             ->add('asientos_salida', TextType::class, [
                 'required' => false,
                 'data' => $reservacion->getSalida()?->getAsientos(),
-                'data_class' => null
-            ]);
+                'data_class' => null,
+            ])
+        ;
         $form->get('asientos_salida')
             ->addModelTransformer(new CallbackTransformer(
                 function (Collection|null $asientos = null) {
                     if ($asientos) {
-                        return  json_encode($asientos->map(fn (Asiento $item) => ['id' => $item->getAsientoId(), 'numero' => $item->getNumero()])->toArray());
+                        return json_encode($asientos->map(fn (Asiento $item) => ['id' => $item->getAsientoId(), 'numero' => $item->getNumero()])->toArray());
                     }
+
                     return null;
                 },
                 function ($asientos) {
                     return json_decode($asientos);
                 }
-            ));
+            ))
+        ;
 
         if ($reservacion->isIdaVuelta()) {
             $form->add('asientos_regreso', TextType::class, [
                 'required' => false,
                 'data' => $reservacion->getRegreso()?->getAsientos(),
-                'data_class' => null
+                'data_class' => null,
             ]);
             $form->get('asientos_regreso')
                 ->addModelTransformer(new CallbackTransformer(
                     function (Collection|null $asientos = null) {
                         if ($asientos) {
-                            return  json_encode($asientos->map(fn (Asiento $item) => ['id' => $item->getAsientoId(), 'numero' => $item->getNumero()])->toArray());
+                            return json_encode($asientos->map(fn (Asiento $item) => ['id' => $item->getAsientoId(), 'numero' => $item->getNumero()])->toArray());
                         }
+
                         return null;
                     },
                     function ($asientos) {
                         return json_decode($asientos);
                     }
-                ));
+                ))
+            ;
         }
 
         $form = $form->getForm();
@@ -303,8 +306,8 @@ class ReservacionController extends AbstractController
                         unset($data['asientos_salida'][array_search($value->getAsientoId(), $array_ids($data['asientos_salida']))]);
                     }
                 }
-                foreach ($data['asientos_salida'] as  $value) {
-                    $entityManagerInterface->persist((new Asiento)->setAsientoId($value->id)->setNumero($value->numero)->setSalidaReservacion($reservacion->getSalida()));
+                foreach ($data['asientos_salida'] as $value) {
+                    $entityManagerInterface->persist((new Asiento())->setAsientoId($value->id)->setNumero($value->numero)->setSalidaReservacion($reservacion->getSalida()));
                     $entityManagerInterface->refresh($reservacion->getSalida());
                 }
 
@@ -326,8 +329,8 @@ class ReservacionController extends AbstractController
                                 unset($data['asientos_regreso'][array_search($value->getAsientoId(), $array_ids($data['asientos_regreso']))]);
                             }
                         }
-                        foreach ($data['asientos_regreso'] as  $value) {
-                            $entityManagerInterface->persist((new Asiento)->setAsientoId($value->id)->setNumero($value->numero)->setSalidaReservacion($reservacion->getRegreso()));
+                        foreach ($data['asientos_regreso'] as $value) {
+                            $entityManagerInterface->persist((new Asiento())->setAsientoId($value->id)->setNumero($value->numero)->setSalidaReservacion($reservacion->getRegreso()));
                             $entityManagerInterface->refresh($reservacion->getRegreso());
                         }
                     }
@@ -349,6 +352,7 @@ class ReservacionController extends AbstractController
                         $reservacion->setPrecioReal($precio->total)->setPrecio($precio->total)->setPrecioDolar($precio->total);
                         $reservacion->setPasoCompletado(3);
                         $entityManagerInterface->flush();
+
                         return $this->redirectToRoute('pagar', ['reservacion' => $reservacion->getId()]);
                     }
                 } catch (\Throwable $th) {
@@ -362,7 +366,7 @@ class ReservacionController extends AbstractController
             'reservacion' => $reservacion,
             'errors' => $errors,
             'form' => $form,
-            'primer_render' => $primer_render
+            'primer_render' => $primer_render,
         ]);
     }
 
@@ -378,12 +382,13 @@ class ReservacionController extends AbstractController
                             $item['elegido'] = true;
                         }
                     }
+
                     return $item;
                 }, array_filter($asientos, fn ($item) => $nivel1 ? !$item['nivel2'] : $item['nivel2']));
             };
             $asientos_nivel_1 = $parseAsientos($salida, $asientos);
 
-            $asientos_nivel_2 = $parseAsientos($salida, $asientos, false); //array_filter($asientos, fn ($item) => $item['nivel2']);
+            $asientos_nivel_2 = $parseAsientos($salida, $asientos, false); // array_filter($asientos, fn ($item) => $item['nivel2']);
 
             $senales_nivel_1 = array_filter($senales, fn ($item) => !$item['nivel2']);
             $senales_nivel_2 = array_filter($senales, fn ($item) => $item['nivel2']);
@@ -397,23 +402,22 @@ class ReservacionController extends AbstractController
             'asientos_nivel_2' => $asientos_nivel_2 ?? [],
             'senales_nivel_2' => $senales_nivel_2 ?? [],
             'sistema_conexion_error' => $sistema_conexion_error ?? null,
-            'regreso' => $regreso
+            'regreso' => $regreso,
         ]);
     }
 
     #[Route('/pagar', name: 'pagar')]
-    public function pagar(Reservacion $reservacion, HubInterface $hub, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
+    public function pagar(Reservacion $reservacion, ServerSentEvent $serverSentEvent, Request $request, EntityManagerInterface $entityManagerInterface, RemoteDatabaseQueries $remoteDatabaseQueries, AsientoRepository $asientoRepository, TranslatorInterface $translatorInterface, CybersourceApi $cybersourceApi, $primer_render = null): Response
     {
         $cliente = $reservacion->getCliente() ?? new ClienteReservacion();
 
         $form = $this->createForm(ClienteReservacionType::class, $cliente, [
             'action' => $this->generateUrl('pagar', ['reservacion' => $reservacion->getId()]),
-            'reservacion' => $reservacion
+            'reservacion' => $reservacion,
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             // $result = $remoteDatabaseQueries->crearBoleto($reservacion);
 
             // if (is_array($result) && isset($result['error'])) {
@@ -436,9 +440,8 @@ class ReservacionController extends AbstractController
             //         return $this->redirectToRoute('asientos', ['reservacion' => $reservacion->getId()]);
             //     }
             //     $error_tarjeta = isset($result['texto']) ? $result['texto'] : $result['error'];
-            // } else 
+            // } else
             if (true || isset($result['success'])) {
-
                 // $data = json_decode($result['data']);
 
                 // $reservacion->setFacturaId($data->factura_id)->setFacturaDte($data->dte)->setBoletoTicketId($data->boletos_ticket);
@@ -457,33 +460,20 @@ class ReservacionController extends AbstractController
                 // if (!$cliente->getClienteId()) {
                 //     $cliente->setClienteId($data->cliente_id);
                 // }
-                // 
-                $pago_datos = $request->request->all()["cliente_reservacion"]["pago_datos"];
+                //
+                $pago_datos = $request->request->all()['cliente_reservacion']['pago_datos'];
                 $entityManagerInterface->persist($cliente);
                 $reservacion->setCliente($cliente)->setTarjeta($entityManagerInterface->getRepository(Tarjeta::class)->find($pago_datos['tarjeta']));
                 $entityManagerInterface->flush();
 
+                $request->attributes->set('_controller', 'App\Controller\ReservacionController::payerAuthenticationSetupService');
 
-                $cybersourceApi->setData($reservacion, $pago_datos);
+                return $this->container->get('http_kernel')->handle($request, HttpKernelInterface::MAIN_REQUEST);
 
-                if ($result = $cybersourceApi->payerAuthenticationSetupService()) {
+                return $this->container->get('http_kernel')->handle($request);
 
-                    $request->getSession()->set('referenceId', $result['referenceId']);
-                    $request->getSession()->set('pago_datos', $request->request->all()["cliente_reservacion"]["pago_datos"]);
-                    $hub->publish(new Update(
-                        'data_collection_iframe_' . $request->getSession()->getId(),
-                        $this->renderView('reservacion/_iframe_device_data_collection.stream.html.twig', $result)
-                    ));
-                }
-
-                return new Response(null, 100, [
-                    'procesando-pago' => true,
-                ]);
-
-
-                // return $this->forward('procesar-pago');
+                return $this->forward('payer_authentication_setup_service');
                 // return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
-
 
                 // if (false) {
                 //     if (is_array($resultado)) {
@@ -524,79 +514,92 @@ class ReservacionController extends AbstractController
         ]);
     }
 
-    #[Route('/payer-authentication-check-enrollment/{session_id_challenge_response}', name: 'payer_authentication_check_enrollment')]
-    public function payerAuthenticationCheckEnrollmentService(HubInterface $hub, Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion = null, $session_id_challenge_response = null)
+    #[Route('/payer_authentication_setup_service', name: 'payer_authentication_setup_service')]
+    public function payerAuthenticationSetupService(ServerSentEvent $serverSentEvent, Request $request, CybersourceApi $cybersourceApi)
     {
+        if ($response = $cybersourceApi->payerAuthenticationSetupService()) {
+            if (isset($response['status'])) {
+                if (CybersourceApi::AUTHENTICATION_SUCCESSFUL == $response['status']) {
+                    $request->getSession()->set('referenceId', $response['referenceId']);
+                    $request->getSession()->set('pago_datos', $request->request->all()['cliente_reservacion']['pago_datos']);
 
-        if (!$session_id_challenge_response) {
-            $cybersourceApi->setData($reservacion, $request->getSession()->get('pago_datos'));
-
-            if ($response = $cybersourceApi->payerAuthenticationCheckEnrollmentService(
-                $request->getSession()->get('referenceId'),
-                $this->generateUrl('payer_authentication_check_enrollment', ['session_id_challenge_response' => $request->getSession()->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            )) {
-
-                if ($response['status'] == CybersourceApi::PENDING_AUTHENTICATION) {
-
-                    $request->getSession()->set('authenticationTransactionId', $response['authenticationTransactionId']);
-                    $hub->publish(new Update(
-                        'authentication_check_enrollment_' . $request->getSession()->getId(),
-                        $this->renderView('reservacion/_iframe_authentication_check_enrollment.stream.html.twig', $response)
-                    ));
-
-                    return new Response(null, 100, [
-                        'procesando-pago' => true,
-                    ]);
+                    return $serverSentEvent->procesandoPago('data_collection_iframe', $response, 'reservacion/_iframe_device_data_collection.stream.html.twig');
                 }
             }
-        } else {
-            $hub->publish(new Update(
-                'authentication_check_enrollment_challenge_response_' . $session_id_challenge_response,
-                json_encode($request->request->all())
-            ));
-            return (new Response())->setStatusCode(Response::HTTP_ACCEPTED);
         }
+
+        return $serverSentEvent->errorPago();
     }
-    #[Route('/payer-authentication-validation', name: 'payer_authentication_validation')]
-    public function payerAuthenticationValidationService(Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion): Response
+
+    #[Route('/payer-authentication-check-enrollment/{session_id_challenge_response}', name: 'payer_authentication_check_enrollment')]
+    public function payerAuthenticationCheckEnrollmentService(EntityManagerInterface $entityManagerInterface, ServerSentEvent $serverSentEvent, Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion = null, $session_id_challenge_response = null)
     {
+        if ($session_id_challenge_response) {
+            return $serverSentEvent->procesandoPago(['authentication_check_enrollment_challenge_response', $session_id_challenge_response], $request->request->all());
+        }
+        if ($response = $cybersourceApi->payerAuthenticationCheckEnrollmentService(
+            $request->getSession()->get('referenceId'),
+            $this->generateUrl('payer_authentication_check_enrollment', ['session_id_challenge_response' => $request->getSession()->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+        )) {
+            if (isset($response['status'])) {
+                if (CybersourceApi::PENDING_AUTHENTICATION == $response['status']) {
+                    $request->getSession()->set('authenticationTransactionId', $response['authenticationTransactionId']);
 
-        if (isset($request->toArray()['TransactionId'])) {
+                    return $serverSentEvent->procesandoPago('authentication_check_enrollment', array_filter($response, fn ($key) => !in_array($key, ['authenticationTransactionId', 'status']), ARRAY_FILTER_USE_KEY), 'reservacion/_iframe_authentication_check_enrollment.stream.html.twig');
+                }
+                if (CybersourceApi::AUTHENTICATION_FAILED == $response['status']) {
+                    return $serverSentEvent->errorPago(detalle: $response['detalle']);
+                }
+                if (CybersourceApi::AUTHORIZED == $response['status'] || CybersourceApi::AUTHENTICATION_SUCCESSFUL == $response['status']) {
+                    if (isset($response['consumerAuthenticationInformation']['authenticationTransactionId'])) {
+                        $reservacion->setTransaccionId($response['consumerAuthenticationInformation']['authenticationTransactionId']);
+                        $entityManagerInterface->flush();
+                    }
 
-            $cybersourceApi->setData($reservacion, $request->getSession()->get('pago_datos'));
-
-            if ($response = $cybersourceApi->payerAuthenticationValidationService($request->getSession()->get('authenticationTransactionId'))) {
+                    return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
+                }
             }
         }
-        $authenticationTransactionId = $request->getSession()->get('authenticationTransactionId');
-        if ($request->request->has('TransactionId')) {
+
+        return $serverSentEvent->errorPago();
+    }
+
+    #[Route('/payer_authentication_validation_service', name: 'payer_authentication_validation_service')]
+    public function payerAuthenticationValidationService(ServerSentEvent $serverSentEvent, Request $request, CybersourceApi $cybersourceApi, Reservacion $reservacion = null)
+    {
+        if ($response = $cybersourceApi->payerAuthenticationValidationService($request->getSession()->get('authenticationTransactionId'))) {
+            if (isset($response['status'])) {
+                if (CybersourceApi::AUTHENTICATION_FAILED == $response['status']) {
+                    return $serverSentEvent->errorPago(detalle: $response['detalle']);
+                }
+                if (CybersourceApi::AUTHORIZED == $response['status'] || CybersourceApi::AUTHENTICATION_SUCCESSFUL == $response['status']) {
+                    return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
+                }
+            }
         }
 
-        return new Response();
+        return $serverSentEvent->errorPago();
     }
 
     #[Route('/confirmacion', name: 'confirmacion')]
     public function confirmacion(Request $request, Reservacion $reservacion, TranslatorInterface $translatorInterface, MailerInterface $mailer, Filesystem $filesystem): Response
     {
+        $pdf_nombre = $translatorInterface->trans('boleto').'_'.$reservacion->getBoletoTicketId().'.pdf';
 
-        $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';
+        $locale = 'es' == $request->getLocale() ? 'en' : 'es';
 
-        $locale = $request->getLocale() == 'es' ? 'en' : 'es';
+        $pdf_nombre_2 = $translatorInterface->trans('boleto', [], null, $locale).'_'.$reservacion->getBoletoTicketId().'.pdf';
 
-        $pdf_nombre_2 = $translatorInterface->trans('boleto', [], null, $locale) . '_' . $reservacion->getBoletoTicketId() . '.pdf';
-
-        if (!$filesystem->exists('facturas/' . $pdf_nombre) && !$filesystem->exists('facturas/' . $pdf_nombre_2)) {
-
+        if (!$filesystem->exists('facturas/'.$pdf_nombre) && !$filesystem->exists('facturas/'.$pdf_nombre_2)) {
             try {
-
                 $dompdf = new Dompdf();
                 $dompdf->loadHtml($this->render('pdf/factura.html.twig', ['reservacion' => $reservacion])->getContent());
                 $dompdf->render();
-                $filesystem->dumpFile('facturas/' . $pdf_nombre, $dompdf->output());
+                $filesystem->dumpFile('facturas/'.$pdf_nombre, $dompdf->output());
             } catch (IOException $th) {
                 return $this->renderForm('reservacion/confirmacion.html.twig', [
                     'error' => 'pdf',
-                    'reservacion' => $reservacion
+                    'reservacion' => $reservacion,
                 ]);
             }
 
@@ -608,7 +611,8 @@ class ReservacionController extends AbstractController
                     ->subject($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
                     ->text($translatorInterface->trans('Boleto de Bus Transporte Fuente del Norte. Servicio de Bus. Guatemala.'))
                     ->html($this->renderView('pdf/factura.html.twig', ['reservacion' => $reservacion]))
-                    ->attachFromPath('facturas/' . $pdf_nombre);
+                    ->attachFromPath('facturas/'.$pdf_nombre)
+                ;
 
                 $mailer->send($email);
             }
@@ -618,16 +622,16 @@ class ReservacionController extends AbstractController
 
         return $this->renderForm('reservacion/confirmacion.html.twig', [
             'reservacion' => $reservacion,
-            'descargar' => (int) !isset($no_descargar)
+            'descargar' => (int) !isset($no_descargar),
         ]);
     }
 
     #[Route('/pdf/{id}', name: 'pdf')]
     public function pdf(Reservacion $reservacion, TranslatorInterface $translatorInterface): Response
     {
-        $pdf_nombre = $translatorInterface->trans('boleto') . '_' . $reservacion->getBoletoTicketId() . '.pdf';
+        $pdf_nombre = $translatorInterface->trans('boleto').'_'.$reservacion->getBoletoTicketId().'.pdf';
 
-        $response = new Response(file_get_contents('facturas/' . $pdf_nombre));
+        $response = new Response(file_get_contents('facturas/'.$pdf_nombre));
 
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
@@ -635,6 +639,7 @@ class ReservacionController extends AbstractController
         );
         $response->headers->set('Content-Disposition', $disposition);
         $response->headers->set('Content-Type', 'application/pdf');
+
         return $response;
     }
 
@@ -642,9 +647,8 @@ class ReservacionController extends AbstractController
     public function cancelar(Request $request, EntityManagerInterface $entityManagerInterface): Response
     {
         if ($reservacion_id = $request->getSession()->get('reservacion')) {
-
             $reservacion = $entityManagerInterface->find(Reservacion::class, $reservacion_id);
-            if ($reservacion->getStatus() != Reservacion::STATUS_COMPLETADA) {
+            if (Reservacion::STATUS_COMPLETADA != $reservacion->getStatus()) {
                 $reservacion->setStatus(Reservacion::STATUS_CANCELADA);
                 $entityManagerInterface->flush();
             }
@@ -653,6 +657,7 @@ class ReservacionController extends AbstractController
             $session->clear();
             $session->set('_to_kepp_locale', true);
         }
+
         return new RedirectResponse($this->generateUrl('inicio'));
     }
 
@@ -665,7 +670,6 @@ class ReservacionController extends AbstractController
     #[Route('/provincias/{country}', name: 'provincias')]
     public function states(FormFactoryInterface $formFactoryInterface, Reservacion $reservacion, ?Countries $country = null): Response
     {
-
         return $this->renderForm('reservacion/_provincias.html.twig', ['form' => $formFactoryInterface->createNamed(
             'cliente_reservacion',
             ProvinciaAutocompleteType::class,
