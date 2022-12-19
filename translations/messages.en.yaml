@@ -132,5 +132,6 @@ Comprar boleto: Buy tickets
 Tipo de tarjeta: Card type
 dato requerido: required data
 Tipo moneda: Currency type
-Ha habido un error inesperado. Por favor inténtelo de nuevo.: There has been an unexpected error. Please try again.
+Ha ocurrido un error inesperado. No se ha realizado el pago: An unexpected error has occurred. Payment has not been made.
 Respuesta de la institucion bancaria: Response from the banking institution
+Los datos son incorrecto. Por favor revise y vuevla a intentarlo.: The data are incorrect. Please review and try again.

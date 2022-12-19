@@ -8,21 +8,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ReservacionRepository::class)]
-#[ORM\Cache(usage: "NONSTRICT_READ_WRITE")]
-
+#[ORM\Cache(usage: 'NONSTRICT_READ_WRITE')]
 class Reservacion
 {
-    const STATUS_INCOMPLETA = "incompleta";
-    const STATUS_COMPLETADA = "completada";
-    const STATUS_ANULADA = "anulada";
-    const STATUS_ANULADA_ERROR = "anular_pendiente";
-    const STATUS_CANCELADA = "cancelada";
-
-
-    const MONEDA_GTQ = "GTQ";
-    const MONEDA_USD = "USD";
-
     use TimestampableEntity;
+    public const STATUS_INCOMPLETA = 'incompleta';
+    public const STATUS_COMPLETADA = 'completada';
+    public const STATUS_ANULADA = 'anulada';
+    public const STATUS_ANULADA_ERROR = 'anular_pendiente';
+    public const STATUS_CANCELADA = 'cancelada';
+
+    public const MONEDA_GTQ = 'GTQ';
+    public const MONEDA_USD = 'USD';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,11 +31,11 @@ class Reservacion
     private ?RutaReservacion $ruta = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(onDelete: "set null")]
+    #[ORM\JoinColumn(onDelete: 'set null')]
     private ?SalidaReservacion $salida = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(onDelete: "set null")]
+    #[ORM\JoinColumn(onDelete: 'set null')]
     private ?SalidaReservacion $regreso = null;
 
     #[ORM\Column(nullable: true)]
@@ -59,13 +56,13 @@ class Reservacion
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $status = null;
 
-    #[ORM\Column(length: 5, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $moneda = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $factura_id = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $factura_dte = null;
 
     #[ORM\Column(nullable: true)]
@@ -89,11 +86,14 @@ class Reservacion
     #[ORM\ManyToOne]
     private ?Tarjeta $tarjeta = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?string $status_cybersources = null;
+
     public function __construct($locale = 'es')
     {
         $this->status = self::STATUS_INCOMPLETA;
         $this->anular_intentos = 0;
-        $this->moneda = $locale == 'es' ? self::MONEDA_GTQ : self::MONEDA_USD;
+        $this->moneda = 'es' == $locale ? self::MONEDA_GTQ : self::MONEDA_USD;
     }
 
     public function getId(): ?int
@@ -187,7 +187,7 @@ class Reservacion
 
     public function getPrecioVisual(): ?float
     {
-        return $this->moneda == self::MONEDA_GTQ ? $this->precio : $this->precio_dolar;
+        return round(self::MONEDA_GTQ == $this->moneda ? $this->precio : $this->precio_dolar, 2);
     }
 
     public function getTransaccionId(): ?string
@@ -225,8 +225,6 @@ class Reservacion
 
         return $this;
     }
-
-
 
     public function getFacturaId(): ?int
     {
@@ -266,7 +264,7 @@ class Reservacion
 
     public function getRutaForAdmin()
     {
-        return $this->ruta->getEstacionSalida()->getNombre() . ' - ' . $this->ruta->getEstacionLlegada()->getNombre();
+        return $this->ruta->getEstacionSalida()->getNombre().' - '.$this->ruta->getEstacionLlegada()->getNombre();
     }
 
     public function getAnularIntentos(): ?int
@@ -283,7 +281,7 @@ class Reservacion
 
     public function incrementarAnularIntentos(): self
     {
-        $this->anular_intentos++;
+        ++$this->anular_intentos;
 
         return $this;
     }
@@ -344,6 +342,18 @@ class Reservacion
     public function setTarjeta(?Tarjeta $tarjeta): self
     {
         $this->tarjeta = $tarjeta;
+
+        return $this;
+    }
+
+    public function getStatusCybersources(): ?string
+    {
+        return $this->status_cybersources;
+    }
+
+    public function setStatusCybersources(string $status_cybersources): self
+    {
+        $this->status_cybersources = $status_cybersources;
 
         return $this;
     }

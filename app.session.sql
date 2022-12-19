@@ -1,0 +1,1 @@
+SELECT * FROM reservacion WHERE id = 1045

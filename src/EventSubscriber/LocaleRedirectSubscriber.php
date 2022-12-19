@@ -17,23 +17,22 @@ class LocaleRedirectSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        // if ($event->isMainRequest() && !$request->hasPreviousSession() && ($preferredLanguage = $request->getPreferredLanguage($this->enabled_locales)) != $request->attributes->get('_locale') && $request->attributes->get('_route') != "payer_authentication_check_enrollment") {
-        //     $request->setLocale($preferredLanguage);
-        //     $request->attributes->set('_vary_by_language', true);
-        //     $this->router->getContext()->setParameter('_locale', $request->getLocale());
-        //     $request->getSession()->set('_locale', $request->getLocale());
+        if ($event->isMainRequest() && !$request->hasPreviousSession() && ($preferredLanguage = $request->getPreferredLanguage($this->enabled_locales)) != $request->attributes->get('_locale') && 'payer_authentication_check_enrollment' != $request->attributes->get('_route')) {
+            $request->setLocale($preferredLanguage);
+            $request->attributes->set('_vary_by_language', true);
+            $this->router->getContext()->setParameter('_locale', $request->getLocale());
+            $request->getSession()->set('_locale', $request->getLocale());
 
-        //     $response = new RedirectResponse($this->router->generate('inicio'));
+            $response = new RedirectResponse($this->router->generate('inicio'));
 
-        //     $event->setResponse($response);
-        // }
-        // else {
-        //     if ($locale = $request->attributes->get('_locale')) {
-        //         $request->getSession()->set('_locale', $locale);
-        //     } else {
-        //         $request->setLocale($request->getSession()->get('_locale', 'es'));
-        //     }
-        // }
+            $event->setResponse($response);
+        } else {
+            if ($locale = $request->attributes->get('_locale')) {
+                $request->getSession()->set('_locale', $locale);
+            } else {
+                $request->setLocale($request->getSession()->get('_locale', 'es'));
+            }
+        }
     }
 
     public static function getSubscribedEvents(): array

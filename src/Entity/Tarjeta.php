@@ -6,6 +6,7 @@ use App\Repository\TarjetaRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\Cache(usage: 'READ_ONLY')]
 #[ORM\Entity(repositoryClass: TarjetaRepository::class)]
 class Tarjeta
 {

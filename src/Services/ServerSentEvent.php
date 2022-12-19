@@ -14,8 +14,15 @@ class ServerSentEvent
     {
     }
 
-    public function errorPago($mensaje = 'Ha habido un error inesperado. Por favor inténtelo de nuevo.', $detalle = null)
+    public function errorPago($mensaje = 'Ha ocurrido un error inesperado. No se ha realizado el pago.', $detalle = null)
     {
+        $detalle = match ($detalle) {
+            \is_array($detalle) && isset($detalle['status']) => '<br/>Status: '.$detalle['status'].(isset($detalle['errorInformation']['reason']) ? ' <br/>Motivo: '.$detalle['errorInformation']['reason'] : '').(isset($detalle['errorInformation']['message']) ? '<br/> Mensaje: '.$detalle['errorInformation']['message'] : ''),
+            \is_object($detalle) && method_exists($detalle, 'getMessage') => $detalle->getMessage(),
+            400 => 'Los datos son incorrecto. Por favor revise y vuevla a intentarlo.',
+            default => null,
+        };
+
         $this->hubInterface->publish(new Update(
             'error_pago_'.$this->requestStack->getSession()->getId(),
             $this->environment->render('reservacion/_error_pago.stream.html.twig', ['error' => $mensaje, 'detalle' => $detalle])

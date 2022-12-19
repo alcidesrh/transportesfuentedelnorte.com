@@ -27,6 +27,7 @@ export default class extends Controller {
   asientos_salida = [];
   asientos_regreso = [];
   connect() {
+    log;
     this.dispatch("reservacion_paso", { detail: { paso: 2 } });
     window.scrollTo({ top: 0, behavior: "smooth" });
 

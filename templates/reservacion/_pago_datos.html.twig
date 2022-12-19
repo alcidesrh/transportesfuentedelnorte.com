@@ -1,6 +1,4 @@
-{%- block form_widget_compound -%}
 {% form_theme form.tarjeta 'form/theme/_tarjeta_label.html.twig' %}
-
 
 <div id="error_pago" {{ turbo_stream_listen('error_pago_' ~ app.session.id) }}>
 	<div id="info-tarjeta" class="alert relative" role="alert">
@@ -22,7 +20,6 @@
 	</div>
 </div>
 
-
 <div class="flex justify-end gap-2 text-sm italic font-medium items-center mb-2 mt-5">
 	<span class="text-orange-600 text-lg font-medium">*</span>
 	<span class="decoration-dashed">{{'dato requerido' | trans}}</span>
@@ -30,11 +27,10 @@
 
 {{ form_row(form.tarjeta, {row_attr: {class: 'mb-0'}, label_attr: {class: 'text-lg'}, attr: {class: 'grid grid-cols-2 sm:grid-cols-3 gap-5 lg:max-w-2xl mt-5'}})}}
 
-
-<div class="grid gap-y-6 mt-8">
+<div class="grid gap-y-6 mt-10">
 	<div class="flex">
-		{{ form_row(form.precio, {attr: {class: 'max-w-[130px]'}})}}
-		{{ form_row(form.tipo_moneda, { attr: {class: 'flex gap-5'}, row_attr:{class: 'ml-8'}})}}
+		{{ form_row(form.precio_visual, {attr: {class: 'max-w-[130px]'}})}}
+		{{ form_row(form.moneda, { attr: {class: 'flex gap-5'}, row_attr:{class: 'ml-8'}})}}
 	</div>
 
 	<div class="flex flex-wrap gap-y-6">
@@ -51,4 +47,4 @@
 			{{ form_row(form.codigo_seguridad)}}
 		</div>
 	</div>
-</div>{%- endblock form_widget_compound -%}
+</div>

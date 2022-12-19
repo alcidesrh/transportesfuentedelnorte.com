@@ -44,14 +44,22 @@ export default class extends Controller {
   }
 
   provincia(event = null) {
-    this.ciudad();
+    if (event.currentTarget.value != 233 || event.currentTarget.value != 39) {
+      document.querySelector("#codigo_postal").classList.add("hidden");
+      document.querySelector("#codigo_postal").removeAttribute("required"); 
+    } else {
+      document.querySelector("#codigo_postal").classList.remove("hidden");
+      document.querySelector("#codigo_postal").setAttribute("required", "required");  
 
+    }
+    // this.ciudad();
     const frame = document.getElementById("provincia-frame");
     frame.src = frame.dataset.provinciasRuta + "/" + event.currentTarget.value;
   }
 
-  ciudad(event = null) {
+  ciudad(event) {
     const frame = document.getElementById("ciudad-frame");
+    console.log(event);
     frame.src =
       frame.dataset.municipiosRuta +
       "/" +

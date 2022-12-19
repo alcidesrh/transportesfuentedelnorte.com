@@ -4,41 +4,24 @@
 			<div class="text-red-700 text-center m-auto mb-10 break-words">
 				{{error_tarjeta}}
 			</div>
-		{% endif %}
 
+		{% endif %}
 
 		{{ form_start(form, {attr:{id: 'form-pagar', 'data-action': "pagar#onSubmit"}})}}
 
 		<div class="min-w-fit lg:min-w-[750px]">
+
 			<div class="w-fit m-auto max-w-lg sm:max-w-[600px] md:max-w-2xl">
 
-				{% form_theme form.pago_datos 'reservacion/_pago_datos.html.twig' %}
-				{{ form_widget(form.pago_datos)}}
+				{% include 'reservacion/_pago_datos.html.twig' %}
+
 
 				<div class="border-t border-slate-300 max-w-sm md:max-w-lg lg:max-w-1xl m-auto my-8 sm:my-14"></div>
 
 				<h1 class="block text-slate-600 font-medium mb-8 text-lg">{{'Propietario de la tarjeta' | trans}}</h1>
 
-				<div class="grid sm:grid-cols-2 gap-5">
-					{{ form_row(form.nombre, {row_attr: {class: ''}})}}
-					{{ form_row(form.apellido)}}
+				{% include 'reservacion/_form_cliente_reservacion.html.twig' %}
 
-					<turbo-frame id="pais-frame" src="{{path('pais')}}" loading="lazy" data-noloading="true"></turbo-frame>
-					<turbo-frame id="provincia-frame" src="{{path('provincias')}}" loading="lazy" data-provincias-ruta="{{path('provincias')}}" data-noloading="true"></turbo-frame>
-					<turbo-frame id="ciudad-frame" src="{{path('ciudad')}}" loading="lazy" data-municipios-ruta="{{path('ciudad')}}" data-noloading="true"></turbo-frame>
-
-					<div class="grid sm:flex sm:col-span-2 gap-5">
-						{{ form_row(form.direccion, {row_attr:{class: 'sm:w-[75%]'}})}}
-						{{ form_row(form.codigo_postal, {attr:{class: 'w-28'}})}}
-					</div>
-
-					{{ form_row(form.email)}}
-					{{ form_row(form.telefono)}}
-
-					{{ form_row(form.nit, {attr: {class: 'w-28'}})}}
-
-
-				</div>
 			</div>
 
 		</div>

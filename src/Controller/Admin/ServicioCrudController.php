@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Archivo;
 use App\Entity\Servicio;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -44,7 +43,6 @@ class ServicioCrudController extends AbstractCrudController
         return Servicio::class;
     }
 
-
     public function configureFields(string $pageName): iterable
     {
         return [
@@ -70,7 +68,8 @@ class ServicioCrudController extends AbstractCrudController
             // the labels used to refer to this entity in titles, buttons, etc.
             ->setEntityLabelInSingular('Servicio')
             ->setEntityLabelInPlural('Servicio')
-            ->setDefaultSort(['inicio' => 'DESC', 'prioridad' => 'DESC']);
+            ->setDefaultSort(['inicio' => 'DESC', 'prioridad' => 'DESC'])
+        ;
     }
 
     public function new(AdminContext $context)
@@ -166,9 +165,9 @@ class ServicioCrudController extends AbstractCrudController
             if (!$this->isCsrfTokenValid(BooleanField::CSRF_TOKEN_NAME, $context->getRequest()->query->get('csrfToken'))) {
                 if (class_exists(InvalidCsrfTokenException::class)) {
                     throw new InvalidCsrfTokenException();
-                } else {
-                    return new Response('Invalid CSRF token.', 400);
                 }
+
+                return new Response('Invalid CSRF token.', 400);
             }
 
             $fieldName = $context->getRequest()->query->get('fieldName');

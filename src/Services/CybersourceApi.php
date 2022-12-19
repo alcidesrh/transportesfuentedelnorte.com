@@ -16,6 +16,7 @@ class CybersourceApi
     public const PENDING_AUTHENTICATION = 'PENDING_AUTHENTICATION';
     public const AUTHORIZED_RISK_DECLINED = 'AUTHORIZED_RISK_DECLINED';
     public const AUTHORIZED = 'AUTHORIZED';
+    public const DECLINED = 'DECLINED';
 
     private ?ClienteReservacion $cliente = null;
     private array|null $pago_datos = [];
@@ -28,10 +29,10 @@ class CybersourceApi
     {
         $request = $this->requestStack->getCurrentRequest();
         $this->cliente = $this->reservacion->getCliente();
-        if (!($request->request->has('cliente_reservacion') && $this->pago_datos = $request->request->all()['cliente_reservacion']['pago_datos'])) {
-            $this->pago_datos = $request->getSession()->get('pago_datos');
+
+        if ($this->pago_datos = $request->getSession()->get('pago_datos')) {
+            $this->setData();
         }
-        $this->setData();
     }
 
     public function request($endpoint_key, $data = null)
@@ -114,12 +115,16 @@ class CybersourceApi
             ]
         );
 
-        $statusCode = $response->getStatusCode();
-        if ($statusCode >= 200 && $statusCode <= 299) {
-            return $response->toArray();
-        }
+        try {
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode <= 299) {
+                return $response->toArray();
+            }
 
-        return $statusCode;
+            return $statusCode;
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
 
     public function GenerateDigest($requestPayload)
@@ -140,7 +145,7 @@ class CybersourceApi
                         'expirationMonth' => $this->pago_datos['expira_mes'],
                         'expirationYear' => $this->pago_datos['expira_year'],
                         'number' => preg_replace('/\s+/', '', $this->pago_datos['numero']),
-                        // 'securityCode' => '453',
+                        'securityCode' => $this->pago_datos['codigo_seguridad'],
                     ],
                 ],
             ];
@@ -160,18 +165,22 @@ class CybersourceApi
                     ],
                     'billTo' => [
                         'address1' => $this->cliente->getDireccion(),
-                        // 'address2' => $this->cliente->getDireccion(),
                         'locality' => $this->cliente->getCiudad()->getName(),
                         'country' => $this->cliente->getPais()->getIso2(),
                         'firstName' => $this->cliente->getNombre(),
                         'lastName' => $this->cliente->getApellido(),
                         'email' => $this->cliente->getEmail(),
                         'administrativeArea' => $this->cliente->getProvincia()->getIso2(),
-                        'postalCode' => $this->cliente->getCodigoPostal(),
-                        // 'phoneNumber' => '"18007097779",',
                     ],
                 ],
             ];
+
+            if ('US' == $this->cliente->getPais()->getIso2() || 'CA' == $this->cliente->getPais()->getIso2()) {
+                $this->orderInformation['orderInformation']['billTo']['postalCode'] = $this->cliente->getCodigoPostal();
+            }
+            if ($telofono = $this->cliente->getTelefono()) {
+                $this->orderInformation['orderInformation']['billTo']['telefono'] = $telofono;
+            }
         }
     }
 
@@ -182,16 +191,12 @@ class CybersourceApi
             ...$this->paymentInformation,
         ]);
 
-        if (is_array($response) && isset($response['consumerAuthenticationInformation'])) {
-            if (isset($response['consumerAuthenticationInformation']['accessToken'])) {
-                return [
-                    'status' => CybersourceApi::AUTHENTICATION_SUCCESSFUL,
-                    'accessToken' => $response['consumerAuthenticationInformation']['accessToken'],
-                    'deviceDataCollectionUrl' => $response['consumerAuthenticationInformation']['deviceDataCollectionUrl'],
-                    'referenceId' => $response['consumerAuthenticationInformation']['referenceId'],
-                ];
-            }
-        }
+        $this->reservacion->setStatusCybersources(__FUNCTION__.
+        (is_array($response) && isset($response['status'])
+        ? $response['status']
+        : ': Fallido código '.(\is_scalar($response) ? $response : 'respuesta vacia')));
+
+        $this->entityManagerInterface->flush();
 
         return $response;
     }
@@ -206,14 +211,12 @@ class CybersourceApi
                 'consumerAuthenticationInformation' => [
                     'returnUrl' => $returnUrl,
                     'referenceId' => $referenceId,
-                    // 'transactionMode' => 'S',
-                    'challengeCode' => '05',
-                    // 'messageCategory' => 80,
                 ],
                 'processingInformation' => [
                     'actionList' => [
                         0 => 'CONSUMER_AUTHENTICATION',
                     ],
+                    'capture' => true,
                 ],
                 'deviceInformation' => [
                     'fingerprintSessionId' => $this->requestStack->getSession()->get('uuid'),
@@ -223,35 +226,14 @@ class CybersourceApi
 
         $response = $this->request('payment', $data);
 
-        if (is_array($response)) {
-            if (CybersourceApi::PENDING_AUTHENTICATION == $response['status']) {
-                $window = json_decode(base64_decode($response['consumerAuthenticationInformation']['pareq']));
-                list($height, $width) = match ($window->challengeWindowSize) {
-                    '01' => [250, 400],
-                    '02' => [390, 400],
-                    '03' => [500, 400],
-                    '04' => [600, 400],
-                    default => ['100%', '100%'],
-                };
+        $this->reservacion->setStatusCybersources(__FUNCTION__.
+        (is_array($response) && isset($response['status'])
+        ? ': '.$response['status']
+        : ': Fallido código '.(\is_scalar($response) ? $response : 'respuesta vacia')));
 
-                return [
-                    'status' => CybersourceApi::PENDING_AUTHENTICATION,
-                    'height' => $height,
-                    'width' => $width,
-                    'stepUpUrl' => $response['consumerAuthenticationInformation']['stepUpUrl'],
-                    'accessToken' => $response['consumerAuthenticationInformation']['accessToken'],
-                    'authenticationTransactionId' => $response['consumerAuthenticationInformation']['authenticationTransactionId'],
-                ];
-            }
-            if (CybersourceApi::AUTHORIZED_RISK_DECLINED == $response['status'] || CybersourceApi::AUTHENTICATION_FAILED == $response['status']) {
-                return ['status' => $response['status'], 'detalle' => isset($response['consumerAuthenticationInformation']['cardholderMessage']) ?: '. '.$response['errorInformation']['message']];
-            }
-            if (CybersourceApi::AUTHORIZED == $response['status'] || CybersourceApi::AUTHENTICATION_SUCCESSFUL == $response['status']) {
-                return $response;
-            }
-        }
+        $this->entityManagerInterface->flush();
 
-        return false;
+        return $response;
     }
 
     public function payerAuthenticationValidationService($authenticationTransactionId)
@@ -269,21 +251,22 @@ class CybersourceApi
                 'actionList' => [
                     0 => 'VALIDATE_CONSUMER_AUTHENTICATION',
                 ],
+                'capture' => true,
             ],
             'deviceInformation' => [
                 'fingerprintSessionId' => $this->requestStack->getSession()->get('uuid'),
             ],
         ];
+
         $response = $this->request('payment', $data);
 
-        if (is_array($response)) {
-            if (CybersourceApi::AUTHORIZED_RISK_DECLINED == $response['status'] || CybersourceApi::AUTHENTICATION_FAILED == $response['status']) {
-                return ['status' => CybersourceApi::AUTHENTICATION_FAILED, 'detalle' => $response['consumerAuthenticationInformation']['authenticationStatusMsg'].'. '.$response['errorInformation']['message']];
-            }
+        $this->reservacion->setStatusCybersources(__FUNCTION__.
+        (is_array($response) && isset($response['status'])
+        ? ': '.$response['status']
+        : ': Fallido código '.(\is_scalar($response) ? $response : 'respuesta vacia')));
 
-            return $response;
-        }
+        $this->entityManagerInterface->flush();
 
-        return false;
+        return $response;
     }
 }

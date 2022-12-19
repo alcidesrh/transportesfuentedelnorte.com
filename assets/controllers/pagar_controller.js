@@ -28,14 +28,16 @@ export default class extends Controller {
     }
   }
 
+
+
   mask() {
-    IMask(document.querySelector("#cliente_reservacion_pago_datos_numero"), {
+    IMask(document.querySelector("#pago_datos_numero"), {
       mask: "0000 0000 0000 000[0]",
     });
 
     IMask(
       document.querySelector(
-        "#cliente_reservacion_pago_datos_codigo_seguridad"
+        "#pago_datos_codigo_seguridad"
       ),
       {
         mask: "000[0]",

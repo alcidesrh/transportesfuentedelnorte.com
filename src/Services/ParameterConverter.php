@@ -13,7 +13,6 @@ class ParameterConverter implements ParamConverterInterface
     {
     }
 
-
     public function apply(Request $request, ParamConverter $configuration)
     {
         if ($id = $request->getSession()->get('reservacion')) {
@@ -25,6 +24,6 @@ class ParameterConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getName() == 'reservacion';
+        return 'reservacion' == $configuration->getName();
     }
 }

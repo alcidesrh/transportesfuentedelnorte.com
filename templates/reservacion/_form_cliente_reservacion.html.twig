@@ -1,0 +1,24 @@
+<div class="grid sm:grid-cols-2 gap-5">
+	{{ form_row(form.cliente.nombre, {row_attr: {class: ''}})}}
+	{{ form_row(form.cliente.apellido)}}
+
+	{{ form_row(form.cliente.pais)}}
+
+	<turbo-frame id="provincia-frame" data-provincias-ruta="{{path('provincias')}}" data-noloading="true">
+		{{ form_row(form.cliente.provincia)}}
+	</turbo-frame>
+	<turbo-frame id="ciudad-frame" data-municipios-ruta="{{path('ciudad')}}" data-noloading="true">
+		{{ form_row(form.cliente.ciudad)}}
+	</turbo-frame>
+
+	<div class="grid sm:flex sm:col-span-2 gap-5">
+		{{ form_row(form.cliente.direccion, {row_attr:{class: 'sm:w-[75%]'}})}}
+		{{ form_row(form.cliente.codigo_postal, {attr:{class: 'w-28'}, row_attr: {id: 'codigo_postal'}})}}
+	</div>
+
+	{{ form_row(form.cliente.email)}}
+	{{ form_row(form.cliente.telefono)}}
+
+	{{ form_row(form.cliente.nit, {attr: {class: 'w-28'}})}}
+
+</div>

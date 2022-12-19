@@ -25,11 +25,15 @@ class AppController extends AbstractController
     #[Route('/', name: 'inicio')]
     public function index(Request $request, ServicioRepository $servicioRepository, SliderRepository $sliderRepository, Reservacion $reservacion = null): Response
     {
+        if ($request->getSession()->has('reservacion') || $id = $request->query->get('id')) {
+            $request->getSession()->set('reservacion', 1045);
+        }
+
         $reservacion_paso = $reservacion ? $reservacion->getPasoCompletado() : 0;
 
-        // if (!$uuid = $request->getSession()->get('uuid')) {
-        $request->getSession()->set('uuid', $uuid = (string) Uuid::v1());
-        // }
+        if (!$uuid = $request->getSession()->get('uuid')) {
+            $request->getSession()->set('uuid', $uuid = (string) Uuid::v1());
+        }
 
         return $this->render('index.html.twig', [
             'reservacion_paso' => $reservacion_paso,
