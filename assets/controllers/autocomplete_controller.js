@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   tomSelect = null;
-  primera_accion = true;
+  value = null;
   initialize() {
     this._onPreConnect = this._onPreConnect.bind(this);
     this._onConnect = this._onConnect.bind(this);
@@ -14,6 +14,7 @@ export default class extends Controller {
       this._onPreConnect
     );
     this.element.addEventListener("autocomplete:connect", this._onConnect);
+    this.value = this.element.value;
   }
 
   disconnect() {
@@ -44,22 +45,25 @@ export default class extends Controller {
   }
 
   provincia(event = null) {
-    if (event.currentTarget.value != 233 || event.currentTarget.value != 39) {
-      document.querySelector("#codigo_postal").classList.add("hidden");
-      document.querySelector("#codigo_postal").removeAttribute("required"); 
-    } else {
+    if (event.currentTarget.value == 233 || event.currentTarget.value == 39) {
       document.querySelector("#codigo_postal").classList.remove("hidden");
-      document.querySelector("#codigo_postal").setAttribute("required", "required");  
-
+      document
+        .querySelector("#codigo_postal")
+        .setAttribute("required", "required");
+    } else {
+      document.querySelector("#codigo_postal").classList.add("hidden");
+      document.querySelector("#codigo_postal").removeAttribute("required");
     }
-    // this.ciudad();
+    if (this.value) {
+      this.ciudad();
+    }
     const frame = document.getElementById("provincia-frame");
     frame.src = frame.dataset.provinciasRuta + "/" + event.currentTarget.value;
+    this.value = event.currentTarget.value;
   }
 
   ciudad(event) {
     const frame = document.getElementById("ciudad-frame");
-    console.log(event);
     frame.src =
       frame.dataset.municipiosRuta +
       "/" +

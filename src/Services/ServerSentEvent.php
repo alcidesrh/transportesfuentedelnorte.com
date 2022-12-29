@@ -16,10 +16,12 @@ class ServerSentEvent
 
     public function errorPago($mensaje = 'Ha ocurrido un error inesperado. No se ha realizado el pago.', $detalle = null)
     {
-        $detalle = match ($detalle) {
-            \is_array($detalle) && isset($detalle['status']) => '<br/>Status: '.$detalle['status'].(isset($detalle['errorInformation']['reason']) ? ' <br/>Motivo: '.$detalle['errorInformation']['reason'] : '').(isset($detalle['errorInformation']['message']) ? '<br/> Mensaje: '.$detalle['errorInformation']['message'] : ''),
+        $detalle = match (true) {
+            \is_array($detalle) && (isset($detalle['status']) || isset($detalle['errorInformation'])) => isset($detalle['errorInformation'])
+            ? (isset($detalle['status']) ? '<br/>Status: '.$detalle['status'] : ' ').'<br/>Motivo: '.$detalle['errorInformation']['reason'].'<br/> Mensaje: '.$detalle['errorInformation']['message']
+            : '<br/>Status: '.$detalle['status'],
             \is_object($detalle) && method_exists($detalle, 'getMessage') => $detalle->getMessage(),
-            400 => 'Los datos son incorrecto. Por favor revise y vuevla a intentarlo.',
+            400 == $detalle => 'Los datos son incorrecto. Por favor revise y vuevla a intentarlo.',
             default => null,
         };
 

@@ -49,6 +49,7 @@ export default class extends Controller {
     const url = this.errorServerSentEventUrlValue;
     setTimeout(function () {
       if (!complete) {
+        complete = true;
         fetch(url + "/?iframe_collection_error=1").then(() => {
           const loading = document.getElementById("turbo-loading");
           if (loading) {

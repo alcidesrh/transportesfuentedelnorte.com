@@ -87,9 +87,6 @@ class ClienteReservacionType extends AbstractType
                 ],
                 'required' => false,
                 ...$this->getNotBlanckContrain(),
-                'getter' => function (ClienteReservacion $pais) {
-                    return $pais->getPais();
-                },
             ])
         ;
 

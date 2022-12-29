@@ -7,6 +7,7 @@ use App\Entity\Reservacion;
 use App\Entity\Tarjeta;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CybersourceApi
@@ -112,6 +113,7 @@ class CybersourceApi
             [
                 'headers' => $headerParams,
                 'body' => $payload,
+                'timeout' => 10,
             ]
         );
 
@@ -122,7 +124,7 @@ class CybersourceApi
             }
 
             return $statusCode;
-        } catch (\Throwable $th) {
+        } catch (TransportExceptionInterface $th) {
             return $th;
         }
     }
@@ -194,7 +196,7 @@ class CybersourceApi
         $this->reservacion->setStatusCybersources(__FUNCTION__.
         (is_array($response) && isset($response['status'])
         ? $response['status']
-        : ': Fallido código '.(\is_scalar($response) ? $response : 'respuesta vacia')));
+        : ': Fallido código: '.(\is_scalar($response) ? $response : 'respuesta vacia')));
 
         $this->entityManagerInterface->flush();
 
@@ -229,7 +231,7 @@ class CybersourceApi
         $this->reservacion->setStatusCybersources(__FUNCTION__.
         (is_array($response) && isset($response['status'])
         ? ': '.$response['status']
-        : ': Fallido código '.(\is_scalar($response) ? $response : 'respuesta vacia')));
+        : ': Fallido código: '.(\is_scalar($response) ? $response : 'respuesta vacia')));
 
         $this->entityManagerInterface->flush();
 
@@ -263,7 +265,7 @@ class CybersourceApi
         $this->reservacion->setStatusCybersources(__FUNCTION__.
         (is_array($response) && isset($response['status'])
         ? ': '.$response['status']
-        : ': Fallido código '.(\is_scalar($response) ? $response : 'respuesta vacia')));
+        : ': Fallido código: '.(\is_scalar($response) ? $response : 'respuesta vacia')));
 
         $this->entityManagerInterface->flush();
 

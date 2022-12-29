@@ -469,11 +469,12 @@ class ReservacionController extends AbstractController
                 $reservacion->setCliente($cliente);
                 $entityManagerInterface->flush();
 
-                $request->attributes->set('_controller', 'App\Controller\ReservacionController::payerAuthenticationSetupService');
-
                 if ($request->request->has('pago_datos') && $pago_datos = array_filter($request->request->all()['pago_datos'], fn ($k) => 'cliente' != $k, \ARRAY_FILTER_USE_KEY)) {
                     $request->getSession()->set('pago_datos', $pago_datos);
                 }
+
+                return $this->forward('App\Controller\ReservacionController::payerAuthenticationSetupService', ['request' => $request]);
+                $request->attributes->set('_controller', 'App\Controller\ReservacionController::payerAuthenticationSetupService');
 
                 return $this->container->get('http_kernel')->handle($request, HttpKernelInterface::MAIN_REQUEST);
                 // return $this->redirectToRoute('confirmacion', ['reservacion' => $reservacion->getId()]);
@@ -521,10 +522,11 @@ class ReservacionController extends AbstractController
     public function payerAuthenticationSetupService(ServerSentEvent $serverSentEvent, Request $request, CybersourceApi $cybersourceApi)
     {
         if (is_array($response = $cybersourceApi->payerAuthenticationSetupService())) {
-            if (isset($response['status']) && CybersourceApi::AUTHENTICATION_SUCCESSFUL == $response['status']) {
-                $request->getSession()->set('referenceId', $response['referenceId']);
+            if (isset($response['consumerAuthenticationInformation'], $response['consumerAuthenticationInformation']['referenceId'])) {
+                $request->getSession()->set('referenceId', $response['consumerAuthenticationInformation']['referenceId']);
+
                 return $serverSentEvent->procesandoPago('data_collection_iframe', [
-                    'status' => CybersourceApi::AUTHENTICATION_SUCCESSFUL,
+                    'status' => $response['statuas'] ?? CybersourceApi::AUTHENTICATION_SUCCESSFUL,
                     'accessToken' => $response['consumerAuthenticationInformation']['accessToken'],
                     'deviceDataCollectionUrl' => $response['consumerAuthenticationInformation']['deviceDataCollectionUrl'],
                     'referenceId' => $response['consumerAuthenticationInformation']['referenceId'],
@@ -541,10 +543,10 @@ class ReservacionController extends AbstractController
         if ($session_id_challenge_response) {
             return $serverSentEvent->procesandoPago(['authentication_check_enrollment_challenge_response', $session_id_challenge_response], $request->request->all());
         }
-        if ($response = $cybersourceApi->payerAuthenticationCheckEnrollmentService(
+        if (\is_array($response = $cybersourceApi->payerAuthenticationCheckEnrollmentService(
             $request->getSession()->get('referenceId'),
             $this->generateUrl('payer_authentication_check_enrollment', ['session_id_challenge_response' => $request->getSession()->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
-        )) {
+        ))) {
             if (isset($response['status'])) {
                 if (CybersourceApi::PENDING_AUTHENTICATION == $response['status']) {
                     $window = json_decode(base64_decode($response['consumerAuthenticationInformation']['pareq']));
@@ -556,7 +558,7 @@ class ReservacionController extends AbstractController
                         default => ['100%', '100%'],
                     };
 
-                    $request->getSession()->set('authenticationTransactionId', $response['authenticationTransactionId']);
+                    $request->getSession()->set('authenticationTransactionId', $response['consumerAuthenticationInformation']['authenticationTransactionId']);
 
                     return $serverSentEvent->procesandoPago('authentication_check_enrollment', [
                         'height' => $height,
@@ -565,6 +567,7 @@ class ReservacionController extends AbstractController
                         'accessToken' => $response['consumerAuthenticationInformation']['accessToken'],
                     ], 'reservacion/_iframe_authentication_check_enrollment.stream.html.twig');
                 }
+
                 if (CybersourceApi::AUTHORIZED == $response['status'] || CybersourceApi::AUTHENTICATION_SUCCESSFUL == $response['status']) {
                     if (isset($response['id'])) {
                         $reservacion->setTransaccionId($response['id']);
@@ -578,7 +581,7 @@ class ReservacionController extends AbstractController
             }
         }
 
-        return $serverSentEvent->errorPago();
+        return $serverSentEvent->errorPago(detalle: $response);
     }
 
     #[Route('/payer_authentication_validation_service', name: 'payer_authentication_validation_service')]
@@ -695,7 +698,7 @@ class ReservacionController extends AbstractController
         return $this->render('reservacion/_provincias.html.twig', [
             'form' => $this->createForm(PagoDatosType::class, $reservacion, [
                 'reservacion' => $reservacion,
-            ])->get('cliente')->add('provincia', ProvinciaAutocompleteType::class, ['label' => false, 'pais' => $pais?->getId()]),
+            ])->get('cliente')->add('provincia', ProvinciaAutocompleteType::class, ['label' => false, 'pais' => $pais?->getId(), 'data' => null]),
         ]);
     }
 
@@ -707,7 +710,7 @@ class ReservacionController extends AbstractController
         return $this->render('reservacion/_municipios.html.twig', [
             'form' => $this->createForm(PagoDatosType::class, $reservacion, [
                 'reservacion' => $reservacion,
-            ])->get('cliente')->remove('ciudad')->add('ciudad', CiudadAutocompleteType::class, ['label' => false, 'provincia' => $provincia?->getId()]),
+            ])->get('cliente')->remove('ciudad')->add('ciudad', CiudadAutocompleteType::class, ['label' => false, 'provincia' => $provincia?->getId(), 'data' => null]),
         ]);
     }
 }
