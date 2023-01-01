@@ -8,7 +8,7 @@ ARG PHP_VERSION=8.1
 ARG CADDY_VERSION=2
 
 # Prod image
-FROM php:${PHP_VERSION}-fpm-alpine AS app_php
+FROM php:${PHP_VERSION}-fpm-alpine3.16 AS app_php
 
 # Allow to use development versions of Symfony
 ARG STABILITY="stable"
@@ -104,7 +104,7 @@ RUN apk add --no-cache --virtual build-essentials \
     libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
     docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
     docker-php-ext-install gd
-##>end gd	
+##>end gd
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/conf.d/app.ini $PHP_INI_DIR/conf.d/
@@ -149,7 +149,7 @@ COPY . .
 RUN rm -Rf docker/
 
 RUN set -eux; \
-	mkdir -p var/cache var/log public/images public/media public/facturas; \	
+	mkdir -p var/cache var/log public/images public/media public/facturas; \
     if [ -f composer.json ]; then \
 		composer dump-autoload --classmap-authoritative --no-dev; \
 		composer dump-env prod; \
