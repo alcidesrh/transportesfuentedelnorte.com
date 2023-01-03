@@ -26,7 +26,8 @@ class AppController extends AbstractController
     public function index(Request $request, ServicioRepository $servicioRepository, SliderRepository $sliderRepository, Reservacion $reservacion = null): Response
     {
         if ($request->getSession()->has('reservacion') || $id = $request->query->get('id')) {
-            $request->getSession()->set('reservacion', 1045);
+            // $request->getSession()->clear();
+            // $request->getSession()->set('reservacion', 1045);
         }
 
         $reservacion_paso = $reservacion ? $reservacion->getPasoCompletado() : 0;

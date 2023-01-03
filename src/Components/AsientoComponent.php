@@ -1,6 +1,7 @@
 <?php
 
 // src/Components/ButtonLinkComponent.php
+
 namespace App\Components;
 
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
@@ -8,7 +9,6 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent('asiento')]
 class AsientoComponent
 {
-
     public string $color = 'gray';
 
     public string $coordX;
@@ -52,12 +52,11 @@ class AsientoComponent
 
         if (isset($data['conductor_puerta'])) {
             $this->asiento = false;
-            if ($data['conductor_puerta'] == 1) {
+            if (1 == $data['conductor_puerta']) {
                 $this->chofer = false;
             }
         } else {
-
-            if (($data['boleto'] && $data['boleto_estado'] != 4) || $data['reservacion']) {
+            if (($data['boleto'] && 4 != $data['boleto_estado']) || $data['reservacion']) {
                 $this->color = '#EF4443';
                 $this->ocupado = true;
             }
@@ -66,7 +65,12 @@ class AsientoComponent
             $this->elegido = isset($data['elegido']);
         }
 
-        $this->coordX = ($data['coordenadaX'] * 1.32) . 'px';
-        $this->coordY = ($data['coordenadaY'] * 1.32) . 'px';
+        $this->coordX = ($data['coordenadaX'] * 1.32).'px';
+
+        if (isset($data['nivel2']) && $data['coordenadaY'] < 800) {
+            $this->coordY = ($data['coordenadaY'] * 1.32).'px';
+        } else {
+            $this->coordY = $data['coordenadaY'].'px';
+        }
     }
 }

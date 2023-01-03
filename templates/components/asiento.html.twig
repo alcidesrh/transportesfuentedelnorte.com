@@ -11,11 +11,8 @@
 			</span>
 		{% endif %}
 	</figure>
-
-
 {% else %}
 	<figure class="absolute" style="margin: 5px; width: 40px; height: 40px; left: {{coordX}}; top: {{coordY}}">
-
 		{% if chofer %}
 			<img class="ml-3 opacity-50" src="{{asset('images/chofer2.png')}}"/>
 		{% else %}
@@ -25,5 +22,4 @@
 			<div class="rounded-l-md top-0 absolute" style="height: 50px; width: 10px; background: #808080; left: 128%;\"></div>
 		{% endif %}
 	</figure>
-
 {% endif %}

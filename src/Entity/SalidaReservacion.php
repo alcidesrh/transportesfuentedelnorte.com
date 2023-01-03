@@ -37,6 +37,7 @@ class SalidaReservacion
     public function __construct()
     {
         $this->asientos = new ArrayCollection();
+        $this->salida_fecha = new \DateTime();
     }
 
     public function getId(): ?int
@@ -47,9 +48,9 @@ class SalidaReservacion
     public function setId(int $id): self
     {
         $this->id = $id;
+
         return $this;
     }
-
 
     public function getBusClase(): ?string
     {
@@ -110,6 +111,7 @@ class SalidaReservacion
 
         return $this;
     }
+
     /**
      * @return Collection<int, Asiento>
      */

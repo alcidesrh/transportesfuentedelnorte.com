@@ -32,14 +32,14 @@
 			</div>
 		{% endif %}
 
-		<div class="relative  h-[1192px] w-[334px] m-1" data-asiento-target="{{regreso ? 'nivel1_regreso' : 'nivel1'}}" data-asientos="{{asientos_nivel_1 | length}}">
+		<div style="height: {{max_h_1}}px" class="relative  w-[334px] m-1" data-asiento-target="{{regreso ? 'nivel1_regreso' : 'nivel1'}}" data-asientos="{{asientos_nivel_1 | length}}">
 			{% for item in senales_nivel_1 | merge(asientos_nivel_1)%}
 				{{ component('asiento', {data: item, regreso: regreso}) }}
 			{% endfor %}
 		</div>
 
 		{% if asientos_nivel_2 is not empty %}
-			<div class="relative  h-[1192px] w-[334px] m-1 hidden" data-asiento-target="{{regreso ? 'nivel2_regreso' : 'nivel2'}}" data-asientos="{{asientos_nivel_2 | length}}">
+			<div style="height: {{max_h_2}}px" class="relative  w-[334px] m-1 hidden" data-asiento-target="{{regreso ? 'nivel2_regreso' : 'nivel2'}}" data-asientos="{{asientos_nivel_2 | length}}">
 				{% for item in senales_nivel_2 | merge(asientos_nivel_2)%}
 					{{ component('asiento', {data: item, regreso: regreso}) }}
 				{% endfor %}

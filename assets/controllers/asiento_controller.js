@@ -27,19 +27,18 @@ export default class extends Controller {
   asientos_salida = [];
   asientos_regreso = [];
   connect() {
-    log;
     this.dispatch("reservacion_paso", { detail: { paso: 2 } });
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    if (!this.hasNivel2Target) {
-      this.nivel1Target.style.height =
-        parseInt((this.nivel1Target.dataset.asientos / 4) * 60 + 350) + "px";
-    } else {
-      this.nivel1Target.style.height =
-        parseInt((this.nivel1Target.dataset.asientos / 3) * 60 + 350) + "px";
-      this.nivel2Target.style.height =
-        parseInt((this.nivel2Target.dataset.asientos / 4) * 60 + 350) + "px";
-    }
+    // if (!this.hasNivel2Target) {
+    //   this.nivel1Target.style.height =
+    //     parseInt((this.nivel1Target.dataset.asientos / 4) * 60 + 350) + "px";
+    // } else {
+    //   this.nivel1Target.style.height =
+    //     parseInt((this.nivel1Target.dataset.asientos / 3) * 60 + 350) + "px";
+    //   this.nivel2Target.style.height =
+    //     parseInt((this.nivel2Target.dataset.asientos / 4) * 60 + 350) + "px";
+    // }
 
     if (this.hasNivel1_regresoTarget) {
       if (!this.hasNivel2_regresoTarget) {

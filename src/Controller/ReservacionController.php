@@ -47,7 +47,6 @@ class ReservacionController extends AbstractController
     #[Route('/ruta-form', name: 'ruta')]
     public function ruta(Reservacion $reservacion = null, Request $request, EntityManagerInterface $entityManagerInterface, $primer_render = null): Response
     {
-        return new Response();
         if ($reservacion) {
             $ruta = $reservacion->getRuta();
         } else {
@@ -188,26 +187,21 @@ class ReservacionController extends AbstractController
         }
 
         if ($ida_vuelta) {
-            if (!$session->has('salidas_vuelta')) {
+            if (!$salidas = $session->get('salidas_vuelta')) {
                 if ($salidas = $sistema->getSalidas($reservacion->getRuta()->getEstacionLlegada()->getId(), $reservacion->getRuta()->getEstacionSalida()->getId(), $salida_reservacion->getSalidaFecha())) {
-                    $session->set('salidas_vuelta', $salidas);
                     if (!isset($salidas['error'])) {
+                        $session->set('salidas_vuelta', $salidas);
                     }
                 }
-            } else {
-                $salidas = $session->get('salidas_vuelta');
             }
-        } else {
-            if (!$session->has('salidas')) {
-                if ($salidas = $sistema->getSalidas($reservacion->getRuta()->getEstacionSalida()->getId(), $reservacion->getRuta()->getEstacionLlegada()->getId(), $salida_reservacion->getSalidaFecha())) {
-                    if (!isset($salidas['error'])) {
-                        $session->set('salidas', $salidas);
-                    }
+        } elseif (!$salidas = $session->get('salidas')) {
+            if ($salidas = $sistema->getSalidas($reservacion->getRuta()->getEstacionSalida()->getId(), $reservacion->getRuta()->getEstacionLlegada()->getId(), $salida_reservacion->getSalidaFecha())) {
+                if (!isset($salidas['error'])) {
+                    $session->set('salidas', $salidas);
                 }
-            } else {
-                $salidas = $session->get('salidas');
             }
         }
+
         if (is_null($salidas)) {
             $sistema_conexion_error = $translatorInterface->trans('No se pudo establecer la conexión con el sistema de reserva. Por favor inténtelo más tarde');
         } elseif (isset($salidas['error'])) {
@@ -373,7 +367,8 @@ class ReservacionController extends AbstractController
     {
         if ($result = $sistema->getAsientos($salida->getSalidaId())) {
             list($asientos, $senales) = $result;
-            $parseAsientos = function (SalidaReservacion $salida, $asientos, $nivel1 = true) {
+            $max_h_1 = $max_h_2 = 0;
+            $parseAsientos = function (SalidaReservacion $salida, $asientos, $nivel1 = true) use (&$max_h_1, &$max_h_2) {
                 return array_map(function ($item) use ($salida) {
                     if ($asientos_elegidos = $salida->getAsientos()) {
                         if (in_array($item['id'], $asientos_elegidos->map(fn (Asiento $item) => $item->getAsientoId())->toArray())) {
@@ -382,7 +377,15 @@ class ReservacionController extends AbstractController
                     }
 
                     return $item;
-                }, array_filter($asientos, fn ($item) => $nivel1 ? !$item['nivel2'] : $item['nivel2']));
+                }, array_filter($asientos, function ($item) use (&$max_h_1, &$max_h_2, $nivel1) {
+                    if ($nivel1 && $max_h_1 < $item['coordenadaY']) {
+                        $max_h_1 = $item['coordenadaY'];
+                    } elseif ($max_h_2 < $item['coordenadaY']) {
+                        $max_h_2 = $item['coordenadaY'];
+                    }
+
+                    return $nivel1 ? !$item['nivel2'] : $item['nivel2'];
+                }));
             };
             $asientos_nivel_1 = $parseAsientos($salida, $asientos);
 
@@ -401,6 +404,8 @@ class ReservacionController extends AbstractController
             'senales_nivel_2' => $senales_nivel_2 ?? [],
             'sistema_conexion_error' => $sistema_conexion_error ?? null,
             'regreso' => $regreso,
+            'max_h_1' => $max_h_1 + 160,
+            'max_h_2' => $max_h_2 + 160,
         ]);
     }
 
