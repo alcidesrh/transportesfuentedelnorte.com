@@ -9,7 +9,12 @@ parameters:
     set_content_language_from_locale: false
     enabled_locales: ["es", "en"]
     reservacion_minutos: 15000000
-
+    CYBERSOURCE_MERCHANT_ID: "%env(CYBERSOURCE_MERCHANT_ID)%"
+    CYBERSOURCE_MERCHANT_KEY_ID: "%env(CYBERSOURCE_MERCHANT_KEY_ID)%"
+    CYBERSOURCE_MERCHANT_SECRET_KEY: "%env(CYBERSOURCE_MERCHANT_SECRET_KEY)%"
+    cybersource_merchant_id: "%env(cybersource_merchant_id)%"
+    cybersource_merchant_key_id: "%env(cybersource_merchant_key_id)%"
+    cybersource_merchant_secret_key: "%env(cybersource_merchant_secret_key)%"
 
 services:
     # default configuration for services in *this* file
