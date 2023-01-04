@@ -20,7 +20,8 @@ export default class extends Controller {
     window.addEventListener(
       "message",
       function (event) {
-        if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
+        //test https://centinelapistag.cardinalcommerce.com
+        if (event.origin === "https://centinelapi.cardinalcommerce.com") {
           if (!complete) {
             const form = document.createElement("form");
             form.action = payerAuthenticationCheckEnrollmentUrl;

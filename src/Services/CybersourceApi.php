@@ -163,7 +163,7 @@ class CybersourceApi
                 'orderInformation' => [
                     'amountDetails' => [
                         'currency' => $this->reservacion->getMoneda(),
-                        'totalAmount' => $this->reservacion->getPrecioVisual(),
+                        'totalAmount' => 1,// $this->reservacion->getPrecioVisual(),
                     ],
                     'billTo' => [
                         'address1' => $this->cliente->getDireccion(),
@@ -177,9 +177,9 @@ class CybersourceApi
                 ],
             ];
 
-            if ('US' == $this->cliente->getPais()->getIso2() || 'CA' == $this->cliente->getPais()->getIso2()) {
-                $this->orderInformation['orderInformation']['billTo']['postalCode'] = $this->cliente->getCodigoPostal();
-            }
+            // if ('US' == $this->cliente->getPais()->getIso2() || 'CA' == $this->cliente->getPais()->getIso2()) {
+            //     $this->orderInformation['orderInformation']['billTo']['postalCode'] = $this->cliente->getCodigoPostal();
+            // }
             if ($telofono = $this->cliente->getTelefono()) {
                 $this->orderInformation['orderInformation']['billTo']['telefono'] = $telofono;
             }

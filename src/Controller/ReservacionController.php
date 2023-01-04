@@ -378,9 +378,9 @@ class ReservacionController extends AbstractController
 
                     return $item;
                 }, array_filter($asientos, function ($item) use (&$max_h_1, &$max_h_2, $nivel1) {
-                    if ($nivel1 && $max_h_1 < $item['coordenadaY']) {
+                    if ($nivel1 && 1 == $item['clase'] && $max_h_1 < $item['coordenadaY']) {
                         $max_h_1 = $item['coordenadaY'];
-                    } elseif ($max_h_2 < $item['coordenadaY']) {
+                    } elseif (!$nivel1 && 2 == $item['clase'] && $max_h_2 < $item['coordenadaY']) {
                         $max_h_2 = $item['coordenadaY'];
                     }
 
@@ -389,7 +389,7 @@ class ReservacionController extends AbstractController
             };
             $asientos_nivel_1 = $parseAsientos($salida, $asientos);
 
-            $asientos_nivel_2 = $parseAsientos($salida, $asientos, false); // array_filter($asientos, fn ($item) => $item['nivel2']);
+            $asientos_nivel_2 = $parseAsientos($salida, $asientos, false);
 
             $senales_nivel_1 = array_filter($senales, fn ($item) => !$item['nivel2']);
             $senales_nivel_2 = array_filter($senales, fn ($item) => $item['nivel2']);
@@ -404,8 +404,8 @@ class ReservacionController extends AbstractController
             'senales_nivel_2' => $senales_nivel_2 ?? [],
             'sistema_conexion_error' => $sistema_conexion_error ?? null,
             'regreso' => $regreso,
-            'max_h_1' => $max_h_1 + 160,
-            'max_h_2' => $max_h_2 + 160,
+            'max_h_1' => $max_h_2 ? $max_h_2 * 1.32 + 160 : $max_h_1 * 1.32 + 160,
+            'max_h_2' => $max_h_1 * 1.32 + 160,
         ]);
     }
 
@@ -534,7 +534,6 @@ class ReservacionController extends AbstractController
                     'status' => $response['statuas'] ?? CybersourceApi::AUTHENTICATION_SUCCESSFUL,
                     'accessToken' => $response['consumerAuthenticationInformation']['accessToken'],
                     'deviceDataCollectionUrl' => $response['consumerAuthenticationInformation']['deviceDataCollectionUrl'],
-                    'referenceId' => $response['consumerAuthenticationInformation']['referenceId'],
                 ], 'reservacion/_iframe_device_data_collection.stream.html.twig');
             }
         }

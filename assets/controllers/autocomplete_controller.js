@@ -15,6 +15,14 @@ export default class extends Controller {
     );
     this.element.addEventListener("autocomplete:connect", this._onConnect);
     this.value = this.element.value;
+
+    if (
+      document.querySelector("#pago_datos_cliente_pais").value != 233 ||
+      document.querySelector("#pago_datos_cliente_pais").value != 39
+    ) {
+      document.querySelector("#codigo_postal").classList.add("hidden");
+      document.querySelector("#codigo_postal").removeAttribute("required");
+    }
   }
 
   disconnect() {

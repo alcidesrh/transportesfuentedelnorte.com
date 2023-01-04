@@ -60,7 +60,7 @@ class ClienteReservacionType extends AbstractType
             ])
             ->add('codigo_postal', TextType::class, [
                 'label' => $this->translator->trans('Código postal'),
-                ...$this->getNotBlanckContrain(),
+                // ...$this->getNotBlanckContrain(),
             ])
             ->add('pais', EntityType::class, [
                 'class' => Countries::class,

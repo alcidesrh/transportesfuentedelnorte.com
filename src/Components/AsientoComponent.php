@@ -67,10 +67,14 @@ class AsientoComponent
 
         $this->coordX = ($data['coordenadaX'] * 1.32).'px';
 
-        if (isset($data['nivel2']) && $data['coordenadaY'] < 800) {
-            $this->coordY = ($data['coordenadaY'] * 1.32).'px';
-        } else {
-            $this->coordY = $data['coordenadaY'].'px';
-        }
+        $this->coordY = ($data['coordenadaY'] * 1.32).'px';
+
+    //     if (!isset($data['numero']) || 1 == $data['clase'] || $) {
+    //         $this->coordY = ($data['coordenadaY'] * 1.32).'px';
+    //     } else {
+    //         $this->coordY = $data['coordenadaY'].'px';
+    //     }
+
+        // $this->coordY = $data['coordenadaY'].'px';
     }
 }
